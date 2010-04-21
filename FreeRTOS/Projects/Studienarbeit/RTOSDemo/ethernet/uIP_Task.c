@@ -62,7 +62,6 @@
 
 /* uip includes. */
 #include "hw_types.h"
-
 #include "uip.h"
 #include "uip_arp.h"
 #include "uip_timer.h"
@@ -74,6 +73,7 @@
 
 /* Demo includes. */
 #include "emac.h"
+#include "hello-world.h"
 
 /*-----------------------------------------------------------*/
 
@@ -149,7 +149,7 @@ extern void ( vEMAC_ISR )( void );
 	uip_init();
 	uip_ipaddr( xIPAddr, uipIP_ADDR0, uipIP_ADDR1, uipIP_ADDR2, uipIP_ADDR3 );
 	uip_sethostaddr( xIPAddr );
-	//httpd_init();
+	hello_world_init();
 
 	while( vInitEMAC() != pdPASS )
     {
