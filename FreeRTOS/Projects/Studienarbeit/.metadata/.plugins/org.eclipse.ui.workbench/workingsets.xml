@@ -2,11 +2,11 @@
 <workingSetManager>
 <workingSet editPageId="org.eclipse.cdt.ui.CElementWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1267966610204_0" label="FreeRTOS_LM3S8962_Demo" name="FreeRTOS_LM3S8962_Demo">
 <item factoryID="org.eclipse.cdt.ui.PersistableCElementFactory" path="/RTOSDemo/startup.c" type="1"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/RTOSDemo/standalone.ld" type="1"/>
-<item factoryID="org.eclipse.cdt.ui.PersistableCElementFactory" path="/RTOSDemo/main.c" type="1"/>
-<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/RTOSDemo/Makefile" type="1"/>
 <item factoryID="org.eclipse.cdt.ui.PersistableCElementFactory" path="/RTOSDemo/FreeRTOSConfig.h" type="1"/>
 <item factoryID="org.eclipse.cdt.ui.PersistableCElementFactory" path="/RTOSDemo/OLEDDisplay/bitmap.h" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/RTOSDemo/standalone.ld" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/RTOSDemo/Makefile" type="1"/>
+<item factoryID="org.eclipse.cdt.ui.PersistableCElementFactory" path="/RTOSDemo/main.c" type="1"/>
 </workingSet>
 <workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1270820190704_1" label="Window Working Set" name="Aggregate for window 1188147282312">
 <workingSet IMemento.internal.id="FreeRTOS_LM3S8962_Demo"/>

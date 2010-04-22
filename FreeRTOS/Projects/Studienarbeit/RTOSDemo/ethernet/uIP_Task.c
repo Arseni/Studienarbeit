@@ -81,7 +81,7 @@
 #define uipIP_ADDR0		192
 #define uipIP_ADDR1		168
 #define uipIP_ADDR2		10
-#define uipIP_ADDR3		232
+#define uipIP_ADDR3		227
 
 /* How long to wait before attempting to connect the MAC again. */
 #define uipINIT_WAIT    100
@@ -131,10 +131,9 @@ clock_time_t clock_time( void )
 
 void vuIP_Task( void *pvParameters )
 {
-portBASE_TYPE i;
-uip_ipaddr_t xIPAddr;
-struct timer periodic_timer, arp_timer;
-extern void ( vEMAC_ISR )( void );
+	portBASE_TYPE i;
+	uip_ipaddr_t xIPAddr;
+	struct timer periodic_timer, arp_timer;
 
 	/* Enable/Reset the Ethernet Controller */
 	SysCtlPeripheralEnable( SYSCTL_PERIPH_ETH );

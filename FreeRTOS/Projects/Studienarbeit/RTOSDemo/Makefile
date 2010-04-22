@@ -120,7 +120,7 @@ RTOSDemo.axf : $(OBJS) startup.o Makefile
 
 $(OBJS) : %.o : %.c Makefile FreeRTOSConfig.h
 	$(CC) -c $(CFLAGS) $< -o $@
-
+	
 startup.o : startup.c Makefile
 	$(CC) -c $(CFLAGS) -O1 startup.c -o startup.o
 		

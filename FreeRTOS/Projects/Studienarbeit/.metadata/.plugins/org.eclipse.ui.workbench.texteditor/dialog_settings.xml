@@ -3,26 +3,26 @@
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="237" key="DIALOG_WIDTH"/>
 		<item value="421" key="DIALOG_Y_ORIGIN"/>
-		<item value="763" key="DIALOG_X_ORIGIN"/>
 		<item value="362" key="DIALOG_HEIGHT"/>
+		<item value="763" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Tahoma|8.25|0|WINDOWS|1|-11|0|0|0|400|0|0|0|1|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="Register" key="selection"/>
+		<item value="vEMAC_ISR" key="selection"/>
 		<list key="findhistory">
+			<item value="vEMAC_ISR"/>
+			<item value="uipINIT_WAIT"/>
 			<item value="register"/>
 			<item value="main"/>
 			<item value="eCOMPort"/>
 			<item value="eParity"/>
 			<item value="eStopBits"/>
 			<item value="eDataBits"/>
-			<item value="eBaud"/>
-			<item value="ser"/>
 		</list>
 		<list key="replacehistory">
 			<item value="tCOMPort"/>

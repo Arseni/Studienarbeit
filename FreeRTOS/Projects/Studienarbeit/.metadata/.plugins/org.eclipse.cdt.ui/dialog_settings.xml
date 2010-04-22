@@ -10,6 +10,7 @@
 		<item value="227191" key="searchFlags"/>
 		<item value="false" key="caseSensitive"/>
 		<list key="previousPatterns">
+			<item value="hello_world_init"/>
 			<item value="*portmacro*"/>
 			<item value="*portmakro*"/>
 			<item value="portmakro"/>
