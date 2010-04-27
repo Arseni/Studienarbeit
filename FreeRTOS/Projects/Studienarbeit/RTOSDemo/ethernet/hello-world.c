@@ -25,12 +25,14 @@
 #include "hello-world.h"
 #include "uip.h"
 #include <string.h>
+#include "OLEDDisplay/lcd_message.h"
 
 /*
  * Declaration of the protosocket function that handles the connection
  * (defined at the end of the code).
  */
 static int handle_connection(struct hello_world_state *s);
+static int handle_ctl_connection(struct hello_world_state *s);
 /*---------------------------------------------------------------------------*/
 /*
  * The initialization function. We must explicitly call this function
@@ -42,6 +44,7 @@ hello_world_init(void)
 {
   /* We start to listen for connections on TCP port 1000. */
   uip_listen(HTONS(1000));
+  uip_listen(HTONS(1010));
 }
 /*---------------------------------------------------------------------------*/
 /*
@@ -74,7 +77,21 @@ hello_world_appcall(void)
    * the communication. We pass it a pointer to the application state
    * of the current connection.
    */
-  handle_connection(s);
+  switch(HTONS(uip_conn->lport))
+  {
+	  case 1000:
+		  LCDDBG("norm con", HTONS(uip_conn->lport));
+		  handle_connection(s);
+		  break;
+	  case 1010:
+		  LCDDBG("ctl con", HTONS(uip_conn->lport));
+		  handle_ctl_connection(s);
+		  break;
+	  default:
+		  LCDDBG("port", HTONS(uip_conn->lport));
+		  break;
+
+  }
 }
 /*---------------------------------------------------------------------------*/
 /*
@@ -95,6 +112,21 @@ handle_connection(struct hello_world_state *s)
   PSOCK_SEND_STR(&s->p, s->name);
   PSOCK_CLOSE(&s->p);
   
+  PSOCK_END(&s->p);
+}
+
+static int
+handle_ctl_connection(struct hello_world_state *s)
+{
+  PSOCK_BEGIN(&s->p);
+
+  PSOCK_SEND_STR(&s->p, "What you wanna know?\n");
+  PSOCK_READTO(&s->p, '\n');
+  strncpy(s->name, s->inputbuffer, sizeof(s->name));
+  PSOCK_SEND_STR(&s->p, "Not yet implemented: ");
+  PSOCK_SEND_STR(&s->p, s->name);
+  PSOCK_CLOSE(&s->p);
+
   PSOCK_END(&s->p);
 }
 /*---------------------------------------------------------------------------*/
