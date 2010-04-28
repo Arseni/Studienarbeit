@@ -10,14 +10,21 @@
 		<item value="227191" key="searchFlags"/>
 		<item value="false" key="caseSensitive"/>
 		<list key="previousPatterns">
-			<item value="hello_world_init"/>
+			<item value="uip_setethaddr"/>
+			<item value="*uip_udp_periodic*"/>
+			<item value="uip_udp_periodic"/>
+			<item value="resolv_appcall"/>
+			<item value="resolv_conf"/>
+			<item value="resolv_init"/>
+			<item value="vApplicationProcessFormInput"/>
+			<item value="xEMACSemaphore"/>
 			<item value="*portmacro*"/>
 			<item value="*portmakro*"/>
 			<item value="portmakro"/>
 		</list>
 	</section>
 	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration.internal">
-		<item value="615" key="size.width"/>
+		<item value="808" key="size.width"/>
 		<item value="188" key="size.height"/>
 	</section>
 	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration">

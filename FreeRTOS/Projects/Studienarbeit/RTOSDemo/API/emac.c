@@ -172,8 +172,7 @@ unsigned int iLen;
 
 void vInitialiseSend( void )
 {
-	/* Set the index to the first byte to send - skipping over the size
-	bytes. */
+	/* Set the index to the first byte to send - skipping over the size bytes. */
 	ulNextTxSpace = 2;
 }
 /*-----------------------------------------------------------*/

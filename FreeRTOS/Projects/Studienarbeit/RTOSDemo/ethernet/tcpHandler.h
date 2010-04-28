@@ -33,19 +33,19 @@
    of our application, and the memory required for this state is
    allocated together with each TCP connection. One application state
    for each TCP connection. */
-typedef struct hello_world_state {
+typedef struct tcpHandler_state {
   struct psock p;
   char inputbuffer[40];
   char name[40];
 } uip_tcp_appstate_t;
 
 /* Finally we define the application function to be called by uIP. */
-void hello_world_appcall(void);
+void tcpHandler_appcall(void);
 #ifndef UIP_APPCALL
-#define UIP_APPCALL hello_world_appcall
+#define UIP_APPCALL tcpHandler_appcall
 #endif /* UIP_APPCALL */
 
-void hello_world_init(void);
+void tcpHandler_init(void);
 
 #endif /* __HELLO_WORLD_H__ */
 /** @} */

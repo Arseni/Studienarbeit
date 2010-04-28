@@ -58,7 +58,7 @@
 #include "task.h"
 #include "semphr.h"
 
-#include "OLEDDisplay/lcd_message.h"
+#include "OLEDDisplay/oledDisplay.h"
 
 /* uip includes. */
 #include "hw_types.h"
@@ -169,7 +169,7 @@ void ethernetTask( void *pvParameters )
 	uip_init();
 	uip_ipaddr( xIPAddr, uipIP_ADDR0, uipIP_ADDR1, uipIP_ADDR2, uipIP_ADDR3 );
 	uip_sethostaddr( xIPAddr );
-	hello_world_init();
+	tcpHandler_init();
 
 	while( vInitEMAC() != pdPASS )
     {
@@ -219,6 +219,7 @@ void ethernetTask( void *pvParameters )
 			if( timer_expired( &periodic_timer ) )
 			{
 				timer_reset( &periodic_timer );
+				// Handle all TCP connections
 				for( i = 0; i < UIP_CONNS; i++ )
 				{
 					uip_periodic( i );
@@ -232,6 +233,17 @@ void ethernetTask( void *pvParameters )
 						prvENET_Send();
 					}
 				}	
+
+				// Handle all UDP connections
+				for( i = 0; i < UIP_UDP_CONNS; i++ )
+				{
+					uip_udp_periodic( i );
+					if( uip_len > 0 )
+					{
+						uip_arp_out();
+						prvENET_Send();
+					}
+				}
 	
 				/* Call the ARP timer function every 10 seconds. */
 				if( timer_expired( &arp_timer ) )

@@ -25,14 +25,14 @@
 #include "tcpHandler.h"
 #include "uip.h"
 #include <string.h>
-#include "OLEDDisplay/lcd_message.h"
+#include "OLEDDisplay/oledDisplay.h"
 
 /*
  * Declaration of the protosocket function that handles the connection
  * (defined at the end of the code).
  */
-static int handle_connection(struct hello_world_state *s);
-static int handle_ctl_connection(struct hello_world_state *s);
+static int handle_connection(struct tcpHandler_state *s);
+static int handle_ctl_connection(struct tcpHandler_state *s);
 /*---------------------------------------------------------------------------*/
 /*
  * The initialization function. We must explicitly call this function
@@ -40,7 +40,7 @@ static int handle_ctl_connection(struct hello_world_state *s);
  * called.
  */
 void
-hello_world_init(void)
+tcpHandler_init(void)
 {
   /* We start to listen for connections on TCP port 1000. */
   uip_listen(HTONS(1000));
@@ -55,14 +55,14 @@ hello_world_init(void)
  * data is acknowledged, data needs to be retransmitted, etc.).
  */
 void
-hello_world_appcall(void)
+tcpHandler_appcall(void)
 {
   /*
    * The uip_conn structure has a field called "appstate" that holds
    * the application state of the connection. We make a pointer to
    * this to access it easier.
    */
-  struct hello_world_state *s = &(uip_conn->appstate);
+  struct tcpHandler_state *s = &(uip_conn->appstate);
 
   /*
    * If a new connection was just established, we should initialize
@@ -72,6 +72,8 @@ hello_world_appcall(void)
     PSOCK_INIT(&s->p, s->inputbuffer, sizeof(s->inputbuffer));
   }
 
+  vOLEDDBG("TCP: port ", HTONS(uip_conn->lport));
+
   /*
    * Finally, we run the protosocket function that actually handles
    * the communication. We pass it a pointer to the application state
@@ -80,15 +82,12 @@ hello_world_appcall(void)
   switch(HTONS(uip_conn->lport))
   {
 	  case 1000:
-		  LCDDBG("norm con", HTONS(uip_conn->lport));
 		  handle_connection(s);
 		  break;
 	  case 1010:
-		  LCDDBG("ctl con", HTONS(uip_conn->lport));
 		  handle_ctl_connection(s);
 		  break;
 	  default:
-		  LCDDBG("port", HTONS(uip_conn->lport));
 		  break;
 
   }
@@ -101,7 +100,7 @@ hello_world_appcall(void)
  * macros.
  */
 static int
-handle_connection(struct hello_world_state *s)
+handle_connection(struct tcpHandler_state *s)
 {
   PSOCK_BEGIN(&s->p);
 
@@ -116,7 +115,7 @@ handle_connection(struct hello_world_state *s)
 }
 
 static int
-handle_ctl_connection(struct hello_world_state *s)
+handle_ctl_connection(struct tcpHandler_state *s)
 {
   PSOCK_BEGIN(&s->p);
 

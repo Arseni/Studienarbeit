@@ -148,9 +148,10 @@ typedef unsigned short uip_stats_t;
 /*#include "telnetd.h"*/
 /*#include "webserver.h"*/
 /*#include "dhcpc.h"*/
-#include "resolv.h"
+/*#include "resolv.h"*/
 /*#include "webclient.h"*/
 #include "tcpHandler.h"
+#include "udpHandler.h"
 
 #define UIP_CONF_EXTERNAL_BUFFER
 
