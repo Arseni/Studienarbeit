@@ -216,6 +216,17 @@ unsigned portLONG ulNextWord;
 }
 /*-----------------------------------------------------------*/
 
+/*
+ * Send the uIP buffer to the MAC.
+ */
+void prvENET_Send(void)
+{
+    vInitialiseSend();
+    vIncrementTxLength( uip_len );
+    vSendBufferToMAC();
+}
+/*-----------------------------------------------------------*/
+
 void vEMAC_ISR( void )
 {
 portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;

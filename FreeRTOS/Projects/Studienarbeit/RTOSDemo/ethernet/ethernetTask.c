@@ -73,15 +73,15 @@
 
 /* Demo includes. */
 #include "emac.h"
-#include "hello-world.h"
+#include "tcpHandler.h"
 
 /*-----------------------------------------------------------*/
 
 /* IP address configuration. */
 #define uipIP_ADDR0		192
 #define uipIP_ADDR1		168
-#define uipIP_ADDR2		10
-#define uipIP_ADDR3		227
+#define uipIP_ADDR2		0 //10
+#define uipIP_ADDR3		13 //227
 
 /* How long to wait before attempting to connect the MAC again. */
 #define uipINIT_WAIT    100
@@ -93,16 +93,6 @@
 #define uipTOTAL_FRAME_HEADER_SIZE	54
 
 /*-----------------------------------------------------------*/
-
-/*
- * Send the uIP buffer to the MAC.
- */
-static void prvENET_Send(void);
-
-/*
- * Setup the MAC address in the MAC itself, and in the uIP stack.
- */
-static void prvSetMACAddress( void );
 
 /*
  * Port functions required by the uIP stack.
@@ -128,8 +118,39 @@ clock_time_t clock_time( void )
 	return xTaskGetTickCount();
 }
 
+/*
+ * Setup the MAC address in the MAC itself, and in the uIP stack.
+ */
+void prvSetMACAddress( void )
+{
+unsigned portLONG ulUser0, ulUser1;
+unsigned char pucMACArray[8];
+struct uip_eth_addr xAddr;
 
-void vuIP_Task( void *pvParameters )
+	/* Get the device MAC address from flash */
+    FlashUserGet(&ulUser0, &ulUser1);
+
+	/* Convert the MAC address from flash into sequence of bytes. */
+    pucMACArray[0] = ((ulUser0 >>  0) & 0xff);
+    pucMACArray[1] = ((ulUser0 >>  8) & 0xff);
+    pucMACArray[2] = ((ulUser0 >> 16) & 0xff);
+    pucMACArray[3] = ((ulUser1 >>  0) & 0xff);
+    pucMACArray[4] = ((ulUser1 >>  8) & 0xff);
+    pucMACArray[5] = ((ulUser1 >> 16) & 0xff);
+
+	/* Program the MAC address. */
+    EthernetMACAddrSet(ETH_BASE, pucMACArray);
+
+	xAddr.addr[ 0 ] = pucMACArray[0];
+	xAddr.addr[ 1 ] = pucMACArray[1];
+	xAddr.addr[ 2 ] = pucMACArray[2];
+	xAddr.addr[ 3 ] = pucMACArray[3];
+	xAddr.addr[ 4 ] = pucMACArray[4];
+	xAddr.addr[ 5 ] = pucMACArray[5];
+	uip_setethaddr( xAddr );
+}
+
+void ethernetTask( void *pvParameters )
 {
 	portBASE_TYPE i;
 	uip_ipaddr_t xIPAddr;
@@ -231,92 +252,4 @@ void vuIP_Task( void *pvParameters )
 	}
 }
 /*-----------------------------------------------------------*/
-
-static void prvENET_Send(void)
-{
-    vInitialiseSend();
-    vIncrementTxLength( uip_len );
-    vSendBufferToMAC();
-}
-/*-----------------------------------------------------------*/
-
-static void prvSetMACAddress( void )
-{
-unsigned portLONG ulUser0, ulUser1;
-unsigned char pucMACArray[8];
-struct uip_eth_addr xAddr;
-
-	/* Get the device MAC address from flash */
-    FlashUserGet(&ulUser0, &ulUser1);
-
-	/* Convert the MAC address from flash into sequence of bytes. */
-    pucMACArray[0] = ((ulUser0 >>  0) & 0xff);
-    pucMACArray[1] = ((ulUser0 >>  8) & 0xff);
-    pucMACArray[2] = ((ulUser0 >> 16) & 0xff);
-    pucMACArray[3] = ((ulUser1 >>  0) & 0xff);
-    pucMACArray[4] = ((ulUser1 >>  8) & 0xff);
-    pucMACArray[5] = ((ulUser1 >> 16) & 0xff);
-
-	/* Program the MAC address. */
-    EthernetMACAddrSet(ETH_BASE, pucMACArray);
-
-	xAddr.addr[ 0 ] = pucMACArray[0];
-	xAddr.addr[ 1 ] = pucMACArray[1];
-	xAddr.addr[ 2 ] = pucMACArray[2];
-	xAddr.addr[ 3 ] = pucMACArray[3];
-	xAddr.addr[ 4 ] = pucMACArray[4];
-	xAddr.addr[ 5 ] = pucMACArray[5];
-	uip_setethaddr( xAddr );
-}
-/*-----------------------------------------------------------*/
-
-void vApplicationProcessFormInput( portCHAR *pcInputString, portBASE_TYPE xInputLength )
-{
-char *c, *pcText;
-static portCHAR cMessageForDisplay[ 32 ];
-extern xQueueHandle xOLEDQueue;
-xOLEDMessage xOLEDMessage;
-
-	/* Process the form input sent by the IO page of the served HTML. */
-
-	c = strstr( pcInputString, "?" );
-
-    if( c )
-    {
-		/* Turn LED's on or off in accordance with the check box status. */
-		if( strstr( c, "LED0=1" ) != NULL )
-		{
-			ledSwitch(true);
-		}
-		else
-		{
-			ledSwitch(false);
-		}		
-		
-		/* Find the start of the text to be displayed on the LCD. */
-        pcText = strstr( c, "LCD=" );
-        pcText += strlen( "LCD=" );
-
-        /* Terminate the file name for further processing within uIP. */
-        *c = 0x00;
-
-        /* Terminate the LCD string. */
-        c = strstr( pcText, " " );
-        if( c != NULL )
-        {
-            *c = 0x00;
-        }
-
-        /* Add required spaces. */
-        while( ( c = strstr( pcText, "+" ) ) != NULL )
-        {
-            *c = ' ';
-        }
-
-        /* Write the message to the LCD. */
-		strcpy( cMessageForDisplay, pcText );
-		strcpy(xOLEDMessage.pcMessage,cMessageForDisplay);
-        xQueueSend( xOLEDQueue, &xOLEDMessage, portMAX_DELAY );
-    }
-}
 

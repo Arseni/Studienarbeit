@@ -93,7 +93,7 @@ OLEDDisplay=$(OLEDDISPLAY_DIR)/rit128x96x4.c $(OLEDDISPLAY_DIR)/osram128x64x4.c 
 
 UIP=$(UIP_DIR)/uip_arp.c $(UIP_DIR)/psock.c $(UIP_DIR)/uip_timer.c $(UIP_DIR)/uip.c
 
-ETHERNET=$(UIP) $(ETHERNET_DIR)/hello-world.c $(ETHERNET_DIR)/uIP_Task.c
+ETHERNET=$(UIP) $(ETHERNET_DIR)/tcpHandler.c $(ETHERNET_DIR)/ethernetTask.c $(ETHERNET_DIR)/resolv.c
  
 SOURCE=	$(DRIVERS) \
 		$(APIS) \

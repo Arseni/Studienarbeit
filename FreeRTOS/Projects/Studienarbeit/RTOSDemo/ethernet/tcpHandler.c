@@ -22,7 +22,7 @@
  * uip.h (since this cannot be included in hello-world.h) and
  * <string.h>, since we use the memcpy() function in the code.
  */
-#include "hello-world.h"
+#include "tcpHandler.h"
 #include "uip.h"
 #include <string.h>
 #include "OLEDDisplay/lcd_message.h"

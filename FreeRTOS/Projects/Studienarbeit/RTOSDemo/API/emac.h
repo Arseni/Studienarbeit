@@ -310,6 +310,8 @@ unsigned int   CheckFrameReceived(void);
 void           vInitialiseSend(void);
 unsigned int   Rdy4Tx(void);
 void           vSendBufferToMAC(void);
+void prvENET_Send(void);
+void prvSetMACAddress( void );
 void vEMACWaitForInput( void );
 unsigned int uiGetEMACRxData( unsigned char *ucBuffer );
 

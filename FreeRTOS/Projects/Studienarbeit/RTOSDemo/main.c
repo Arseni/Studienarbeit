@@ -113,7 +113,7 @@
 #include "led.h"
 #include "comport.h"
 #include "buttons.h"
-#include "uiP_Task.h"
+#include "ethernetTask.h"
 
 /*-----------------------------------------------------------*/
 
@@ -235,7 +235,7 @@ int main( void )
 	//xTaskCreate( vUARTTask, (signed portCHAR *) "UART", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	//xTaskCreate( vLEDTask, (signed portCHAR *) "LED", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	xTaskCreate( vButtonTask, (signed portCHAR *) "Buttons", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
-	xTaskCreate( vuIP_Task, ( signed portCHAR * ) "uIP", mainBASIC_WEB_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
+	xTaskCreate( ethernetTask, ( signed portCHAR * ) "uIP", mainBASIC_WEB_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
 
 
 
