@@ -32,7 +32,6 @@
  * (defined at the end of the code).
  */
 static int handle_connection(struct tcpHandler_state *s);
-static int handle_ctl_connection(struct tcpHandler_state *s);
 /*---------------------------------------------------------------------------*/
 /*
  * The initialization function. We must explicitly call this function
@@ -42,9 +41,8 @@ static int handle_ctl_connection(struct tcpHandler_state *s);
 void
 tcpHandler_init(void)
 {
-  /* We start to listen for connections on TCP port 1000. */
-  uip_listen(HTONS(1000));
-  uip_listen(HTONS(1010));
+  /* We start to listen for connections on TCP port 1100. */
+  uip_listen(HTONS(1100));
 }
 /*---------------------------------------------------------------------------*/
 /*
@@ -72,7 +70,7 @@ tcpHandler_appcall(void)
     PSOCK_INIT(&s->p, s->inputbuffer, sizeof(s->inputbuffer));
   }
 
-  vOLEDDBG("TCP: port ", HTONS(uip_conn->lport));
+  vOledDbg1("TCP: port ", HTONS(uip_conn->lport));
 
   /*
    * Finally, we run the protosocket function that actually handles
@@ -81,15 +79,11 @@ tcpHandler_appcall(void)
    */
   switch(HTONS(uip_conn->lport))
   {
-	  case 1000:
+	  case 1100:
 		  handle_connection(s);
-		  break;
-	  case 1010:
-		  handle_ctl_connection(s);
 		  break;
 	  default:
 		  break;
-
   }
 }
 /*---------------------------------------------------------------------------*/
@@ -111,21 +105,6 @@ handle_connection(struct tcpHandler_state *s)
   PSOCK_SEND_STR(&s->p, s->name);
   PSOCK_CLOSE(&s->p);
   
-  PSOCK_END(&s->p);
-}
-
-static int
-handle_ctl_connection(struct tcpHandler_state *s)
-{
-  PSOCK_BEGIN(&s->p);
-
-  PSOCK_SEND_STR(&s->p, "What you wanna know?\n");
-  PSOCK_READTO(&s->p, '\n');
-  strncpy(s->name, s->inputbuffer, sizeof(s->name));
-  PSOCK_SEND_STR(&s->p, "Not yet implemented: ");
-  PSOCK_SEND_STR(&s->p, s->name);
-  PSOCK_CLOSE(&s->p);
-
   PSOCK_END(&s->p);
 }
 /*---------------------------------------------------------------------------*/

@@ -1,1 +1,1 @@
-extern void ethernetTask( void *pvParameters );
+extern void vEthernetTask( void *pvParameters );

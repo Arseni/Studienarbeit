@@ -150,7 +150,7 @@ struct uip_eth_addr xAddr;
 	uip_setethaddr( xAddr );
 }
 
-void ethernetTask( void *pvParameters )
+void vEthernetTask( void *pvParameters )
 {
 	portBASE_TYPE i;
 	uip_ipaddr_t xIPAddr;
@@ -170,6 +170,7 @@ void ethernetTask( void *pvParameters )
 	uip_ipaddr( xIPAddr, uipIP_ADDR0, uipIP_ADDR1, uipIP_ADDR2, uipIP_ADDR3 );
 	uip_sethostaddr( xIPAddr );
 	tcpHandler_init();
+	udpHandler_init();
 
 	while( vInitEMAC() != pdPASS )
     {
@@ -244,16 +245,15 @@ void ethernetTask( void *pvParameters )
 						prvENET_Send();
 					}
 				}
-	
+			}
+			else if( timer_expired( &arp_timer ) )
+			{
 				/* Call the ARP timer function every 10 seconds. */
-				if( timer_expired( &arp_timer ) )
-				{
-					timer_reset( &arp_timer );
-					uip_arp_timer();
-				}
+				timer_reset( &arp_timer );
+				uip_arp_timer();
 			}
 			else
-			{			
+			{
 				/* We did not receive a packet, and there was no periodic
 				processing to perform.  Block for a fixed period.  If a packet
 				is received during this period we will be woken by the ISR

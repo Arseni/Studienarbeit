@@ -39,8 +39,14 @@ static void Init(void)
 		return;
 
 	// enable peripheral clock
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+
+	// setup multiplexer
+	GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_7, GPIO_DIR_MODE_OUT);
+	GPIOPadConfigSet( GPIO_PORTB_BASE, GPIO_PIN_7, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD );
+	GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_7, 0xFF);
+
 
 	// set gpio pins to hardware used mode
 	GPIOPinTypeUART(SERIALPORT_PORT_BASE, SERIALPORT_PINS);

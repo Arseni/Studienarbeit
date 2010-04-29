@@ -75,6 +75,10 @@
 <listOptionValue builtIn="false" value="C:/TUHH/Studienarbeit/freeRTOS/Demo/CORTEX_LM3Sxxxx_Eclipse_Studienarbeit/RTOSDemo/API"/>
 <listOptionValue builtIn="false" value="C:/E/Dev/FreeRTOS/WorkingCopy3/Demo/Common/ethernet/uIP/uip-1.0/uip"/>
 </option>
+<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.38335143" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOSDemo/ethernet}&quot;"/>
+<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RTOSDemo/uip}&quot;"/>
+</option>
 <inputType id="org.eclipse.cdt.build.core.settings.holder.inType.685511860" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 </tool>
 <tool id="org.eclipse.cdt.build.core.settings.holder.1021181093" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
