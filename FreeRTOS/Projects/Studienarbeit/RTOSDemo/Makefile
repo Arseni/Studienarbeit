@@ -89,11 +89,11 @@ DRIVERS=$(DRIVERS_DIR)/adc.c $(DRIVERS_DIR)/can.c $(DRIVERS_DIR)/comp.c $(DRIVER
 
 APIS=$(API_DIR)/led.c $(API_DIR)/comport.c $(API_DIR)/buttons.c $(API_DIR)/ustdlib.c $(API_DIR)/emac.c
 
-OLEDDisplay=$(OLEDDISPLAY_DIR)/rit128x96x4.c $(OLEDDISPLAY_DIR)/osram128x64x4.c $(OLEDDISPLAY_DIR)/formike128x128x16.c
+OLEDDisplay=$(OLEDDISPLAY_DIR)/rit128x96x4.c $(OLEDDISPLAY_DIR)/osram128x64x4.c $(OLEDDISPLAY_DIR)/formike128x128x16.c $(OLEDDISPLAY_DIR)/oledDisplay.c
 
 UIP=$(UIP_DIR)/uip_arp.c $(UIP_DIR)/psock.c $(UIP_DIR)/uip_timer.c $(UIP_DIR)/uip.c
 
-ETHERNET=$(UIP) $(ETHERNET_DIR)/hello-world.c $(ETHERNET_DIR)/uIP_Task.c
+ETHERNET=$(UIP) $(ETHERNET_DIR)/tcpHandler.c $(ETHERNET_DIR)/ethernetTask.c $(ETHERNET_DIR)/udpHandler.c
  
 SOURCE=	$(DRIVERS) \
 		$(APIS) \

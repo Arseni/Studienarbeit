@@ -172,8 +172,7 @@ unsigned int iLen;
 
 void vInitialiseSend( void )
 {
-	/* Set the index to the first byte to send - skipping over the size
-	bytes. */
+	/* Set the index to the first byte to send - skipping over the size bytes. */
 	ulNextTxSpace = 2;
 }
 /*-----------------------------------------------------------*/
@@ -213,6 +212,17 @@ unsigned portLONG ulNextWord;
 
 	/* Go. */
     HWREG( ETH_BASE + MAC_O_TR ) = MAC_TR_NEWTX;
+}
+/*-----------------------------------------------------------*/
+
+/*
+ * Send the uIP buffer to the MAC.
+ */
+void prvENET_Send(void)
+{
+    vInitialiseSend();
+    vIncrementTxLength( uip_len );
+    vSendBufferToMAC();
 }
 /*-----------------------------------------------------------*/
 

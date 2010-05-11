@@ -242,9 +242,8 @@ struct uip_stats uip_stat;
 #endif /* UIP_STATISTICS == 1 */
 
 #if UIP_LOGGING == 1
-#include <stdio.h>
-void uip_log(char *msg);
-#define UIP_LOG(m) uip_log(m)
+#include "OLEDDisplay/oledDisplay.h"
+#define UIP_LOG(m) vOledDbg(m)
 #else
 #define UIP_LOG(m)
 #endif /* UIP_LOGGING == 1 */
@@ -1117,14 +1116,25 @@ uip_process(u8_t flag)
        connection is bound to a remote port. Finally, if the
        connection is bound to a remote IP address, the source IP
        address of the packet is checked. */
-    if(uip_udp_conn->lport != 0 &&
+	  unsigned short dp_ = UDPBUF->destport;
+	  unsigned short sp_ = UDPBUF->srcport;
+	  unsigned short ip_[2];
+	  ip_[0] = BUF->srcipaddr[0];
+	  ip_[1] = BUF->srcipaddr[1];
+
+	  if(uip_udp_conn->lport != 0 &&
        UDPBUF->destport == uip_udp_conn->lport &&
        (uip_udp_conn->rport == 0 ||
         UDPBUF->srcport == uip_udp_conn->rport) &&
        (uip_ipaddr_cmp(uip_udp_conn->ripaddr, all_zeroes_addr) ||
 	uip_ipaddr_cmp(uip_udp_conn->ripaddr, all_ones_addr) ||
 	uip_ipaddr_cmp(BUF->srcipaddr, uip_udp_conn->ripaddr))) {
-      goto udp_found;
+    /**/
+		  dp_--;
+		  sp_ -= dp_;
+		  ip_[0] -= ip_[1] + sp_;
+	/**/
+		  goto udp_found;
     }
   }
   UIP_LOG("udp: no matching connection found");
