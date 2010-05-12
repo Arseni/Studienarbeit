@@ -125,7 +125,7 @@ typedef unsigned short uip_stats_t;
  *
  * \hideinitializer
  */
-#define UIP_CONF_UDP             1
+#define UIP_CONF_UDP             0
 
 /**
  * UDP checksums on or off
@@ -151,7 +151,7 @@ typedef unsigned short uip_stats_t;
 /*#include "resolv.h"*/
 /*#include "webclient.h"*/
 #include "tcpHandler.h"
-#include "udpHandler.h"
+//#include "udpHandler.h"
 
 #define UIP_CONF_EXTERNAL_BUFFER
 

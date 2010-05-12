@@ -89,7 +89,7 @@ DRIVERS=$(DRIVERS_DIR)/adc.c $(DRIVERS_DIR)/can.c $(DRIVERS_DIR)/comp.c $(DRIVER
 
 APIS=$(API_DIR)/led.c $(API_DIR)/comport.c $(API_DIR)/buttons.c $(API_DIR)/ustdlib.c $(API_DIR)/emac.c
 
-OLEDDisplay=$(OLEDDISPLAY_DIR)/rit128x96x4.c $(OLEDDISPLAY_DIR)/osram128x64x4.c $(OLEDDISPLAY_DIR)/formike128x128x16.c $(OLEDDISPLAY_DIR)/oledDisplay.c
+OLEDDisplay=$(OLEDDISPLAY_DIR)/rit128x96x4.c $(OLEDDISPLAY_DIR)/osram128x64x4.c $(OLEDDISPLAY_DIR)/formike128x128x16.c
 
 UIP=$(UIP_DIR)/uip_arp.c $(UIP_DIR)/psock.c $(UIP_DIR)/uip_timer.c $(UIP_DIR)/uip.c
 
