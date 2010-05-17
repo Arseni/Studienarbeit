@@ -36,19 +36,15 @@ int main ()
   static const char XML3[] = "<test><test2>Hier</test2></test>";
   
   p = muXMLTreeDecode(XML3, Data, sizeof(Data), 1, &Usage);
-  if(p){
-  FILE * fp;
-  int i;
-  fp = fopen( "C:\\test.txt", "w+");
-  if(fp == NULL)
-  	printf("failed\r\n");
-  printf ("Memory Usage: %d of %d\n\n", Usage, sizeof (Data));
-  getchar();
-  for(i=0; i<Usage; i++)
-  	fprintf(fp, "%03d;0x%02X;%c;\r\n", i, Data[i], Data[i]);
-  fclose(fp);
-  Dump (& p->Root, 0);
-	}
+  if(p)
+  {
+	  int i;
+	  struct muXMLTreeElement * tmp = muXMLGetElementByName(&(p->Root), "test2");
+	  printf ("Memory Usage: %d of %d\n\n", Usage, sizeof (Data));
+	  muXMLUpdateData(p, tmp, "nu");
+	  Dump (& p->Root, 0);
+	  printf("Memory Usage: %d of %d\n\n", p->StorageInfo.SpaceInUse, p->StorageInfo.SpaceTotal);
+  }
 /*
   p = muXMLTreeDecode (XML, Data, sizeof (Data), 1, & Usage);
   if (p) {
