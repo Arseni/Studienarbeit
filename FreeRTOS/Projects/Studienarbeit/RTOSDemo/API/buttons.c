@@ -14,7 +14,7 @@
 
 /* API include */
 #include "buttons.h"
-//#include "OLEDDisplay/oledDisplay.h"
+#include "OLEDDisplay/oledDisplay.h"
 
 /* Presets */
 #define BUTTON_MAX_CALLBACKS	10

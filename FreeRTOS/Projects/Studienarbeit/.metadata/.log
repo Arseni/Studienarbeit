@@ -2319,3 +2319,731 @@ org.eclipse.debug.core.DebugException: Breakpoint does not have an associated ma
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1311)
 !SUBENTRY 1 org.eclipse.debug.core 4 5012 2010-04-28 18:27:55.058
 !MESSAGE Breakpoint does not have an associated marker.
+!SESSION 2010-05-11 15:15:37.906 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=1.6.0_20
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=de_DE
+Framework arguments:  -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.ui 4 0 2010-05-11 15:15:42.265
+!MESSAGE Unable to create editor ID org.eclipse.cdt.ui.editor.CEditor: The file does not exist.
+!STACK 1
+org.eclipse.core.runtime.CoreException: The file does not exist.
+	at org.eclipse.core.internal.filebuffers.ResourceFileBuffer.create(ResourceFileBuffer.java:237)
+	at org.eclipse.core.internal.filebuffers.TextFileBufferManager.connect(TextFileBufferManager.java:113)
+	at org.eclipse.ui.editors.text.TextFileDocumentProvider.createFileInfo(TextFileDocumentProvider.java:559)
+	at org.eclipse.cdt.internal.ui.editor.CDocumentProvider.createFileInfo(CDocumentProvider.java:856)
+	at org.eclipse.ui.editors.text.TextFileDocumentProvider.connect(TextFileDocumentProvider.java:478)
+	at org.eclipse.cdt.internal.ui.editor.CDocumentProvider.connect(CDocumentProvider.java:778)
+	at org.eclipse.ui.texteditor.AbstractTextEditor.doSetInput(AbstractTextEditor.java:4135)
+	at org.eclipse.ui.texteditor.StatusTextEditor.doSetInput(StatusTextEditor.java:203)
+	at org.eclipse.ui.texteditor.AbstractDecoratedTextEditor.doSetInput(AbstractDecoratedTextEditor.java:1413)
+	at org.eclipse.ui.editors.text.TextEditor.doSetInput(TextEditor.java:166)
+	at org.eclipse.cdt.internal.ui.editor.CEditor.internalDoSetInput(CEditor.java:1380)
+	at org.eclipse.cdt.internal.ui.editor.CEditor.doSetInput(CEditor.java:1345)
+	at org.eclipse.ui.texteditor.AbstractTextEditor$19.run(AbstractTextEditor.java:3116)
+	at org.eclipse.jface.operation.ModalContext.runInCurrentThread(ModalContext.java:464)
+	at org.eclipse.jface.operation.ModalContext.run(ModalContext.java:372)
+	at org.eclipse.jface.window.ApplicationWindow$1.run(ApplicationWindow.java:759)
+	at org.eclipse.swt.custom.BusyIndicator.showWhile(BusyIndicator.java:70)
+	at org.eclipse.jface.window.ApplicationWindow.run(ApplicationWindow.java:756)
+	at org.eclipse.ui.internal.WorkbenchWindow.run(WorkbenchWindow.java:2579)
+	at org.eclipse.ui.texteditor.AbstractTextEditor.internalInit(AbstractTextEditor.java:3134)
+	at org.eclipse.ui.texteditor.AbstractTextEditor.init(AbstractTextEditor.java:3161)
+	at org.eclipse.ui.internal.EditorManager.createSite(EditorManager.java:798)
+	at org.eclipse.ui.internal.EditorReference.createPartHelper(EditorReference.java:644)
+	at org.eclipse.ui.internal.EditorReference.createPart(EditorReference.java:462)
+	at org.eclipse.ui.internal.WorkbenchPartReference.getPart(WorkbenchPartReference.java:595)
+	at org.eclipse.ui.internal.EditorAreaHelper.setVisibleEditor(EditorAreaHelper.java:271)
+	at org.eclipse.ui.internal.EditorManager.setVisibleEditor(EditorManager.java:1417)
+	at org.eclipse.ui.internal.EditorManager$5.runWithException(EditorManager.java:942)
+	at org.eclipse.ui.internal.StartupThreading$StartupRunnable.run(StartupThreading.java:31)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:134)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3885)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3506)
+	at org.eclipse.ui.application.WorkbenchAdvisor.openWindows(WorkbenchAdvisor.java:803)
+	at org.eclipse.ui.internal.Workbench$28.runWithException(Workbench.java:1384)
+	at org.eclipse.ui.internal.StartupThreading$StartupRunnable.run(StartupThreading.java:31)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:134)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3885)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3506)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2316)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2221)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:500)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:332)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:493)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:113)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:194)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:368)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:559)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:514)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1311)
+!SUBENTRY 1 org.eclipse.core.filebuffers 4 0 2010-05-11 15:15:42.265
+!MESSAGE The file does not exist.
+
+!ENTRY org.eclipse.ui 2 2 2010-05-11 15:15:42.343
+!MESSAGE Ignored attempt to add saveable that was already registered
+!STACK 0
+org.eclipse.core.runtime.AssertionFailedException: unknown saveable: org.eclipse.ui.internal.DefaultSaveable@1641ee0 from part: org.eclipse.ui.internal.ErrorEditorPart@1641ee0
+	at org.eclipse.ui.internal.SaveablesList.logWarning(SaveablesList.java:187)
+	at org.eclipse.ui.internal.SaveablesList.addModel(SaveablesList.java:117)
+	at org.eclipse.ui.internal.SaveablesList.addModels(SaveablesList.java:289)
+	at org.eclipse.ui.internal.SaveablesList.postOpen(SaveablesList.java:684)
+	at org.eclipse.ui.internal.PartList.partOpened(PartList.java:234)
+	at org.eclipse.ui.internal.PartList.access$0(PartList.java:210)
+	at org.eclipse.ui.internal.PartList$1.propertyChanged(PartList.java:40)
+	at org.eclipse.ui.internal.WorkbenchPartReference.fireInternalPropertyChange(WorkbenchPartReference.java:375)
+	at org.eclipse.ui.internal.WorkbenchPartReference.getPart(WorkbenchPartReference.java:610)
+	at org.eclipse.ui.internal.EditorAreaHelper.setVisibleEditor(EditorAreaHelper.java:271)
+	at org.eclipse.ui.internal.EditorManager.setVisibleEditor(EditorManager.java:1417)
+	at org.eclipse.ui.internal.EditorManager$5.runWithException(EditorManager.java:942)
+	at org.eclipse.ui.internal.StartupThreading$StartupRunnable.run(StartupThreading.java:31)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:134)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3885)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3506)
+	at org.eclipse.ui.application.WorkbenchAdvisor.openWindows(WorkbenchAdvisor.java:803)
+	at org.eclipse.ui.internal.Workbench$28.runWithException(Workbench.java:1384)
+	at org.eclipse.ui.internal.StartupThreading$StartupRunnable.run(StartupThreading.java:31)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:134)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3885)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3506)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2316)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2221)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:500)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:332)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:493)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:113)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:194)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:368)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:559)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:514)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1311)
+
+!ENTRY org.eclipse.ui 4 0 2010-05-11 15:15:45.656
+!MESSAGE Unable to create editor ID org.eclipse.cdt.make.editor: The file does not exist.
+!STACK 1
+org.eclipse.core.runtime.CoreException: The file does not exist.
+	at org.eclipse.core.internal.filebuffers.ResourceFileBuffer.create(ResourceFileBuffer.java:237)
+	at org.eclipse.core.internal.filebuffers.TextFileBufferManager.connect(TextFileBufferManager.java:113)
+	at org.eclipse.ui.editors.text.TextFileDocumentProvider.createFileInfo(TextFileDocumentProvider.java:559)
+	at org.eclipse.ui.editors.text.TextFileDocumentProvider.connect(TextFileDocumentProvider.java:478)
+	at org.eclipse.ui.editors.text.ForwardingDocumentProvider.connect(ForwardingDocumentProvider.java:114)
+	at org.eclipse.ui.editors.text.TextFileDocumentProvider.connect(TextFileDocumentProvider.java:480)
+	at org.eclipse.ui.texteditor.AbstractTextEditor.doSetInput(AbstractTextEditor.java:4135)
+	at org.eclipse.ui.texteditor.StatusTextEditor.doSetInput(StatusTextEditor.java:203)
+	at org.eclipse.ui.texteditor.AbstractDecoratedTextEditor.doSetInput(AbstractDecoratedTextEditor.java:1413)
+	at org.eclipse.ui.editors.text.TextEditor.doSetInput(TextEditor.java:166)
+	at org.eclipse.ui.texteditor.AbstractTextEditor$19.run(AbstractTextEditor.java:3116)
+	at org.eclipse.jface.operation.ModalContext.runInCurrentThread(ModalContext.java:464)
+	at org.eclipse.jface.operation.ModalContext.run(ModalContext.java:372)
+	at org.eclipse.jface.window.ApplicationWindow$1.run(ApplicationWindow.java:759)
+	at org.eclipse.swt.custom.BusyIndicator.showWhile(BusyIndicator.java:70)
+	at org.eclipse.jface.window.ApplicationWindow.run(ApplicationWindow.java:756)
+	at org.eclipse.ui.internal.WorkbenchWindow.run(WorkbenchWindow.java:2579)
+	at org.eclipse.ui.texteditor.AbstractTextEditor.internalInit(AbstractTextEditor.java:3134)
+	at org.eclipse.ui.texteditor.AbstractTextEditor.init(AbstractTextEditor.java:3161)
+	at org.eclipse.ui.internal.EditorManager.createSite(EditorManager.java:798)
+	at org.eclipse.ui.internal.EditorReference.createPartHelper(EditorReference.java:644)
+	at org.eclipse.ui.internal.EditorReference.createPart(EditorReference.java:462)
+	at org.eclipse.ui.internal.WorkbenchPartReference.getPart(WorkbenchPartReference.java:595)
+	at org.eclipse.ui.internal.PartPane.setVisible(PartPane.java:313)
+	at org.eclipse.ui.internal.presentations.PresentablePart.setVisible(PresentablePart.java:180)
+	at org.eclipse.ui.internal.presentations.util.PresentablePartFolder.select(PresentablePartFolder.java:270)
+	at org.eclipse.ui.internal.presentations.util.LeftToRightTabOrder.select(LeftToRightTabOrder.java:65)
+	at org.eclipse.ui.internal.presentations.util.TabbedStackPresentation.selectPart(TabbedStackPresentation.java:473)
+	at org.eclipse.ui.internal.PartStack.refreshPresentationSelection(PartStack.java:1256)
+	at org.eclipse.ui.internal.PartStack.handleDeferredEvents(PartStack.java:1224)
+	at org.eclipse.ui.internal.LayoutPart.deferUpdates(LayoutPart.java:400)
+	at org.eclipse.ui.internal.PartSashContainer.handleDeferredEvents(PartSashContainer.java:1409)
+	at org.eclipse.ui.internal.LayoutPart.deferUpdates(LayoutPart.java:400)
+	at org.eclipse.ui.internal.WorkbenchPage.handleDeferredEvents(WorkbenchPage.java:1416)
+	at org.eclipse.ui.internal.WorkbenchPage.deferUpdates(WorkbenchPage.java:1406)
+	at org.eclipse.ui.internal.WorkbenchPage.closeEditors(WorkbenchPage.java:1380)
+	at org.eclipse.ui.internal.WorkbenchPage.closeEditor(WorkbenchPage.java:1435)
+	at org.eclipse.ui.internal.EditorPane.doHide(EditorPane.java:61)
+	at org.eclipse.ui.internal.PartStack.close(PartStack.java:543)
+	at org.eclipse.ui.internal.EditorStack.close(EditorStack.java:206)
+	at org.eclipse.ui.internal.PartStack$1.close(PartStack.java:122)
+	at org.eclipse.ui.internal.presentations.util.TabbedStackPresentation$1.handleEvent(TabbedStackPresentation.java:83)
+	at org.eclipse.ui.internal.presentations.util.AbstractTabFolder.fireEvent(AbstractTabFolder.java:270)
+	at org.eclipse.ui.internal.presentations.util.AbstractTabFolder.fireEvent(AbstractTabFolder.java:279)
+	at org.eclipse.ui.internal.presentations.defaultpresentation.DefaultTabFolder.access$1(DefaultTabFolder.java:1)
+	at org.eclipse.ui.internal.presentations.defaultpresentation.DefaultTabFolder$1.closeButtonPressed(DefaultTabFolder.java:70)
+	at org.eclipse.ui.internal.presentations.PaneFolder.notifyCloseListeners(PaneFolder.java:626)
+	at org.eclipse.ui.internal.presentations.PaneFolder$3.close(PaneFolder.java:206)
+	at org.eclipse.swt.custom.CTabFolder.onMouse(CTabFolder.java:2199)
+	at org.eclipse.swt.custom.CTabFolder$1.handleEvent(CTabFolder.java:327)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:84)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1003)
+	at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:3910)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3503)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:2405)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2369)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2221)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:500)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:332)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:493)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:113)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:194)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:368)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:559)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:514)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1311)
+!SUBENTRY 1 org.eclipse.core.filebuffers 4 0 2010-05-11 15:15:45.671
+!MESSAGE The file does not exist.
+
+!ENTRY org.eclipse.ui 2 2 2010-05-11 15:15:45.687
+!MESSAGE Ignored attempt to add saveable that was already registered
+!STACK 0
+org.eclipse.core.runtime.AssertionFailedException: unknown saveable: org.eclipse.ui.internal.DefaultSaveable@7ae165 from part: org.eclipse.ui.internal.ErrorEditorPart@7ae165
+	at org.eclipse.ui.internal.SaveablesList.logWarning(SaveablesList.java:187)
+	at org.eclipse.ui.internal.SaveablesList.addModel(SaveablesList.java:117)
+	at org.eclipse.ui.internal.SaveablesList.addModels(SaveablesList.java:289)
+	at org.eclipse.ui.internal.SaveablesList.postOpen(SaveablesList.java:684)
+	at org.eclipse.ui.internal.PartList.partOpened(PartList.java:234)
+	at org.eclipse.ui.internal.PartList.access$0(PartList.java:210)
+	at org.eclipse.ui.internal.PartList$1.propertyChanged(PartList.java:40)
+	at org.eclipse.ui.internal.WorkbenchPartReference.fireInternalPropertyChange(WorkbenchPartReference.java:375)
+	at org.eclipse.ui.internal.WorkbenchPartReference.getPart(WorkbenchPartReference.java:610)
+	at org.eclipse.ui.internal.PartPane.setVisible(PartPane.java:313)
+	at org.eclipse.ui.internal.presentations.PresentablePart.setVisible(PresentablePart.java:180)
+	at org.eclipse.ui.internal.presentations.util.PresentablePartFolder.select(PresentablePartFolder.java:270)
+	at org.eclipse.ui.internal.presentations.util.LeftToRightTabOrder.select(LeftToRightTabOrder.java:65)
+	at org.eclipse.ui.internal.presentations.util.TabbedStackPresentation.selectPart(TabbedStackPresentation.java:473)
+	at org.eclipse.ui.internal.PartStack.refreshPresentationSelection(PartStack.java:1256)
+	at org.eclipse.ui.internal.PartStack.handleDeferredEvents(PartStack.java:1224)
+	at org.eclipse.ui.internal.LayoutPart.deferUpdates(LayoutPart.java:400)
+	at org.eclipse.ui.internal.PartSashContainer.handleDeferredEvents(PartSashContainer.java:1409)
+	at org.eclipse.ui.internal.LayoutPart.deferUpdates(LayoutPart.java:400)
+	at org.eclipse.ui.internal.WorkbenchPage.handleDeferredEvents(WorkbenchPage.java:1416)
+	at org.eclipse.ui.internal.WorkbenchPage.deferUpdates(WorkbenchPage.java:1406)
+	at org.eclipse.ui.internal.WorkbenchPage.closeEditors(WorkbenchPage.java:1380)
+	at org.eclipse.ui.internal.WorkbenchPage.closeEditor(WorkbenchPage.java:1435)
+	at org.eclipse.ui.internal.EditorPane.doHide(EditorPane.java:61)
+	at org.eclipse.ui.internal.PartStack.close(PartStack.java:543)
+	at org.eclipse.ui.internal.EditorStack.close(EditorStack.java:206)
+	at org.eclipse.ui.internal.PartStack$1.close(PartStack.java:122)
+	at org.eclipse.ui.internal.presentations.util.TabbedStackPresentation$1.handleEvent(TabbedStackPresentation.java:83)
+	at org.eclipse.ui.internal.presentations.util.AbstractTabFolder.fireEvent(AbstractTabFolder.java:270)
+	at org.eclipse.ui.internal.presentations.util.AbstractTabFolder.fireEvent(AbstractTabFolder.java:279)
+	at org.eclipse.ui.internal.presentations.defaultpresentation.DefaultTabFolder.access$1(DefaultTabFolder.java:1)
+	at org.eclipse.ui.internal.presentations.defaultpresentation.DefaultTabFolder$1.closeButtonPressed(DefaultTabFolder.java:70)
+	at org.eclipse.ui.internal.presentations.PaneFolder.notifyCloseListeners(PaneFolder.java:626)
+	at org.eclipse.ui.internal.presentations.PaneFolder$3.close(PaneFolder.java:206)
+	at org.eclipse.swt.custom.CTabFolder.onMouse(CTabFolder.java:2199)
+	at org.eclipse.swt.custom.CTabFolder$1.handleEvent(CTabFolder.java:327)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:84)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1003)
+	at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:3910)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3503)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:2405)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2369)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2221)
+	at org.eclipse.ui.internal.Workbench$5.run(Workbench.java:500)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:332)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:493)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:113)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:194)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:110)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:79)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:368)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:179)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:559)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:514)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1311)
+
+!ENTRY org.eclipse.cdt.core 1 0 2010-05-11 15:16:07.218
+!MESSAGE Indexed 'RTOSDemo' (8 sources, 18 headers) in 1,12 sec: 720 declarations; 3.346 references; 18 unresolved inclusions; 0 syntax errors; 89 unresolved names (2,14 %)
+!SESSION 2010-05-12 09:29:52.906 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=1.6.0_20
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=de_DE
+Framework arguments:  -product org.eclipse.epp.package.cpp.product -product org.eclipse.epp.package.cpp.product
+Command-line arguments:  -os win32 -ws win32 -arch x86 -product org.eclipse.epp.package.cpp.product -data C:\TUHH\Studienarbeit\FreeRTOS\Projects\Studienarbeit -product org.eclipse.epp.package.cpp.product
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:03:40.562
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10001 2010-05-12 10:03:40.562
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:03:40.562
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10005 2010-05-12 10:03:40.562
+!MESSAGE "Eclipse C/C++ GDB Hardware Debugging" will be ignored because it is already installed.
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:03:40.562
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.562
+!MESSAGE Software being installed: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.562
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.0.200706261300 (org.eclipse.cdt.feature.group 4.0.0.200706261300) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.562
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.1.200709241202 (org.eclipse.cdt.feature.group 4.0.1.200709241202) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.562
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.2.200711280800 (org.eclipse.cdt.feature.group 4.0.2.200711280800) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.562
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.3.200802251018 (org.eclipse.cdt.feature.group 4.0.3.200802251018) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:03:40.562
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.562
+!MESSAGE From: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.562
+!MESSAGE To: org.eclipse.cdt.feature.group [4.0.0,5.0.0)
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:03:40.578
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10001 2010-05-12 10:03:40.578
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:03:40.578
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10005 2010-05-12 10:03:40.578
+!MESSAGE "Eclipse C/C++ GDB Hardware Debugging" will be ignored because it is already installed.
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:03:40.578
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.578
+!MESSAGE Software being installed: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.578
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.0.200706261300 (org.eclipse.cdt.feature.group 4.0.0.200706261300) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.1.200709241202 (org.eclipse.cdt.feature.group 4.0.1.200709241202) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.2.200711280800 (org.eclipse.cdt.feature.group 4.0.2.200711280800) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.3.200802251018 (org.eclipse.cdt.feature.group 4.0.3.200802251018) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:03:40.593
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE From: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE To: org.eclipse.cdt.feature.group [4.0.0,5.0.0)
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:03:40.593
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10001 2010-05-12 10:03:40.593
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:03:40.593
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10005 2010-05-12 10:03:40.593
+!MESSAGE "Eclipse C/C++ GDB Hardware Debugging" will be ignored because it is already installed.
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:03:40.593
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE Software being installed: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.0.200706261300 (org.eclipse.cdt.feature.group 4.0.0.200706261300) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.1.200709241202 (org.eclipse.cdt.feature.group 4.0.1.200709241202) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.2.200711280800 (org.eclipse.cdt.feature.group 4.0.2.200711280800) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.3.200802251018 (org.eclipse.cdt.feature.group 4.0.3.200802251018) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:03:40.593
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE From: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.593
+!MESSAGE To: org.eclipse.cdt.feature.group [4.0.0,5.0.0)
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:03:40.625
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10001 2010-05-12 10:03:40.625
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:03:40.625
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10005 2010-05-12 10:03:40.625
+!MESSAGE "Eclipse C/C++ GDB Hardware Debugging" will be ignored because it is already installed.
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:03:40.625
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.625
+!MESSAGE Software being installed: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.625
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.0.200706261300 (org.eclipse.cdt.feature.group 4.0.0.200706261300) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.625
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.1.200709241202 (org.eclipse.cdt.feature.group 4.0.1.200709241202) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.625
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.2.200711280800 (org.eclipse.cdt.feature.group 4.0.2.200711280800) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.625
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.3.200802251018 (org.eclipse.cdt.feature.group 4.0.3.200802251018) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:03:40.625
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.625
+!MESSAGE From: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:03:40.625
+!MESSAGE To: org.eclipse.cdt.feature.group [4.0.0,5.0.0)
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:04:45.343
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10001 2010-05-12 10:04:45.343
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:04:45.343
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10005 2010-05-12 10:04:45.343
+!MESSAGE "Eclipse C/C++ GDB Hardware Debugging" will be ignored because it is already installed.
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:04:45.343
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:04:45.343
+!MESSAGE Software being installed: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:04:45.343
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.0.200706261300 (org.eclipse.cdt.feature.group 4.0.0.200706261300) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:04:45.343
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.1.200709241202 (org.eclipse.cdt.feature.group 4.0.1.200709241202) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:04:45.343
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.2.200711280800 (org.eclipse.cdt.feature.group 4.0.2.200711280800) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:04:45.343
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.3.200802251018 (org.eclipse.cdt.feature.group 4.0.3.200802251018) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:04:45.343
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:04:45.343
+!MESSAGE From: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:04:45.343
+!MESSAGE To: org.eclipse.cdt.feature.group [4.0.0,5.0.0)
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:05:37.453
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 4 10050 2010-05-12 10:05:37.453
+!MESSAGE Cannot complete the request.  See the error log for details.
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:05:37.453
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:05:37.484
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 4 10050 2010-05-12 10:05:37.484
+!MESSAGE Cannot complete the request.  See the error log for details.
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:05:37.484
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:05:51.515
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:05:51.515
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE Software being installed: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.0.200706261300 (org.eclipse.cdt.feature.group 4.0.0.200706261300) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.1.200709241202 (org.eclipse.cdt.feature.group 4.0.1.200709241202) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.2.200711280800 (org.eclipse.cdt.feature.group 4.0.2.200711280800) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.3.200802251018 (org.eclipse.cdt.feature.group 4.0.3.200802251018) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:05:51.515
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE From: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE To: org.eclipse.cdt.feature.group [4.0.0,5.0.0)
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:05:51.515
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:05:51.515
+!MESSAGE Cannot complete the install because one or more required items could not be found.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE Software being installed: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.0.200706261300 (org.eclipse.cdt.feature.group 4.0.0.200706261300) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.1.200709241202 (org.eclipse.cdt.feature.group 4.0.1.200709241202) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.2.200711280800 (org.eclipse.cdt.feature.group 4.0.2.200711280800) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE Missing requirement: Eclipse C/C++ Development Tools 4.0.3.200802251018 (org.eclipse.cdt.feature.group 4.0.3.200802251018) requires 'com.ibm.icu [3.4.0,4.0.0)' but it could not be found
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:05:51.515
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE From: Eclipse C/C++ Development Tools SDK 4.0.3.200802251018 (org.eclipse.cdt.sdk.feature.group 4.0.3.200802251018)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:05:51.515
+!MESSAGE To: org.eclipse.cdt.feature.group [4.0.0,5.0.0)
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:14:30.968
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10001 2010-05-12 10:14:30.968
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:14:30.968
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot complete the install because of a conflicting dependency.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Software being installed: Eclipse C/C++ Development Tooling SDK 3.0.2 (org.eclipse.cdt.sdk.feature.group 3.0.2)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Software currently installed: Eclipse IDE for C/C++ Developers 1.2.2.20100209-1511 (epp.package.cpp 1.2.2.20100209-1511)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Only one of the following can be installed at once: 
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 3.0.2 (org.eclipse.cdt.feature.jar 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 7.0.0.201005031211 (org.eclipse.cdt.feature.jar 7.0.0.201005031211)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 6.0.0.200909110608 (org.eclipse.cdt.feature.jar 6.0.0.200909110608)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 6.0.2.201002161416 (org.eclipse.cdt.feature.jar 6.0.2.201002161416)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse IDE for C/C++ Developers 1.2.2.20100209-1511 (epp.package.cpp 1.2.2.20100209-1511)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.epp.package.cpp.feature.feature.group [1.2.2.20100209-1511]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 3.0.2 (org.eclipse.cdt.feature.group 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [3.0.2]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 6.0.0.200909110608 (org.eclipse.cdt.feature.group 6.0.0.200909110608)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [6.0.0.200909110608]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 6.0.2.201002161416 (org.eclipse.cdt.feature.group 6.0.2.201002161416)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [6.0.2.201002161416]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 7.0.0.201005031211 (org.eclipse.cdt.feature.group 7.0.0.201005031211)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [7.0.0.201005031211]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tooling SDK 3.0.2 (org.eclipse.cdt.sdk.feature.group 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.group [3.0.2]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: EPP CPP Feature 1.2.2.20100209-1511 (org.eclipse.epp.package.cpp.feature.feature.group 1.2.2.20100209-1511)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.group 6.0.0
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:14:30.968
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10001 2010-05-12 10:14:30.968
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:14:30.968
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot complete the install because of a conflicting dependency.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Software being installed: Eclipse C/C++ Development Tooling SDK 3.0.2 (org.eclipse.cdt.sdk.feature.group 3.0.2)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Software currently installed: Eclipse IDE for C/C++ Developers 1.2.2.20100209-1511 (epp.package.cpp 1.2.2.20100209-1511)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Only one of the following can be installed at once: 
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 3.0.2 (org.eclipse.cdt.feature.jar 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 7.0.0.201005031211 (org.eclipse.cdt.feature.jar 7.0.0.201005031211)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 6.0.0.200909110608 (org.eclipse.cdt.feature.jar 6.0.0.200909110608)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 6.0.2.201002161416 (org.eclipse.cdt.feature.jar 6.0.2.201002161416)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse IDE for C/C++ Developers 1.2.2.20100209-1511 (epp.package.cpp 1.2.2.20100209-1511)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.epp.package.cpp.feature.feature.group [1.2.2.20100209-1511]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 3.0.2 (org.eclipse.cdt.feature.group 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [3.0.2]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 6.0.0.200909110608 (org.eclipse.cdt.feature.group 6.0.0.200909110608)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [6.0.0.200909110608]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 6.0.2.201002161416 (org.eclipse.cdt.feature.group 6.0.2.201002161416)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [6.0.2.201002161416]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 7.0.0.201005031211 (org.eclipse.cdt.feature.group 7.0.0.201005031211)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [7.0.0.201005031211]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tooling SDK 3.0.2 (org.eclipse.cdt.sdk.feature.group 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.group [3.0.2]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: EPP CPP Feature 1.2.2.20100209-1511 (org.eclipse.epp.package.cpp.feature.feature.group 1.2.2.20100209-1511)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.group 6.0.0
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:14:30.968
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10001 2010-05-12 10:14:30.968
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:14:30.968
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot complete the install because of a conflicting dependency.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Software being installed: Eclipse C/C++ Development Tooling SDK 3.0.2 (org.eclipse.cdt.sdk.feature.group 3.0.2)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Software currently installed: Eclipse IDE for C/C++ Developers 1.2.2.20100209-1511 (epp.package.cpp 1.2.2.20100209-1511)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Only one of the following can be installed at once: 
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 3.0.2 (org.eclipse.cdt.feature.jar 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 7.0.0.201005031211 (org.eclipse.cdt.feature.jar 7.0.0.201005031211)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 6.0.0.200909110608 (org.eclipse.cdt.feature.jar 6.0.0.200909110608)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE Eclipse C/C++ Development Tools 6.0.2.201002161416 (org.eclipse.cdt.feature.jar 6.0.2.201002161416)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse IDE for C/C++ Developers 1.2.2.20100209-1511 (epp.package.cpp 1.2.2.20100209-1511)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.epp.package.cpp.feature.feature.group [1.2.2.20100209-1511]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 3.0.2 (org.eclipse.cdt.feature.group 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [3.0.2]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 6.0.0.200909110608 (org.eclipse.cdt.feature.group 6.0.0.200909110608)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [6.0.0.200909110608]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 6.0.2.201002161416 (org.eclipse.cdt.feature.group 6.0.2.201002161416)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [6.0.2.201002161416]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tools 7.0.0.201005031211 (org.eclipse.cdt.feature.group 7.0.0.201005031211)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.jar [7.0.0.201005031211]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: Eclipse C/C++ Development Tooling SDK 3.0.2 (org.eclipse.cdt.sdk.feature.group 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.group [3.0.2]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.968
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE From: EPP CPP Feature 1.2.2.20100209-1511 (org.eclipse.epp.package.cpp.feature.feature.group 1.2.2.20100209-1511)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.968
+!MESSAGE To: org.eclipse.cdt.feature.group 6.0.0
+
+!ENTRY org.eclipse.equinox.p2.ui 4 0 2010-05-12 10:14:30.984
+!MESSAGE Operation details
+!SUBENTRY 1 org.eclipse.equinox.p2.ui 2 10001 2010-05-12 10:14:30.984
+!MESSAGE Your original request has been modified.
+!SUBENTRY 2 org.eclipse.equinox.p2.ui 2 10004 2010-05-12 10:14:30.984
+!MESSAGE "Eclipse C/C++ Development Tools" will be ignored because a newer version is already installed. 
+!SUBENTRY 1 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.984
+!MESSAGE Cannot complete the install because of a conflicting dependency.
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE Software being installed: Eclipse C/C++ Development Tooling SDK 3.0.2 (org.eclipse.cdt.sdk.feature.group 3.0.2)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE Software currently installed: Eclipse IDE for C/C++ Developers 1.2.2.20100209-1511 (epp.package.cpp 1.2.2.20100209-1511)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.984
+!MESSAGE Only one of the following can be installed at once: 
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE Eclipse C/C++ Development Tools 3.0.2 (org.eclipse.cdt.feature.jar 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE Eclipse C/C++ Development Tools 7.0.0.201005031211 (org.eclipse.cdt.feature.jar 7.0.0.201005031211)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE Eclipse C/C++ Development Tools 6.0.0.200909110608 (org.eclipse.cdt.feature.jar 6.0.0.200909110608)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE Eclipse C/C++ Development Tools 6.0.2.201002161416 (org.eclipse.cdt.feature.jar 6.0.2.201002161416)
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.984
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE From: Eclipse IDE for C/C++ Developers 1.2.2.20100209-1511 (epp.package.cpp 1.2.2.20100209-1511)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE To: org.eclipse.epp.package.cpp.feature.feature.group [1.2.2.20100209-1511]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.984
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE From: Eclipse C/C++ Development Tools 3.0.2 (org.eclipse.cdt.feature.group 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE To: org.eclipse.cdt.feature.jar [3.0.2]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.984
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE From: Eclipse C/C++ Development Tools 6.0.0.200909110608 (org.eclipse.cdt.feature.group 6.0.0.200909110608)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE To: org.eclipse.cdt.feature.jar [6.0.0.200909110608]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.984
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE From: Eclipse C/C++ Development Tools 6.0.2.201002161416 (org.eclipse.cdt.feature.group 6.0.2.201002161416)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE To: org.eclipse.cdt.feature.jar [6.0.2.201002161416]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.984
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE From: Eclipse C/C++ Development Tools 7.0.0.201005031211 (org.eclipse.cdt.feature.group 7.0.0.201005031211)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE To: org.eclipse.cdt.feature.jar [7.0.0.201005031211]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.984
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE From: Eclipse C/C++ Development Tooling SDK 3.0.2 (org.eclipse.cdt.sdk.feature.group 3.0.2)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE To: org.eclipse.cdt.feature.group [3.0.2]
+!SUBENTRY 2 org.eclipse.equinox.p2.director 4 1 2010-05-12 10:14:30.984
+!MESSAGE Cannot satisfy dependency:
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE From: EPP CPP Feature 1.2.2.20100209-1511 (org.eclipse.epp.package.cpp.feature.feature.group 1.2.2.20100209-1511)
+!SUBENTRY 3 org.eclipse.equinox.p2.director 4 0 2010-05-12 10:14:30.984
+!MESSAGE To: org.eclipse.cdt.feature.group 6.0.0
