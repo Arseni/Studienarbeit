@@ -1,0 +1,1627 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+ ===============================================================
+  XML-Schema-Definition für ModIS2 Event Protocol Messages (epm)
+
+  $Id: modis.xsd 161 2008-09-05 10:35:43Z knueppel $
+ ===============================================================
+-->
+
+<xsd:schema
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.hamburg.krauth-online.de/XMLSchema/epm"
+  xmlns="http://www.hamburg.krauth-online.de/XMLSchema/epm"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+
+  <xsd:annotation>
+    <xsd:documentation xml:lang="DE">
+      Schema für die ModIS2-geräteinterne Kommunikation auf Basis der
+      Event Protocol Messages ("epm"),
+      Copyright 2008 Krauth Technology. Alle Rechte vorbehalten.
+      $Revision: 161 $
+      $Date: 2008-09-05 12:35:43 +0200 (Fr, 05 Sep 2008) $
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <!--
+   ========================================================
+    Allgemeine Konventionen (Datentypdefinitionen)
+   ========================================================
+  -->
+
+  <!-- relative Zeitangaben (z.B. für Timeouts) -->
+
+  <xsd:simpleType name="epmBase_reltime">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([0-9]{1,9}ms)|([0-9]{1,6}s)"/>
+      <!-- Beispiele: "123ms" oder "12s" -->
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- absolute Zeitangaben (z.B. für Uhrzeit/Datum) -->
+
+  <xsd:simpleType name="epmBase_abstime">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="(So|Mo|Di|Mi|Do|Fr|Sa) \d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}"/>
+      <!-- Beispiel: "Fr 28.03.2008 12:34:56" -->
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Entfernungen -->
+
+  <xsd:simpleType name="epmBase_distance">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[0-9]{1,8}m"/>
+      <!-- Beispiel: "123m" -->
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Temperaturen -->
+
+  <xsd:simpleType name="epmBase_temperature">
+    <xsd:restriction base="xsd:byte">
+      <xsd:minInclusive value="-99" />
+      <xsd:maxInclusive value="127" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Logische Werte -->
+
+  <xsd:simpleType name="epmBase_logical">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="yes"/>
+      <xsd:enumeration value="no"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Hexadezimale Werte -->
+
+  <xsd:simpleType name="epmBase_hex">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[0-9A-Fa-f]{1,8}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Hexadezimale Daten -->
+
+  <xsd:simpleType name="epmBase_hexdata">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([0-9A-Fa-f][0-9A-Fa-f])+"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Allgemeine Daten -->
+
+  <xsd:complexType name="epmBase_data" mixed="true">
+    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="hex" type="epmBase_hexdata" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Einheitenbezeichnungen:
+        Aufbau: "EINHEIT" oder "EINHEIT:AUSPRÄGUNG"
+        Beispiel: "display" oder
+                  "display:algra" oder
+		  "*"
+  -->
+
+  <xsd:simpleType name="epmBase_unitname">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="(\w+(:\w*))|\*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Leeres Element -->
+
+  <xsd:complexType name="empty">
+  </xsd:complexType>
+
+  <!-- IP-Adresse -->
+
+  <xsd:simpleType name="epmBase_ipaddr">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}"/>
+      <!-- Beispiel: "192.168.0.2" -->
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- IP-Adresse mit Port -->
+
+  <xsd:simpleType name="epmBase_ipsocket">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}:\d{1,5}"/>
+      <!-- Beispiel: "192.168.0.2:50011" -->
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Ereignismodi bei Zustandsänderungen:
+        "now":      keine automatische Ereignisaussendung bei Zustandsänderung,
+                    jedoch einmalige sofortige Ereignisaussendung
+        "never":    keine automatische Ereignisaussendung bei Zustandsänderung
+                    und keine einmalige sofortige Ereignisaussendung
+        "once":     erst bei Zustandsänderung einmalig ein Ereignis erzeugen
+        "onchange": sofort und bei jeder Zustandsänderung ein Ereignis erzeugen
+   -->
+  <xsd:simpleType name="epmBase_reply">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="now" />
+      <xsd:enumeration value="never" />
+      <xsd:enumeration value="once" />
+      <xsd:enumeration value="onchange" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Zustand für Daten, die auf mehrere Datenpakete verteilt werden:
+        "intermediate": Mittleres Datenpaket (z.B. während des Downloads)
+        "start":        Erstes Datenpaket (z.B. Beginn des Downloads)
+        "final":        Letztes Datenpaket (z.B. Ende des Downloads)
+   -->
+  <xsd:simpleType name="epmBase_transferstate">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="intermediate" />
+      <xsd:enumeration value="start" />
+      <xsd:enumeration value="final" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- mögliche Grafikcodierungen:
+        "gif": GIF89a
+        "png": Portable Network Graphics
+	"jpg": JPEG
+	"rle": Run Length Encoding (nur für Bitmaps)
+   -->
+  <xsd:simpleType name="epmBase_imageencoding">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="gif" />
+      <xsd:enumeration value="png" />
+      <xsd:enumeration value="jpg" />
+      <xsd:enumeration value="rle" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="epmBase_imageencodinglist">
+    <xsd:list itemType="epmBase_imageencoding" />
+  </xsd:simpleType>
+
+  <!--
+   ========================================================
+    Ereignisbestätigung
+   ========================================================
+  -->
+
+  <!-- Fehlerkennungen:
+        "none":        kein Fehler,
+        "noinit":      Initialisierung (z.B. Schnittstellenparameter bei
+                       serieller Schnittstelle) fehlt,
+        "command":     Befehl unbekannt.
+        "parameter":   allgemeiner Parameterfehler.
+   -->
+  <xsd:simpleType name="epmAck_error">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="none" />
+      <xsd:enumeration value="noinit" />
+      <xsd:enumeration value="command" />
+      <xsd:enumeration value="parameter" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmAck">
+    <xsd:attribute name="cmd" type="xsd:string" />
+    <xsd:attribute name="error" type="epmAck_error" default="none" />
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Versions-/Fehler-/Warnungsinformationen
+   ========================================================
+  -->
+
+  <!-- Bereitschaftszustand:
+        "yes":        Vollständig betriebsbereit
+        "restricted": Eingeschränkt betriebsbereit
+                      (z.B. wegen defekter Sensoren)
+        "no":         Nicht betriebsbereit
+                      (z.B. wegen schwerwiegender Hardwaredefekte)
+   -->
+  <xsd:simpleType name="epmInfo_readystate">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="yes" />
+      <xsd:enumeration value="restricted" />
+      <xsd:enumeration value="no" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmInfo_versions_software">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:unsignedInt">
+        <xsd:attribute name="dependson" type="epmBase_unitname" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmInfo_versions">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="software"     type="epmInfo_versions_software" />
+      <xsd:element name="hardware"     type="xsd:unsignedByte" />
+      <xsd:element name="softwareinfo" type="xsd:string" />
+      <xsd:element name="hardwareinfo" type="xsd:string" />
+      <xsd:element name="created"      type="epmBase_abstime" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmInfo_subtype">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:NMTOKENS">
+        <xsd:attribute name="id" type="xsd:unsignedByte" use="required" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmInfo_capability">
+    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="subtype" type="epmInfo_subtype" />
+    </xsd:sequence>
+
+    <xsd:attribute name="type"    type="xsd:string" use="required" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmInfo_capabilities">
+    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="capability" type="epmInfo_capability" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmInfo">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="versions"     type="epmInfo_versions" />
+      <xsd:element name="capabilities" type="epmInfo_capabilities" />
+      <xsd:element name="description"  type="xsd:string" />
+    </xsd:sequence>
+
+    <xsd:attribute name="isproxy" type="epmBase_logical"    default="no" />
+    <xsd:attribute name="ready"   type="epmInfo_readystate" default="yes" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmReadyStateInfo">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="state"        type="epmInfo_readystate" />
+      <xsd:element name="description"  type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Code-/Datendownload
+   ========================================================
+  -->
+
+  <xsd:complexType name="epmDownload">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="data" type="epmBase_data" />
+    </xsd:sequence>
+
+    <xsd:attribute name="state" type="epmBase_transferstate" default="intermediate" />
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    IBIS
+   ========================================================
+  -->
+
+  <!-- IBIS-Betriebsart ("master", "slave", "none", "current")
+   -->
+  <xsd:simpleType name="epmIBIS_mode">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="none" />
+      <xsd:enumeration value="master" />
+      <xsd:enumeration value="slave" />
+      <xsd:enumeration value="current" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmIBIS">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="msg"     type="xsd:string" />
+      <xsd:element name="reply"   type="xsd:string" />
+    </xsd:sequence>
+
+    <xsd:attribute name="mode"    type="epmIBIS_mode" default="current" />
+    <xsd:attribute name="timeout" type="epmBase_reltime"   default="0ms" />
+    <xsd:attribute name="withmsg" type="epmBase_logical"   default="no" />
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Serieller Bus (AK0117)
+   ========================================================
+  -->
+
+  <!-- Einheitenkennung beim seriellen Bus -->
+
+  <xsd:simpleType name="epmSerbus_id">
+    <xsd:restriction base="xsd:unsignedByte">
+      <xsd:minInclusive value="0" />
+      <xsd:maxInclusive value="3" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmSerbus">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="msg"     type="xsd:string" />
+      <xsd:element name="reply"   type="xsd:string" />
+    </xsd:sequence>
+
+    <xsd:attribute name="dev"     type="epmSerbus_id" use="required" />
+    <xsd:attribute name="withmsg" type="epmBase_logical"   default="no" />
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Netzteil
+   ========================================================
+  -->
+
+  <!-- Power-On-Modi -->
+
+  <xsd:simpleType name="epmPower_poweronmodes">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="remote" />
+      <xsd:enumeration value="wakeuptime" />
+      <xsd:enumeration value="button" />
+      <xsd:enumeration value="gsm" />
+      <xsd:enumeration value="ignition" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Eingangssignale -->
+
+  <xsd:simpleType name="epmPower_inputs">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="remote" />
+      <xsd:enumeration value="button" />
+      <xsd:enumeration value="gsm" />
+      <xsd:enumeration value="ignition" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Einschaltgrund -->
+
+  <xsd:simpleType name="epmPower_startcauses">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="remote" />
+      <xsd:enumeration value="wakeuptime" />
+      <xsd:enumeration value="button" />
+      <xsd:enumeration value="gsm" />
+      <xsd:enumeration value="ignition" />
+      <xsd:enumeration value="restart" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Ausschaltgrund -->
+
+  <xsd:simpleType name="epmPower_stopcauses">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="watchdog" />
+      <xsd:enumeration value="power" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- eigentliche Netzteildefinitionen -->
+
+  <xsd:complexType name="epmPower_state">
+    <xsd:attribute name="ignition" type="epmBase_logical" use="required" />
+    <xsd:attribute name="battery"  type="epmBase_logical" default="no" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmPower_poweroff">
+    <xsd:attribute name="delay"   type="epmBase_reltime" default="0s" />
+    <xsd:attribute name="restart" type="epmBase_logical" default="no" />
+    <xsd:attribute name="prepare" type="epmBase_logical" default="no" />
+  </xsd:complexType>
+
+  <xsd:simpleType name="epmPower_poweronmode">
+    <xsd:list itemType="epmPower_poweronmodes" />
+  </xsd:simpleType>
+
+  <xsd:simpleType name="epmPower_temperature">
+    <xsd:list itemType="epmBase_temperature" />
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmPower_gsmpower">
+    <xsd:attribute name="on" type="epmBase_logical" default="no" />
+  </xsd:complexType>
+
+  <xsd:simpleType name="epmPower_input">
+    <xsd:list itemType="epmPower_inputs" />
+  </xsd:simpleType>
+
+
+  <xsd:complexType name="epmPower_startcause">
+    <xsd:simpleContent>
+      <xsd:extension base="epmPower_startcauses">
+        <xsd:attribute name="time" type="epmBase_abstime" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmPower_stopcause">
+    <xsd:simpleContent>
+      <xsd:extension base="epmPower_stopcauses">
+        <xsd:attribute name="time" type="epmBase_abstime" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <!-- USV-Elemente fehlen noch -->
+
+  <!-- eigentlicher Netzteildefinitionsrahmen -->
+
+  <xsd:complexType name="epmPower">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Nur lesbare Elemente (Anforderung per "get") -->
+      <xsd:element name="state"       type="epmPower_state" />
+      <xsd:element name="temperature" type="epmPower_temperature" />
+      <xsd:element name="startcause"  type="epmPower_startcause" />
+      <xsd:element name="stopcause"   type="epmPower_stopcause" />
+      <!-- Les- und schreibbare Elemente -->
+      <xsd:element name="poweronmode" type="epmPower_poweronmode" />
+      <xsd:element name="inputs"      type="epmPower_input" />
+      <xsd:element name="daytime"     type="epmBase_abstime" />
+      <xsd:element name="wakeuptime"  type="epmBase_abstime" />
+      <!-- Nur schreibbare Elemente -->
+      <xsd:element name="poweroff"    type="epmPower_poweroff" />
+      <xsd:element name="gsmpower"    type="epmPower_gsmpower" />
+      <xsd:element name="watchdog"    type="empty" />
+
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Wegimpuls, Ortsbakeninterrupt, ...
+   ========================================================
+  -->
+
+  <xsd:complexType name="epmWheel_wheelstate">
+    <xsd:attribute name="distance"   type="epmBase_distance" use="required" />
+    <xsd:attribute name="beacondist" type="epmBase_distance" />
+    <xsd:attribute name="beacon"     type="epmBase_logical"  default="no" />
+    <xsd:attribute name="dooropen"   type="epmBase_logical"  default="no" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmWheel_resetwheel">
+    <xsd:attribute name="value" type="epmBase_distance" default="0m" />
+  </xsd:complexType>
+
+  <!-- eigentlicher Wegimpuls-/Ortsbakeninterrupt-Definitionsrahmen -->
+
+  <xsd:complexType name="epmWheel">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Nur lesbare Elemente (Anforderung per "get") -->
+      <xsd:element name="wheelstate"    type="epmWheel_wheelstate" />
+      <!-- Nur schreibbare Elemente -->
+      <xsd:element name="resetwheel"    type="epmWheel_resetwheel" />
+      <xsd:element name="resetbeacon"   type="empty" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Fahrer-/Kundenterminal Soundausgabe
+   ========================================================
+  -->
+
+  <!-- Tonfolge -->
+
+  <xsd:simpleType name="epmSound_frequency">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([0-9]{1,5}Hz)|([CDEFGAB][01234][+-]?)"/>
+      <!-- Beispiele: "1000Hz" oder "C2+" (für cis in der 2. Oktave) -->
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmSound_soundtone">
+    <xsd:attribute name="duration" type="epmBase_reltime"         use="required" />
+    <xsd:attribute name="freq"     type="epmSound_frequency" use="required" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmSound_toneseq">
+    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="tone" type="epmSound_soundtone" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Klangbezeichnungen (z.B. PCM-Daten-Dateiname)
+       Mindestens sollte (zumindest beim Fahrerterminal)
+       der folgende Klang verfügbar sein: "keyclick".
+       Ist der Klang "hello" vorhanden, so wird dieser beim (Neu-)Start
+       der Einheit automatisch ausgegeben.
+  -->
+
+  <xsd:simpleType name="epmSound_playname">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\w{1,16}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="epmSound_playlist">
+    <xsd:list itemType="epmSound_playname" />
+  </xsd:simpleType>
+
+  <!-- eigentlicher Soundausgabe-Definitionsrahmen -->
+
+  <xsd:complexType name="epmSound">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Nur lesbare Elemente (Anforderung per "get") -->
+      <xsd:element name="playlist" type="epmSound_playlist" />
+      <!-- Nur schreibbare Elemente -->
+      <xsd:element name="play"     type="epmSound_playname" />
+      <xsd:element name="toneseq"  type="epmSound_toneseq" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Fahrerterminal (Tastatur, Touch, Bildschirm)
+   ========================================================
+  -->
+
+  <!-- Tasten-/Zeigerereignisse:
+        "click":   Taste/Touchscreen gedrückt
+        "release": Taste/Touchscreen losgelassen
+        "drag":    Bewegung bei berührtem Touchscreen
+        "move":    Bewegung bei nicht berührtem Touchscreen
+   -->
+  <xsd:simpleType name="epmBase_keyaction">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="click" />
+      <xsd:enumeration value="release" />
+      <xsd:enumeration value="drag" />
+      <xsd:enumeration value="move" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="epmBase_pointerpos">
+    <xsd:restriction base="xsd:unsignedShort">
+      <xsd:minInclusive value="0" />
+      <xsd:maxInclusive value="4095" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmKeyboard_key">
+    <xsd:attribute name="value"  type="xsd:string"        use="required" />
+    <xsd:attribute name="action" type="epmBase_keyaction" default="click" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmPointer_pos">
+    <xsd:attribute name="x"      type="epmBase_pointerpos" use="required" />
+    <xsd:attribute name="y"      type="epmBase_pointerpos" use="required" />
+    <xsd:attribute name="action" type="epmBase_keyaction"  default="move" />
+  </xsd:complexType>
+
+  <!-- Touch-Kalibrierdaten:
+       X-Soll oberer linker Eckpunkt
+       Y-Soll oberer linker Eckpunkt
+       X-Ist oberer linker Eckpunkt
+       Y-Ist oberer linker Eckpunkt
+       X-Soll unterer rechter Eckpunkt
+       Y-Soll unterer rechter Eckpunkt
+       X-Ist unterer rechter Eckpunkt
+       Y-Ist unterer rechter Eckpunkt -->
+
+  <xsd:simpleType name="epmPointer_scale">
+    <xsd:list itemType="epmBase_pointerpos" />
+  </xsd:simpleType>
+
+  <!-- eigentlicher Tastatur-Definitionsrahmen -->
+
+  <xsd:complexType name="epmKeyboard">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Nur lesbare Elemente (Anforderung per "get") -->
+      <xsd:element name="key"        type="epmKeyboard_key" />
+      <!-- Les- und schreibbare Elemente -->
+      <xsd:element name="clicksound" type="epmSound" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!-- eigentlicher Zeiger-Definitionsrahmen -->
+
+  <xsd:complexType name="epmPointer">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Nur lesbare Elemente (Anforderung per "get") -->
+      <xsd:element name="pos"        type="epmPointer_pos" />
+      <!-- Les- und schreibbare Elemente -->
+      <xsd:element name="scale"      type="epmPointer_scale" />
+      <xsd:element name="noscale"    type="epmBase_logical" />
+      <xsd:element name="clicksound" type="epmSound" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!-- eigentlicher Fahrerbildschirm-Definitionsrahmen -->
+
+  <xsd:complexType name="epmDisplay">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Les- und schreibbare Elemente -->
+      <xsd:element name="backlight"  type="xsd:unsignedByte" />
+      <xsd:element name="autoon"     type="epmBase_reltime" />
+      <xsd:element name="enabled"    type="epmBase_logical" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Drucker (Grafik-/Bitmap-Drucker)
+   ========================================================
+  -->
+
+  <xsd:simpleType name="epmPrinter_coord">
+    <xsd:restriction base="xsd:unsignedShort">
+      <xsd:minInclusive value="0" />
+      <xsd:maxInclusive value="4095" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="epmPrinter_distance">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="-?[0-9]{1,8}mm"/>
+      <!-- Beispiel: "12mm" oder "-2mm" -->
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Digitale Sensorwerte:
+        "mouthpiece":       Mundstück belegt
+        "nopaper_printer":  Papierende direkt am Druckkopf
+	"nopaper_external": Papierende am externen Sensor
+	"nopaper_soon":     Papier demnächst zu Ende
+	"head_lifted":      Druckkopf abgehoben
+	"cutter_jam":       Messer nicht in Ruheposition
+	"paper_jam":        Papierstau
+	"heating":          Es wird geheizt
+	"temp_low":         Temperatur zu niedrig
+   -->
+  <xsd:simpleType name="epmPrinter_statussignals">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="mouthpiece" />
+      <xsd:enumeration value="nopaper_printer" />
+      <xsd:enumeration value="nopaper_external" />
+      <xsd:enumeration value="nopaper_soon" />
+      <xsd:enumeration value="head_lifted" />
+      <xsd:enumeration value="cutter_jam" />
+      <xsd:enumeration value="paper_jam" />
+      <xsd:enumeration value="heating" />
+      <xsd:enumeration value="temp_low" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="epmPrinter_statussignallist">
+    <xsd:list itemType="epmPrinter_statussignals" />
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmPrinter_printerinfo">
+    <xsd:attribute name="width"     type="epmPrinter_coord" />
+    <xsd:attribute name="height"    type="epmPrinter_coord" />
+    <xsd:attribute name="encodings" type="epmBase_imageencodinglist" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmPrinter_status">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="signals" type="epmPrinter_statussignallist" />
+    </xsd:sequence>
+
+    <xsd:attribute name="printing"  type="epmBase_logical" default="no" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmPrinter_image">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="data" type="epmBase_data" />
+    </xsd:sequence>
+    <xsd:attribute name="state"    type="epmBase_transferstate" default="intermediate" />
+    <xsd:attribute name="encoding" type="epmBase_imageencoding" />
+    <xsd:attribute name="x"        type="epmCustomerDisplay_coord" />
+    <xsd:attribute name="y"        type="epmCustomerDisplay_coord" />
+    <xsd:attribute name="width"    type="epmPrinter_coord" />
+    <xsd:attribute name="height"   type="epmPrinter_coord" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmPrinter_cut">
+    <xsd:attribute name="partial"    type="epmBase_logical" default="no" />
+    <xsd:attribute name="delayed"    type="epmBase_logical" default="no" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmPrinter_param_feed">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="before" type="epmPrinter_distance" />
+      <xsd:element name="after"  type="epmPrinter_distance" />
+      <xsd:element name="next"   type="epmPrinter_distance" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmPrinter_param">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="feed" type="epmPrinter_param_feed" />
+      <!-- weitere Parameter fehlen noch!!! -->
+    </xsd:all>
+  </xsd:complexType>
+
+  <!-- eigentlicher Drucker-Definitionsrahmen -->
+
+  <xsd:complexType name="epmPrinter">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Nur lesbare Elemente (Anforderung per "get") -->
+      <xsd:element name="printerinfo" type="epmPrinter_printerinfo" />
+      <xsd:element name="status"      type="epmPrinter_status" />
+      <!-- Les- und schreibbare Elemente -->
+      <xsd:element name="parameter"   type="epmPrinter_param" />
+      <!-- Nur schreibbare Elemente -->
+      <xsd:element name="image"       type="epmPrinter_image" />
+      <xsd:element name="cut"         type="epmPrinter_cut" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Kundenterminal (Kundenanzeige, Chipkartenterminal)
+   ========================================================
+  -->
+
+  <xsd:simpleType name="epmCustomerDisplay_coord">
+    <xsd:restriction base="xsd:unsignedShort">
+      <xsd:minInclusive value="0" />
+      <xsd:maxInclusive value="4095" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmCustomerDisplay_displayinfo">
+    <xsd:attribute name="width"     type="epmCustomerDisplay_coord" />
+    <xsd:attribute name="height"    type="epmCustomerDisplay_coord" />
+    <xsd:attribute name="depth"     type="epmCustomerDisplay_coord" />
+    <xsd:attribute name="encodings" type="epmBase_imageencodinglist" />
+  </xsd:complexType>
+
+  <!-- Farbangaben entweder als RGB-Tripel oder als Farbname ("red", ...) -->
+  <xsd:simpleType name="epmCustomerDisplay_color">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([0-9A-Fa-f]{1,6})|(\w+)"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmCustomerDisplay_clear">
+    <xsd:attribute name="background" type="epmCustomerDisplay_color" />
+  </xsd:complexType>
+
+  <xsd:simpleType name="epmCustomerDisplay_font">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\w{1,8}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmCustomerDisplay_text">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="x"     type="epmCustomerDisplay_coord" />
+        <xsd:attribute name="y"     type="epmCustomerDisplay_coord" />
+        <xsd:attribute name="font"  type="epmCustomerDisplay_font" />
+        <xsd:attribute name="color" type="epmCustomerDisplay_color" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmCustomerDisplay_image">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="data" type="epmBase_data" />
+    </xsd:sequence>
+    <xsd:attribute name="state"    type="epmBase_transferstate" default="intermediate" />
+    <xsd:attribute name="encoding" type="epmBase_imageencoding" />
+    <xsd:attribute name="x"        type="epmCustomerDisplay_coord" />
+    <xsd:attribute name="y"        type="epmCustomerDisplay_coord" />
+    <xsd:attribute name="width"    type="epmCustomerDisplay_coord" />
+    <xsd:attribute name="height"   type="epmCustomerDisplay_coord" />
+    <xsd:attribute name="depth"    type="epmCustomerDisplay_coord" />
+  </xsd:complexType>
+
+  <!-- eigentlicher Kundenanzeige-Definitionsrahmen -->
+
+  <xsd:complexType name="epmCustomerDisplay">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Nur lesbare Elemente (Anforderung per "get") -->
+      <xsd:element name="displayinfo" type="epmCustomerDisplay_displayinfo" />
+      <!-- Nur schreibbare Elemente -->
+      <xsd:element name="clear"       type="epmCustomerDisplay_clear" />
+      <xsd:element name="image"       type="epmCustomerDisplay_image" />
+      <xsd:element name="text"        type="epmCustomerDisplay_text" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    CAN-Einheiten (z.B. Drucker)
+   ========================================================
+  -->
+
+  <xsd:complexType name="epmCAN_obj">
+    <xsd:complexContent>
+      <xsd:extension base="epmBase_data">
+        <xsd:attribute name="id"    type="epmBase_hex" use="required" />
+        <xsd:attribute name="error" type="xsd:unsignedShort" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmCAN">
+    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="obj" type="epmCAN_obj" />
+    </xsd:sequence>
+
+    <xsd:attribute name="dev" type="epmBase_hex" use="required" />
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Allgemeine serielle Schnittstellen
+   ========================================================
+  -->
+
+  <!-- Entfernungen -->
+
+  <xsd:simpleType name="epmSerial_parity">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[NOE]"/>
+      <!-- Beispiel: "N", "O" oder "E" -->
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmSerial">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="data" type="epmBase_data" />
+    </xsd:sequence>
+
+    <xsd:attribute name="id"       type="xsd:unsignedByte" use="required" />
+    <xsd:attribute name="baud"     type="xsd:unsignedInt" />
+    <xsd:attribute name="bits"     type="xsd:unsignedByte" />
+    <xsd:attribute name="parity"   type="epmSerial_parity" />
+    <xsd:attribute name="stopbits" type="xsd:unsignedByte" />
+    <xsd:attribute name="type"     type="xsd:string" />
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Geräte- und Fahrzeugparameter
+   ========================================================
+  -->
+
+  <!-- Fehlerkennungen für Parameterspeicherzugriff:
+        "none":  kein Fehler aufgetreten
+        "read":  Fehler beim Lesen
+        "write": Fehler beim Schreiben
+        "edc":   Prüfkennung fehlerhaft
+   -->
+  <xsd:simpleType name="epmGeneralParam_error">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="none" />
+      <xsd:enumeration value="read" />
+      <xsd:enumeration value="write" />
+      <xsd:enumeration value="edc" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmGeneralParam_param">
+    <xsd:sequence minOccurs="0" maxOccurs="1">
+      <xsd:element name="data" type="epmBase_data" />
+    </xsd:sequence>
+
+    <xsd:attribute name="addr"    type="xsd:unsignedInt"  use="required" />
+    <xsd:attribute name="size"    type="xsd:unsignedByte" use="required" />
+    <xsd:attribute name="withedc" type="epmBase_logical" default="yes" />
+    <xsd:attribute name="error"   type="epmGeneralParam_error" default="none" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmDeviceParam_device">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="id"   type="xsd:unsignedInt" />
+      <xsd:element name="type" type="xsd:unsignedShort" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmDeviceParam_sale">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="seqno"    type="xsd:unsignedInt" />
+      <xsd:element name="ticketid" type="xsd:unsignedInt" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmDeviceParam_radio">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="pin" type="xsd:unsignedInt" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmDeviceParam_display">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="nightvalue" type="xsd:unsignedByte" />
+      <xsd:element name="nightindex" type="xsd:unsignedByte" />
+      <xsd:element name="dayvalue"   type="xsd:unsignedByte" />
+      <xsd:element name="dayindex"   type="xsd:unsignedByte" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmDeviceParam_service">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="code" type="xsd:unsignedInt" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmDeviceParam_tour">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="tourno" type="xsd:unsignedInt" />
+      <xsd:element name="daytourno" type="xsd:unsignedInt" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmVesselParam_wheel">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="calibration"   type="xsd:unsignedShort" />
+      <xsd:element name="doorpolarity"  type="xsd:unsignedByte" />
+      <xsd:element name="totaldistance" type="xsd:unsignedInt" />
+      <xsd:element name="lastdistance"  type="xsd:unsignedInt" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmVesselParam_ibis">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="mode"          type="epmIBIS_mode" />
+      <xsd:element name="display_outer" type="xsd:unsignedByte" />
+      <xsd:element name="line_outer"    type="xsd:unsignedByte" />
+      <xsd:element name="display_inner" type="xsd:unsignedByte" />
+      <xsd:element name="talk_inner"    type="xsd:unsignedByte" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmVesselParam_audio">
+    <xsd:all minOccurs="0" maxOccurs="1">
+      <xsd:element name="phone_out"  type="xsd:unsignedByte" />
+      <xsd:element name="phone_in"   type="xsd:unsignedByte" />
+      <xsd:element name="master_out" type="xsd:unsignedByte" />
+      <xsd:element name="master_in"  type="xsd:unsignedByte" />
+      <xsd:element name="driver_out" type="xsd:unsignedByte" />
+      <xsd:element name="driver_in"  type="xsd:unsignedByte" />
+      <xsd:element name="main_out"   type="xsd:unsignedByte" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <!-- eigentlicher Geräteparameter-Definitionsrahmen -->
+
+  <xsd:complexType name="epmDeviceParam">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Les- und schreibbare Elemente -->
+      <xsd:element name="device"   type="epmDeviceParam_device" />
+      <xsd:element name="sale"     type="epmDeviceParam_sale" />
+      <xsd:element name="radio"    type="epmDeviceParam_radio" />
+      <xsd:element name="display"  type="epmDeviceParam_display" />
+      <xsd:element name="service"  type="epmDeviceParam_service" />
+      <xsd:element name="tour"     type="epmDeviceParam_tour" />
+      <xsd:element name="language" type="xsd:string" />
+      <xsd:element name="param"    type="epmGeneralParam_param" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!-- eigentlicher Fahrzeugparameter-Definitionsrahmen -->
+
+  <xsd:complexType name="epmVesselParam">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Les- und schreibbare Elemente -->
+      <xsd:element name="vesselid" type="xsd:unsignedInt" />
+      <xsd:element name="orgid"    type="xsd:unsignedInt" />
+      <xsd:element name="ipaddr"   type="epmBase_ipaddr" />
+      <xsd:element name="wheel"    type="epmVesselParam_wheel" />
+      <xsd:element name="ibis"     type="epmVesselParam_ibis" />
+      <xsd:element name="audio"    type="epmVesselParam_audio" />
+      <xsd:element name="param"    type="epmGeneralParam_param" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Modul
+   ========================================================
+  -->
+
+  <xsd:simpleType name="epmModule_moduletype">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="driver"/>
+      <xsd:enumeration value="data"/>
+      <xsd:enumeration value="save"/>
+      <xsd:enumeration value="empty"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="epmModule_filename">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="255"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="epmModule_modulestate">
+    <xsd:attribute name="inserted" type="epmBase_logical" use="required" />
+    <xsd:attribute name="id"       type="epmBase_hex"     use="required" />
+    <xsd:attribute name="type"     type="epmModule_moduletype" />
+  </xsd:complexType>
+
+  <!-- Hier fehlen noch ein Haufen Befehle -->
+
+  <xsd:complexType name="epmModule_initialize">
+    <xsd:attribute name="type" type="epmModule_moduletype" use="required" />
+  </xsd:complexType>
+
+  <xsd:complexType name="epmModule_createfile">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="name" type="epmModule_filename" use="required" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="epmModule">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Nur lesbare Elemente (Anforderung per "get") -->
+      <xsd:element name="modulestate"    type="epmModule_modulestate" />
+      <!-- Nur schreibbare Elemente -->
+      <xsd:element name="initialize"     type="epmModule_initialize" />
+      <xsd:element name="createfile"     type="epmModule_createfile" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <!--
+   ========================================================
+    Informationsanforderung
+   ========================================================
+  -->
+
+  <!-- Informationsanforderung
+        Aufbau: "FUNKTIONSGRUPPE:INFORMATION:SUBINFORMATION1:..."
+        Beispiel: "power:temperature" oder
+                  "vesselparam:wheel:doorpolarity"
+  -->
+
+  <xsd:simpleType name="epmGet">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\w+(:\w+)*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!--
+   ========================================================
+    Allgemeiner Protokollrahmen
+   ========================================================
+  -->
+
+  <xsd:complexType name="epmUnit">
+    <xsd:choice minOccurs="0" maxOccurs="1">
+      <!-- Allgemeine Befehle (zur Einheit) -->
+      <xsd:element name="get"         type="epmGet" />
+      <xsd:element name="download"    type="epmDownload" />
+      <!-- Allgemeine Befehle (von der Einheit) -->
+      <xsd:element name="info"        type="epmInfo" />
+      <xsd:element name="readystate"  type="epmReadyStateInfo" />
+      <!-- Allgemeine Befehle (i.d.R. von der Einheit) -->
+      <xsd:element name="ack"         type="epmAck" />
+      <!-- Einheitenspezifische Befehle -->
+      <xsd:element name="power"       type="epmPower" />
+      <xsd:element name="wheel"       type="epmWheel" />
+      <xsd:element name="keyboard"    type="epmKeyboard" />
+      <xsd:element name="pointer"     type="epmPointer" />
+      <xsd:element name="display"     type="epmDisplay" />
+      <xsd:element name="sound"       type="epmSound" />
+      <xsd:element name="printer"     type="epmPrinter" />
+      <xsd:element name="deviceparam" type="epmDeviceParam" />
+      <xsd:element name="vesselparam" type="epmVesselParam" />
+      <xsd:element name="customer"    type="epmCustomerDisplay" />
+      <xsd:element name="candevice"   type="epmCAN" />
+      <xsd:element name="module"      type="epmModule" />
+      <xsd:element name="ibis"        type="epmIBIS" />
+      <xsd:element name="serbus"      type="epmSerbus" />
+      <xsd:element name="serial"      type="epmSerial" />
+    </xsd:choice>
+
+    <xsd:attribute name="name"        type="epmBase_unitname" default="*" />
+  </xsd:complexType>
+
+  <xsd:element name="epm">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element name="unit" type="epmUnit" />
+      </xsd:choice>
+
+      <xsd:attribute name="dest"        type="epmBase_ipsocket" />
+      <xsd:attribute name="home"        type="epmBase_ipsocket" />
+      <xsd:attribute name="uid"         type="epmBase_hex" />
+      <xsd:attribute name="ack"         type="epmBase_logical"  default="no" />
+      <xsd:attribute name="withseqno"   type="epmBase_logical"  default="no" />
+      <xsd:attribute name="seqno"       type="xsd:unsignedInt" />
+      <xsd:attribute name="withreltime" type="epmBase_logical"  default="no" />
+      <xsd:attribute name="reltime"     type="epmBase_reltime" />
+      <xsd:attribute name="reply"       type="epmBase_reply"    default="now" />
+      <xsd:attribute name="ds"          type="epmBase_distance" default="0m" />
+      <xsd:attribute name="dt"          type="epmBase_reltime"  default="0s" />
+
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>
+
+<!--
+  ============================================================================
+  Allgemeine Informationen:
+  ============================================================================
+
+  Als Protokoll für die Ereignisnachrichtenversendung wird UDP/IP über
+  den Defaultport 50000 (es sind aber auch alle anderen zulässigen
+  Portnummern möglich) verwendet.
+  Für die initiale, per Broadcast gesendete Profilinformation kommt
+  Port 50001 per Default als Zielport zur Verwendung.
+  Die Einheiten selbst bestimmen ihre IP-Adresse über DHCP. Adressbereich
+  für die Einheiten ist 192.168.254.0/24, wobei die Adresse 192.168.254.1
+  für den Master (PC) reserviert ist.
+  Die maximale Länge einer Ereignisnachricht ist - mit Rücksicht auf
+  Speicherplatzbeschränkungen bei den Einheiten - auf 1408 Byte beschränkt.
+  Jeder Sender eines Ereignisses hat sicherzustellen, dass er nur so viele
+  Ereignisse zu einem Empfänger sendet, wie dieser verarbeiten kann, ohne
+  dass es zu einem Ereignisverlust kommt. D.h. insbesondere bei Downloads
+  ist auf eine Bestätigung ("ack") der gesendeten Nachrichten zu warten,
+  bevor die nächste Nachricht gesendet wird.
+
+  Um die XML-Auswertung insbesondere auf Einheitenseite einfach zu halten,
+  sind Elementtyp-, Entity- und sonstige Deklarationen nicht zulässig.
+  D.h. alles, was mit "<!" beginnt und keine DOCTYPE-Deklaration ist
+  (innerhalb deren allerdings auch keine Deklarationen zulässig sind),
+  ist nicht zulässig.
+  Ebenso sind außer "<?xml...?>" keine Processing-Instructions zulässig.
+
+  Innerhalb von Attributwerten sind keine Entity-Referenzen (also "&#...;")
+  zulässig.
+
+  ============================================================================
+  Beispiele:
+  ============================================================================
+
+  Auch wenn im nachfolgenden Leerzeichen und Zeilenendezeichen zur besseren
+  Lesbarkeit verwendet werden, sind diese in den eigentlichen Nachrichten
+  nicht zu verwenden.
+
+  Die Namespace-Angabe wird in den folgenden Beispielen weggelassen, d.h.
+  korrekterweise müsste statt
+
+    <epm> ... </epm>
+
+  das folgende angegeben werden:
+
+    <epm xmlns="http://www.hamburg.krauth-online.de/XMLSchema/epm"> ... </epm>
+
+  Die Beispiele können wie folgt getestet werden, wenn "epm.xsd" diese
+  Schemadefinition enthält und "example.xml" das Beispiel:
+
+    xmllint (minus)(minus)schema epm.xsd example.xml
+
+  - Beim (Neu-)Start einer Einheit sendet diese periodisch per Broadcast
+    Kurzinformationen über die von ihr unterstützten Funktionseinheiten:
+
+      <epm uid="0" ack="yes" home="192.168.254.14:50000">
+        <unit name="power" />
+      </epm>
+
+    Über das Attribut "home" wird angegeben, an welche Adresse und welchen
+    Port Anforderungen für die entsprechende Einheit zu senden sind.
+
+    Antwort des Masters, um die Broadcastaussendung zu beenden:
+
+      <epm uid="0"><unit><ack /></unit></epm>
+
+    Allgemein gilt, dass ein nicht angegebener Name einer Funktionseinheit
+    ("unit") für alle Funktionseinheiten gilt, sofern dies sinnvoll ist.
+    Sofern Einheiten nur eine Funktionseinheit unterstützen, kann der Name
+    der Funktionseinheit problemlos weggelassen werden.
+
+  - Anforderung von Basisinformationen einer Einheit (hier: hypothetisches
+    Netzteil mit seriellen Schnittstellen):
+
+      <epm><unit><get>info</get></unit></epm>
+
+    Antwort:
+
+      <epm><unit name="superpower"><info /></unit></epm>
+
+    Nähere Informationen für diese Einheit können dann mit
+
+      <epm><unit name="superpower"><get>info</get></unit></epm>
+
+    angefordert werden. Die Antwort lautet dann beispielsweise:
+
+      <epm><unit name="superpower">
+        <info>
+          <versions>
+            <software>1234</software>
+            <hardware>5</hardware>
+	    <softwareinfo>V 1.4.2TEST (23.7.2004)</softwareinfo>
+	    <hardwareinfo>superpower zero-energy-module</hardwareinfo>
+          </versions>
+          <capabilities>
+            <capability type="download" />
+            <capability type="power" />
+            <capability type="serial">
+              <subtype id="0">rs232</subtype>
+              <subtype id="1">rs232 rs485</subtype>
+            </capability>
+          </capabilities>
+          <description>Netzteil mit serieller Schnittstelle</description>
+        </info>
+      </unit></epm>
+
+    Ist in Info-Tag das Attribut "ready" auf einen Wert ungleich "yes"
+    gesetzt, ist die Einheit nur eingeschränkt oder gar nicht betriebsbereit.
+    Nähere Informationen können dann mit
+
+    <epm><unit name="superpower"><get>readystate</get></unit></epm>
+
+    angefordert werden. Eine mögliche Antwort wäre dann:
+
+    <epm><unit name="superpower">
+      <readystate>
+        <state>restricted</state>
+        <description>Temperatursensor 1 defekt</description>
+      </readystate>
+    </unit></epm>
+
+    Die Standardfähigkeiten "get", "ack", "info" sowie "readystate" müssen von
+    jeder Einheit unterstützt werden und werden daher nicht in der Liste der
+    Fähigkeiten aufgeführt.
+
+  - Für einen Drucker, der ein getrenntes Nachladen von Code und Zeichensätzen
+    erlaubt, könnte die Antwort auf die allgemeine Informationsanfrage wie
+    folgt lauten:
+
+      <epm>
+        <unit name="printer"><info /></unit>
+        <unit name="printerfonts"><info /></unit>
+      </epm>
+
+    Um jetzt Informationen über die Zeichensätze zu bekommen, können diese
+    mit
+
+      <epm><unit name="printerfonts"><get>info</get></unit></epm>
+
+    angefordert werden. Die Antwort lautet dann:
+
+      <epm><unit name="printerfonts">
+        <info>
+          <versions>
+            <software>1234</software>
+          </versions>
+          <capabilities>
+            <capability type="download" />
+          <capabilities>
+        </info>
+      </unit></epm>
+
+  - Eine Touchscreen mit zusätzlicher Tastatur (also Input-Overkill)
+    und Soundausgabe könnte auf
+
+      <epm><unit><get>info</get></unit></epm>
+
+    Die folgende Antwort geben:
+
+      <epm>
+        <unit name="touchdisplay"><info /></unit>
+        <unit name="touchsound"><info /></unit>
+      </epm>
+
+    Dann könnte
+
+      <epm><unit name="touchdisplay"><get>info</get></unit></epm>
+
+    folgende Antwort liefern:
+
+      <epm><unit name="touchdisplay">
+        <info>
+          <versions>
+            <software>1234</software>
+            <hardware>5</hardware>
+          </versions>
+          <capabilities>
+            <capability type="download" />
+            <capability type="touch" />
+            <capability type="keyboard" />
+          <capabilities>
+        </info>
+      </unit></epm>
+
+    und
+
+      <epm><unit name="touchsound"><get>info</get></unit></epm>
+
+    diese Antwort liefern:
+
+      <epm><unit name="touchsound">
+        <info>
+          <versions>
+            <software dependson="touchdisplay">1234</software>
+          </versions>
+          <capabilities>
+            <capability type="download" />
+            <capability type="sound" />
+          <capabilities>
+        </info>
+      </unit></epm>
+
+    Damit wären Code und Klänge getrennt nachladbar.
+    Durch das Attribut "dependson" wird angegeben, dass beim Nachladen des
+    Codes (also für "touchdisplay") die Downloaddaten für "touchsound"
+    beeinflusst (d.h. in diesem Fall gelöscht) werden.
+    Damit kann ein Abhängigkeitsbaum und eine Downloadreihenfolge
+    bestimmt werden.
+
+  - Werden nur Informationen über den Druckercode benötigt, könnten diese
+    wie folgt angefordert werden:
+
+      <epm><unit name="printer"><get>info</get></unit></epm>
+
+    Die Antwort lautet dann:
+
+      <epm><unit name="printer">
+        <info>
+          <versions>
+            <software>1234</software>
+            <hardware>5</hardware>
+          </versions>
+          <capabilities>
+            <capability type="download" />
+            <capability type="candevice" />
+          <capabilities>
+        </info>
+      </unit></epm>
+
+  - Einmalige Anforderung der Netzteiltemperaturinformationen:
+
+      <epm><unit><get>power:temperature</get></unit></epm>
+
+    Antwort:
+
+      <epm><unit name="power">
+        <power><temperature>45 46 45</temperature></power>
+      </unit></epm>
+
+  - Periodische Anforderung des Wegzählerstands, falls mehr als 10m gefahren
+    wurden oder falls mehr als 2s vergangen sind.
+    Außerdem sollen die Ereignisse mit einer Sequenznummer und einem
+    (relativen) Zeitstempel versehen und an 192.168.64.98 Port 12345
+    geschickt werden.
+    Die Wegzählerereignisnachrichten sollen mit der Kennung 5566 versehen
+    werden. Eine Bestätigung der Abarbeitung der Anforderung soll erfolgen.
+
+      <epm dest="192.168.64.98:12345" uid="5566"
+           withseqno="yes" withreltime="yes" ds="10m" dt="2s" ack="yes">
+        <unit><get>wheel:wheelstate</get></unit>
+      </epm>
+
+    Antwort (an Absender der Anforderung):
+
+      <epm uid="5566"><unit name="wheel"><ack cmd="get" /></unit></epm>
+
+    Antwort (an 192.168.64.98 Port 12345):
+
+      <epm uid="5566" seqno="1" reltime="0ms">
+        <unit name="wheel">
+          <wheel>
+            <wheelstate distance="55m" beacon="no" dooropen="no"></wheelstate>
+          </wheel>
+        <unit>
+      </epm>
+
+      <epm uid="5566" seqno="2" reltime="123ms">
+        <unit name="wheel">
+          <wheel>
+            <wheelstate distance="65m" beacon="no" dooropen="no"></wheelstate>
+          </wheel>
+        </unit>
+      </epm>
+      ...
+
+  - Beenden der obigen periodischen Aussendung:
+
+     <epm uid="5566" reply="never"><unit>
+       <get>wheel:wheelstate</get>
+     </unit></epm>
+
+  - Codedownload für das Netzteil (mit Bestätigung der Übertragung):
+
+      <epm uid="1" ack="yes">
+        <unit name="power">
+          <download state="start">
+            <data><hex>112233...</hex></data>
+          </download>
+        </unit>
+      </epm>
+
+    Antwort:
+
+      <epm uid="1"><unit name="power"><ack cmd="download" /></unit></epm>
+
+    oder im Fehlerfall:
+
+      <epm uid="1"><unit name="power">
+        <ack cmd="download" error="parameter" />
+      </unit></epm>
+
+    Nächstes Datenpaket:
+
+      <epm uid="2" ack="yes">
+        <unit name="power">
+          <download state="intermediate">
+            <data><hex>112233...</hex></data>
+          </download>
+        </unit>
+      </epm>
+
+    Antwort:
+
+      <epm uid="2"><unit name="power"><ack cmd="download" /></unit></epm>
+
+    Letztes Datenpaket:
+
+      <epm uid="576" ack="yes">
+        <unit name="power">
+          <download state="final">
+            <data><hex>112233...</hex></data>
+          </download>
+        </unit>
+      </epm>
+
+    Antwort:
+
+      <epm uid="576"><unit name="power"><ack cmd="download" /></unit"</epm>
+
+  - Der Aufbau der Download-Daten-Datei ist wie folgt:
+      4 Byte Dateikennung ("XMLB")
+      2 Byte Länge des Headers (Big-Endian)
+      Header im binXML-Format (siehe "binXML.c")
+      eigentliche Download-Daten
+    Aus Gründen der Einfachheit sollte genau die komplette Headerinformation im
+    ersten ("start") Download-Paket übertragen werden, um eine Defragmentierung
+    auf Einheitenseite zu vermeiden.
+    Die Länge des Headers wird nur benötigt, um die Headerinformationen von
+    den eigentlichen Download-Daten zu trennen. Diese Länge ist aber nicht
+    Bestandteil der zur der Einheit übertragenen Header-Information.
+    Für die XML-Schema-Definition des Download-Headers siehe "dataheader.xsd".
+
+  - Aussenden einer IBIS-Nachricht (als IBIS-Master) ohne Erwartung einer
+    Antwort:
+
+      <epm><unit><ibis mode="master"><msg>hP1234</msg></ibis></unit></epm>
+
+  - Aussenden einer IBIS-Nachricht (als IBIS-Master) mit Erwartung einer
+    Antwort in max. 500ms:
+
+      <epm><unit><ibis mode="master" timeout="500ms">
+        <msg>a0</msg>
+      </ibis></unit></epm>
+
+    Antwort (falls keine Antwort erfolgt, ist das "reply"-Element leer):
+
+      <epm><unit name="ibis"><ibis timeout="500ms">
+        <reply>a2</reply>
+      </ibis></unit></epm>
+
+  - Vorbereiten des IBIS-Slave-Betriebs mit automatischer Antwort "a2"
+    auf die Master-Nachricht "a0":
+
+      <epm><unit><ibis mode="slave">
+        <msg>a0</msg><reply>a2</reply>
+      </ibis></unit></epm>
+
+    Bei Erhalt der Master-Nachricht "a0" wird dann folgendes Ereignis
+    ausgelöst:
+
+      <epm><unit name="ibis"><ibis><msg>a0</msg></ibis></unit></epm>
+
+  - Aussendung einer Broadcast-Nachricht über den seriellen Bus:
+
+      <epm><unit><serbus dev="0"><msg>t5</msg></serbus></unit></epm>
+
+  - Aussendung einer Nachricht an Einheit 1 über den seriellen Bus, wobei
+    der Antwort dann noch die eigentliche Nachricht angefügt werden soll:
+
+      <epm><unit>
+        <serbus dev="1" withmsg="yes"><msg>t5</msg></serbus>
+      </unit></epm>
+
+    Antwort:
+
+      <epm><unit name="serbus">
+        <serbus dev="1"><msg>t5</msg><reply>t6</reply></serbus>
+      </unit></epm>
+
+  - Aussendung von Zeichen über eine serielle Schnittstelle, wobei empfangene
+    Zeichen als Ereignis zurückgemeldet werden sollen:
+
+      <epm uid="5" reply="onchange"><unit>
+        <serial id="0"
+                baud="9600" bits="8" parity="N" stopbits="1" type="rs232">
+          <data>Dies ist ein Test.</data>
+        </serial>
+      </unit></epm>
+
+    Weitere Zeichen können dann wie folgt gesendet werden:
+
+      <epm uid="5" reply="onchange"><unit>
+        <serial id="0"><data>Dies ist ein Test.</data></serial>
+      </unit></epm>
+
+    Sobald Zeichen empfangen wurden, werden diese wie folgt versendet:
+
+      <epm uid="5"><unit name="superpower"><serial id="0">
+        <data>Empfangene Zeichen</data>
+      </serial></unit></epm>
+
+    Ein Schließen der seriellen Schnittstelle erfolgt dann mit:
+
+      <epm uid="5" reply="never"><unit><serial id="0" /></unit></epm>
+
+  - Senden von Daten an den CAN-Drucker:
+
+      <epm><unit><candevice dev="12345678">
+        <obj id="0637"><hex>000100008000</hex></obj>
+        <obj id="0620"><hex>00010000</hex></obj>
+        <obj id="0610">Hallo Leute, 5 &lt; 10.</obj>
+        <obj id="0642"><hex>00</hex></obj>
+      </candevice></unit></epm>
+
+  - Abfrage der Druckersoftwareversion beim CAN-Drucker:
+
+      <epm><unit>
+        <candevice dev="12345678"><obj id="0107" /></candevice>
+      </unit></epm>
+
+    Antwort ist dann:
+
+      <epm><unit name="can"><candevice dev="12345678">
+        <obj id="0107"><hex>AABBCCDD</hex></obj>
+      </candevice></unit></epm>
+
+  - Um alle Nachrichten über einen zentralen Proxy laufen zu lassen,
+    müsste dieser die Broadcastnachrichten von allen angeschlossenen Einheiten
+    auswerten und daraus dann eigene simulierte Einheiten bilden. Um diese
+    von den echten Einheiten zu unterscheiden, muss der Proxy das Attribut
+    "isproxy" bei seinen generierten Broadcastnachrichten einfügen.
+    Die Applikation kann damit die vom Proxy generierten Broadcastnachrichten
+    eindeutig erkennen und nur auf diese reagieren.
+
+    Alternativ kann der Proxy auch auf die Aussendung der Broadcastnachrichten
+    verzichten, wenn seitens der Applikation die Adresse und der Port des
+    Proxies a priori bekannt sind. In diesem Fall simuliert der Proxy eine
+    "Super"-Einheit, die den gesamten Funktionsumfang aller angeschlossenen
+    echten Einheiten beinhaltet. Problematisch wird es hier allerdings dann,
+    wenn mehrere gleichartige echte Einheiten angeschlossen sind, da die
+    seitens der Applikation, die nur über den Proxy darauf zugreift, nicht
+    mehr unterschieden werden können. Es sei denn, der Proxy führt eine
+    eindeutige Umbenennung der Funktionseinheiten durch.
+
+  - Um Einheiten der gleichen Art, aber mit unterschiedlicher Hardware-
+    ausprägung (z.B. Fahrerterminal mit ALGRA- oder Folientastatur) zu
+    erkennen, kann folgende Einheitenbezeichnung gewählt werden:
+
+      "EINHEIT:AUSPRÄGUNG"
+
+    Also beispielsweise "display:algra" bzw. "display:simple".
+
+  - Der Aufbau der Download-Daten ist wie folgt:
+      2 Byte Länge des Headers (Big-Endian)
+      Header im binXML-Format (siehe "binXML.c")
+      eigentliche Download-Daten
+    Aus Gründen der Einfachheit sollte die komplette Headerinformation im
+    ersten ("start") Download-Paket übertragen werden, um die Notwendigkeit
+    einer Defragmentierung auf Einheitenseite zu vermeiden.
+
+    Für die XML-Schema-Definition des Download-Headers siehe "dataheader.xsd".
+
+-->
