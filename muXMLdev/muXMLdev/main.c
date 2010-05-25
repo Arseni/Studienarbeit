@@ -33,17 +33,24 @@ int main ()
   char Stream[1024];
   static const char XML[] = "<epm><unit name=\"superpower\"><info><versions><software>1234</software><hardware>5678</hardware></versions><capabilities><capability type=\"download\" /><capability type=\"power\" /><capability type=\"serial\"><subtype id=\"0\">rs232</subtype><subtype id=\"1\">rs232 rs485</subtype></capability><description>Netzteil mit serieller Schnittstelle</description></capabilities></info></unit></epm>";
   static const char XML2[] = "<epm dest=\"192.168.64.98:12345\" uid=\"5566\" withseqno=\"yes\" withreltime=\"yes\" ds=\"10m\" dt=\"2s\" ack=\"yes\"><unit><get>wheel:wheelstate</get></unit></epm>";
-  static const char XML3[] = "<test><test2>Hier</test2></test>";
+  static const char XML3[] = "<test><test2>test</test2><test2></test2></test>";
   
   p = muXMLTreeDecode(XML3, Data, sizeof(Data), 1, &Usage);
   if(p)
   {
 	  int i;
+	  FILE * fp = fopen("test.txt", "w+");
+
 	  struct muXMLTreeElement * tmp = muXMLGetElementByName(&(p->Root), "test2");
 	  printf ("Memory Usage: %d of %d\n\n", Usage, sizeof (Data));
-	  muXMLUpdateData(p, tmp, "nu");
+	  //muXMLUpdateData(p, tmp, "nu");
 	  Dump (& p->Root, 0);
 	  printf("Memory Usage: %d of %d\n\n", p->StorageInfo.SpaceInUse, p->StorageInfo.SpaceTotal);
+	  for(i=0; i<p->StorageInfo.SpaceInUse; i++)
+	  {
+		  fprintf(fp, "%02X\t%c\r\n", Data[i], Data[i]);
+	  }
+	  fclose(fp);
   }
 /*
   p = muXMLTreeDecode (XML, Data, sizeof (Data), 1, & Usage);

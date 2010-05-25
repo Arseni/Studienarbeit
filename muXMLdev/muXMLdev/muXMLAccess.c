@@ -13,7 +13,7 @@
  * + return: Pointer auf den gefundenen Knoten bei Erfolg, sonst NULL
  */
 struct muXMLTreeElement* muXMLGetElementByName(struct muXMLTreeElement * pRoot,
-												char * Name)
+											   char * Name)
 {
 	struct muXMLTreeElement * hopper = pRoot->SubElements;
 
@@ -30,13 +30,24 @@ struct muXMLTreeElement* muXMLGetElementByName(struct muXMLTreeElement * pRoot,
 
 /*----------------------------      Writing      -----------------------------*/
 
-
+/**
+ * Ersetzt das Datum eines Elements durch ein neues. Passt dabei die Länge des
+ * Baumes an.
+ * @ pTree   : Pointer auf den Gesamtbaum, der bearbeitet wird
+ * @ pElement: Pointer auf das Element, indem das Datum verädert werden soll
+ * @ newData : Nullterminiterter String des neuen Datums
+ * + return  : Passt nicht in den Buffer:1 , sonst 0
+ */
 int muXMLUpdateData(struct muXMLTree * pTree,
 					struct muXMLTreeElement * pElement,
 					char * newData)
 {
-	int i=0, dataLen = strlen(newData), diff = dataLen -strlen(pElement->Data.Data);
+	int i=0, dataLen = strlen(newData),
+		diff = dataLen - strlen(pElement->Data.Data);
 	char * pData;
+	
+	if(pTree->StorageInfo.SpaceInUse + diff > pTree->StorageInfo.SpaceTotal)
+		return 1;
 	
 	// Vorgang der Datenverschiebung je nach diff unterschiedlich
 	if(diff > 0) // neue Daten sind größer
@@ -48,7 +59,7 @@ int muXMLUpdateData(struct muXMLTree * pTree,
 			pData--;
 		}
 	}
-	if(diff < 0)
+	if(diff < 0) // neue Daten sind kleiner
 	{
 		pData = pElement->Data.Data;
 		while(pData != (char*)pTree + pTree->StorageInfo.SpaceInUse)
@@ -57,8 +68,14 @@ int muXMLUpdateData(struct muXMLTree * pTree,
 			pData++;
 		}
 	}
+
+	// neue Daten übernehmen
 	memcpy(pElement->Data.Data, newData, dataLen);
 	pElement->Data.DataSize = dataLen;
 	pTree->StorageInfo.SpaceInUse += diff;
+
+	// Ketteninformationen updaten
+	if(pElement->Next)
+		pElement->Next = (char*)pElement->Next + diff;
 	return 0;
 }
