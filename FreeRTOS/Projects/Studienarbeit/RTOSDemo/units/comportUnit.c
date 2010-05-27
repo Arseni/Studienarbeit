@@ -36,3 +36,7 @@ void vComportUnitTask( void *pvParameters )
 	}
 }
 /*-----------------------------------------------------------*/
+
+/*
+ * Callback für Unit müssste sowas sein wie: entsperre semaphore, schreibe daten in queue
+ */

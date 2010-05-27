@@ -28,6 +28,7 @@ typedef struct
 typedef struct
 {
 	char Type[UNIT_MIDDLE_STRING];
+	void * pxDependancy;
 }tUnitCapability;
 
 typedef struct
