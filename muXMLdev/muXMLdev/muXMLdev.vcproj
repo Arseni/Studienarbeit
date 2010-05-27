@@ -188,6 +188,10 @@
 				RelativePath=".\muXMLTree.c"
 				>
 			</File>
+			<File
+				RelativePath=".\unit.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Headerdateien"
@@ -204,6 +208,10 @@
 			</File>
 			<File
 				RelativePath=".\muXMLTree.h"
+				>
+			</File>
+			<File
+				RelativePath=".\unit.h"
 				>
 			</File>
 		</Filter>

@@ -65,6 +65,7 @@ OLEDDISPLAY_DIR=./OLEDDisplay
 UIP_DIR=./uip
 ETHERNET_DIR=./ethernet
 XML_DIR=./muXML
+UNITS_PATH=./units
 
 CC=arm-none-eabi-gcc
 OBJCOPY=arm-none-eabi-objcopy
@@ -88,7 +89,7 @@ DRIVERS=$(DRIVERS_DIR)/adc.c $(DRIVERS_DIR)/can.c $(DRIVERS_DIR)/comp.c $(DRIVER
 		$(DRIVERS_DIR)/mpu.c $(DRIVERS_DIR)/pwm.c $(DRIVERS_DIR)/qei.c $(DRIVERS_DIR)/ssi.c $(DRIVERS_DIR)/sysctl.c $(DRIVERS_DIR)/systick.c \
 		$(DRIVERS_DIR)/timer.c $(DRIVERS_DIR)/uart.c $(DRIVERS_DIR)/udma.c $(DRIVERS_DIR)/usb.c $(DRIVERS_DIR)/watchdog.c
 
-APIS=$(API_DIR)/led.c $(API_DIR)/comport.c $(API_DIR)/buttons.c $(API_DIR)/ustdlib.c $(API_DIR)/emac.c
+APIS=$(API_DIR)/led.c $(API_DIR)/buttons.c $(API_DIR)/comport.c $(API_DIR)/ustdlib.c $(API_DIR)/emac.c
 
 OLEDDisplay=$(OLEDDISPLAY_DIR)/rit128x96x4.c $(OLEDDISPLAY_DIR)/osram128x64x4.c $(OLEDDISPLAY_DIR)/formike128x128x16.c $(OLEDDISPLAY_DIR)/oledDisplay.c
 
@@ -97,12 +98,16 @@ UIP=$(UIP_DIR)/uip_arp.c $(UIP_DIR)/psock.c $(UIP_DIR)/uip_timer.c $(UIP_DIR)/ui
 ETHERNET=$(UIP) $(ETHERNET_DIR)/tcpHandler.c $(ETHERNET_DIR)/ethernetTask.c $(ETHERNET_DIR)/udpHandler.c
 
 XML=$(XML_DIR)/muXML.c $(XML_DIR)/muXMLTree.c $(XML_DIR)/muXMLAccess.c
+
+UNITS=$(UNITS_PATH)/unit.c $(UNITS_PATH)/comportUnit.c
+
  
 SOURCE=	$(DRIVERS) \
 		$(APIS) \
 		$(OLEDDisplay) \
 		$(ETHERNET) \
 		$(XML) \
+		$(UNITS) \
 		main.c \
 		$(RTOS_SOURCE_DIR)/list.c \
 		$(RTOS_SOURCE_DIR)/queue.c \
