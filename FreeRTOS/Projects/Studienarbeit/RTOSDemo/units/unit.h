@@ -6,6 +6,7 @@
 #define UNIT_LONG_STRING		50
 
 #define UNIT_MAX_CAPABILITIES	5
+#define UNIT_MAX_GLOBAL_UNITS	5
 
 /* Library includes. */
 #include "hw_types.h"
@@ -44,7 +45,7 @@ typedef struct
 	unsigned int uDt;
 }tUnitJob;
 
-typedef void (* tcbNewJob) (tUnitJob xNewJob);
+typedef void (* tcbUnitNewJob) (tUnitJob xNewJob);
 
 typedef struct
 {
@@ -52,7 +53,7 @@ typedef struct
 	tUnitVersion xVersion;
 	eUnitState xState;
 	tUnitCapability xCapabilities[UNIT_MAX_CAPABILITIES];
-	tcbNewJob vNewJob;
+	tcbUnitNewJob vNewJob;
 }tUnit;
 
 #endif

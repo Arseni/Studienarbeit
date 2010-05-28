@@ -10,6 +10,7 @@
 		<item value="227191" key="searchFlags"/>
 		<item value="false" key="caseSensitive"/>
 		<list key="previousPatterns">
+			<item value="FALSE"/>
 			<item value="*uint16_t*"/>
 			<item value="uint16_t"/>
 			<item value="uip_setethaddr"/>
