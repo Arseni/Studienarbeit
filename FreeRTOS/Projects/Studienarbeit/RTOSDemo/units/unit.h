@@ -32,6 +32,8 @@ typedef struct
 	void * pxDependancy;
 }tUnitCapability;
 
+#define UNIT_CAPABILITY_VALID(X) (strlen(X.Type)>0?true:false)
+
 typedef struct
 {
 	uip_ipaddr_t xSrcAddr;

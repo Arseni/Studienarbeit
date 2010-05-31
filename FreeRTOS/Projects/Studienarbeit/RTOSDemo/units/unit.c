@@ -57,7 +57,7 @@ tUnit * unitCreate(char * Name)
 	return ret;
 }
 
-tBoolean unitAddCapability(tUnit * Unit, tUnitCapability Capability)
+tBoolean unitUnlink(tUnit * pUnit)
 {
 	int i;
 
@@ -65,7 +65,25 @@ tBoolean unitAddCapability(tUnit * Unit, tUnitCapability Capability)
 	// -> validate Unit pointer to be one of the global unit pool
 	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
 	{
-		if(xUnits[i].bInUse && &(xUnits[i].xUnit) == Unit)
+		if(xUnits[i].bInUse && &(xUnits[i].xUnit) == pUnit)
+			goto parameters_valid;
+	}
+	return false;
+
+	parameters_valid:
+	memset(pUnit, 0, sizeof(tUnit));
+	return true;
+}
+
+tBoolean unitAddCapability(tUnit * pUnit, tUnitCapability Capability)
+{
+	int i;
+
+	// Validate parameters
+	// -> validate Unit pointer to be one of the global unit pool
+	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
+	{
+		if(xUnits[i].bInUse && &(xUnits[i].xUnit) == pUnit)
 			goto parameters_valid;
 	}
 	return false;
@@ -73,10 +91,12 @@ tBoolean unitAddCapability(tUnit * Unit, tUnitCapability Capability)
 	parameters_valid:
 	for(i=0; i<UNIT_MAX_CAPABILITIES; i++)
 	{
-		if(strlen(Unit->xCapabilities[i].Type) == 0)
+		if(!UNIT_CAPABILITY_VALID(pUnit->xCapabilities[i]))
 		{
-
+			pUnit->xCapabilities[i] = Capability;
+			return true;
 		}
 	}
+	return false;
 }
 
