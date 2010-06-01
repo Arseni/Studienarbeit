@@ -115,3 +115,9 @@ tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, cons
 {
 	return true;
 }
+
+/**
+ * Es muss noch eine Funktion gebaut werden, die als Callback fungiert für neue jobs
+ * Die kann dann co-routines erstellen und löschen für periodische Jobs
+ * das wars erstmal...
+ */
