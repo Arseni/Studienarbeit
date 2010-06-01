@@ -34,7 +34,7 @@ static void buttonArrowsPressed(unsigned char ucPins)
 {
 	tButton btnPressed = ucPins & BUTTON_ARROW_PINS;
 	if(btnPressed)
-		xQueueSend(xButtonQueue, &btnPressed, portMAX_DELAY);
+		xQueueSendFromISR(xButtonQueue, &btnPressed, portMAX_DELAY);
 }
 static void buttonSelPressed(unsigned char ucPins)
 {
@@ -42,7 +42,7 @@ static void buttonSelPressed(unsigned char ucPins)
 	if(btnPressed)
 	{
 		btnPressed = BUTTON_SEL;
-		xQueueSend(xButtonQueue, &btnPressed, portMAX_DELAY);
+		xQueueSendFromISR(xButtonQueue, &btnPressed, portMAX_DELAY);
 	}
 }
 
@@ -87,19 +87,38 @@ void vButtonTask(void * pvParameters)
 {
 	tButton btnPressed;
 	xOLEDMessage msg;
+	int i;
+
 	Init();
 	xButtonQueue = xQueueCreate( BUTTON_QUEUE_SIZE, sizeof( tButton ) );
 	for(;;)
 	{
 		xQueueReceive( xButtonQueue, &btnPressed, portMAX_DELAY );
+		for(i=0; i<BUTTON_MAX_CALLBACKS; i++)
+		{
+			if(callbackCollection[i] != NULL)
+				callbackCollection[i](btnPressed);
+		}
 		sprintf(msg.pcMessage, "btn: %04X", btnPressed);
 		xQueueSend( xOLEDQueue, &msg, portMAX_DELAY);
 	}
 }
 
-tBoolean xButtonRegisterCallback(tButtonCallback btnCb)
+tBoolean bButtonRegisterCallback(tButtonCallback btnCb)
 {
+	int i=0;
+
 	Init();
+
+	for(i=0; i<BUTTON_MAX_CALLBACKS; i++)
+	{
+		if(callbackCollection[i] == NULL)
+		{
+			callbackCollection[i] = btnCb;
+			return true;
+		}
+	}
+	return false;
 }
 
 tButton xButtonIsPressed(void)

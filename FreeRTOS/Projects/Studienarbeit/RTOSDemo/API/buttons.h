@@ -2,6 +2,8 @@
 #ifndef BUTTONS_H
 #define BUTTONS_H
 
+#include "hw_types.h"
+
 #define BUTTON_QUEUE_SIZE	10
 
 typedef enum
@@ -15,6 +17,8 @@ typedef enum
 }tButton;
 
 typedef void (* tButtonCallback) (tButton btn);
+
+tBoolean bButtonRegisterCallback(tButtonCallback btnCb);
 
 tButton xButtonIsPressed(void);
 void vButtonTask(void * pvParameters);

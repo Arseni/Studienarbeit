@@ -26,10 +26,10 @@ static void Initialize(void)
 }
 
 
-tUnit * unitCreate(char * Name)
+tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived)
 {
 	int i;
-	tUnit * ret;
+	tUnit * ret = NULL;
 
 	Initialize();
 
@@ -50,14 +50,18 @@ tUnit * unitCreate(char * Name)
 		}
 	}
 
-	// initial setup
-	memset(ret, 0, sizeof(tUnit));
-	strcpy(ret->Name, Name);
-
+	// found free slot
+	if(ret != NULL)
+	{
+		// initial setup
+		memset(ret, 0, sizeof(tUnit));
+		strcpy(ret->Name, Name);
+		ret->vNewJob = JobReceived;
+	}
 	return ret;
 }
 
-tBoolean unitUnlink(tUnit * pUnit)
+tBoolean xUnitUnlink(tUnit * pUnit)
 {
 	int i;
 
@@ -75,7 +79,11 @@ tBoolean unitUnlink(tUnit * pUnit)
 	return true;
 }
 
-tBoolean unitAddCapability(tUnit * pUnit, tUnitCapability Capability)
+
+/**
+ * TODO: funktioniert das wirklich so? ich mein mit capability = capability
+ */
+tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 {
 	int i;
 
@@ -100,3 +108,10 @@ tBoolean unitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 	return false;
 }
 
+/**
+ * TODO: Not yet implemented
+ */
+tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, const tUnitValue value)
+{
+	return true;
+}

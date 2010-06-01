@@ -11,6 +11,7 @@
 /* Library includes. */
 #include "hw_types.h"
 #include "uip.h"
+#include <string.h>
 
 typedef enum
 {
@@ -33,9 +34,11 @@ typedef struct
 }tUnitCapability;
 
 #define UNIT_CAPABILITY_VALID(X) (strlen(X.Type)>0?true:false)
+#define UNIT_CAPABILITIES_CMP(X,Y) (strcmp(X.Type, Y.Type))
 
 typedef struct
 {
+	tUnitCapability xCapability;
 	uip_ipaddr_t xSrcAddr;
 	u16_t uSrcPort;
 	uip_ipaddr_t xDstAddr;
@@ -47,6 +50,11 @@ typedef struct
 	unsigned int uDt;
 }tUnitJob;
 
+typedef struct
+{
+	char Text[UNIT_MIDDLE_STRING];
+}tUnitValue;
+
 typedef void (* tcbUnitNewJob) (tUnitJob xNewJob);
 
 typedef struct
@@ -57,5 +65,10 @@ typedef struct
 	tUnitCapability xCapabilities[UNIT_MAX_CAPABILITIES];
 	tcbUnitNewJob vNewJob;
 }tUnit;
+
+tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);
+tBoolean xUnitUnlink(tUnit * pUnit);
+tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
+tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, tUnitValue value);
 
 #endif

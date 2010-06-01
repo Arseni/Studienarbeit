@@ -25,8 +25,26 @@ static void Dump (struct muXMLTreeElement *p, int Indent)
   }
 }
 
+typedef struct
+{
+enum eType
+{
+	NONE			= (0),
+	BUTTON_DRIVER 	= (1<<0),
+	JOB_HANDLER 	= (1<<1)
+}eType;
+union xValue
+{
+	char xButton[50];
+	int xCapability[20];
+}xValue;
+}tBtnUnitQueueItem;
+
 int main ()
 {
+
+	tBtnUnitQueueItem test;
+
   int Usage;
   struct muXMLTree *p;
   unsigned char Data[2048];
