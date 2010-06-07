@@ -121,3 +121,9 @@ tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, cons
  * Die kann dann co-routines erstellen und löschen für periodische Jobs
  * das wars erstmal...
  */
+void vUnitJobExtract(unsigned char * pData, unsigned int uDataLen)
+{
+	tUnitJob xJob;
+
+	// TODO: xJob = blblaextract();
+}

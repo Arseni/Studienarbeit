@@ -8,16 +8,16 @@
 </perspectiveBar>
 <coolbarLayout locked="0">
 <coolItem id="group.file" itemType="typeGroupMarker"/>
-<coolItem id="org.eclipse.ui.workbench.file" itemType="typeToolBarContribution" x="129" y="22"/>
+<coolItem id="org.eclipse.ui.workbench.file" itemType="typeToolBarContribution" x="130" y="22"/>
 <coolItem id="additions" itemType="typeGroupMarker"/>
-<coolItem id="org.eclipse.cdt.ui.CElementCreationActionSet" itemType="typeToolBarContribution" x="160" y="22"/>
-<coolItem id="org.eclipse.cdt.ui.buildConfigActionSet" itemType="typeToolBarContribution" x="86" y="22"/>
-<coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="124" y="22"/>
-<coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="98" y="22"/>
-<coolItem id="org.eclipse.ui.WorkingSetActionSet" itemType="typeToolBarContribution" x="52" y="22"/>
-<coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="108" y="22"/>
+<coolItem id="org.eclipse.cdt.ui.CElementCreationActionSet" itemType="typeToolBarContribution" x="167" y="22"/>
+<coolItem id="org.eclipse.cdt.ui.buildConfigActionSet" itemType="typeToolBarContribution" x="89" y="22"/>
+<coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="129" y="22"/>
+<coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="99" y="22"/>
+<coolItem id="org.eclipse.ui.WorkingSetActionSet" itemType="typeToolBarContribution" x="53" y="22"/>
+<coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="107" y="22"/>
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
-<coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="183" y="22"/>
+<coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="190" y="22"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="org.eclipse.cdt.ui.editor.CEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
@@ -27,58 +27,34 @@
 </coolbarLayout>
 <page aggregateWorkingSetId="Aggregate for window 1188147282312" focus="true" label="Workspace - C/C++">
 <editors>
-<editorArea activeWorkbook="DefaultEditorWorkbook">
-<info part="DefaultEditorWorkbook">
+<editorArea activeWorkbook="org.eclipse.ui.internal.EditorStack@a4a89a">
+<info part="org.eclipse.ui.internal.EditorStack@a4a89a">
 <folder appearance="1" expanded="2">
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
 <part id="1"/>
-<part id="2"/>
-<part id="3"/>
-<part id="4"/>
-<part id="5"/>
-<part id="6"/>
-<part id="7"/>
-<part id="8"/>
+</presentation>
+</folder>
+</info>
+<info part="org.eclipse.ui.internal.EditorStack@ab5443" ratio="0.58111703" ratioLeft="437" ratioRight="315" relationship="4" relative="org.eclipse.ui.internal.EditorStack@a4a89a">
+<folder appearance="1" expanded="2">
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="buttonsUnit.c" partName="buttonsUnit.c" path="C:/TUHH/Studienarbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/units/buttonsUnit.c" title="buttonsUnit.c" tooltip="RTOSDemo/units/buttonsUnit.c" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/units/buttonsUnit.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2189" selectionTopPixel="1163"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="unit.h" partName="unit.h" path="C:/TUHH/Studienarbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/units/unit.h" title="unit.h" tooltip="RTOSDemo/units/unit.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/units/unit.h"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="887" selectionTopPixel="170"/>
-</editor>
-<editor activePart="true" focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="unit.c" partName="unit.c" path="C:/TUHH/Studienarbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/units/unit.c" title="unit.c" tooltip="RTOSDemo/units/unit.c" workbook="DefaultEditorWorkbook">
+<editor activePart="true" focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="unit.c" partName="unit.c" path="C:/TUHH/Studienarbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/units/unit.c" title="unit.c" tooltip="RTOSDemo/units/unit.c" workbook="org.eclipse.ui.internal.EditorStack@a4a89a">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/units/unit.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2364" selectionTopPixel="1299"/>
+<editorState selectionHorizontalPixel="0" selectionLength="8" selectionOffset="2445" selectionTopPixel="1679"/>
 </editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="portmacro.h" partName="portmacro.h" path="C:/TUHH/Studienarbeit/freeRTOS/Source/portable/GCC/ARM_CM3/portmacro.h" title="portmacro.h" tooltip="RTOSDemo/FreeRTOS.org Source/portable/GCC/ARM_CM3/portmacro.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/FreeRTOS.org Source/portable/GCC/ARM_CM3/portmacro.h"/>
-<editorState selectionHorizontalPixel="0" selectionLength="16" selectionOffset="4148" selectionTopPixel="425"/>
+<editor id="org.eclipse.cdt.ui.editor.CEditor" name="unit.h" partName="unit.h" path="C:/TUHH/Studienarbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/units/unit.h" title="unit.h" tooltip="RTOSDemo/units/unit.h" workbook="org.eclipse.ui.internal.EditorStack@a4a89a">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/units/unit.h"/>
+<editorState selectionHorizontalPixel="0" selectionLength="8" selectionOffset="987" selectionTopPixel="404"/>
 </editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="buttonsUnit.h" partName="buttonsUnit.h" path="C:/TUHH/Studienarbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/units/buttonsUnit.h" title="buttonsUnit.h" tooltip="RTOSDemo/units/buttonsUnit.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/units/buttonsUnit.h"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="102" selectionTopPixel="0"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="buttons.c" partName="buttons.c" path="C:/TUHH/Studienarbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/API/buttons.c" title="buttons.c" tooltip="RTOSDemo/API/buttons.c" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/API/buttons.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="981" selectionTopPixel="255"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="queue.h" partName="queue.h" path="C:/TUHH/Studienarbeit/freeRTOS/Source/include/queue.h" title="queue.h" tooltip="RTOSDemo/FreeRTOS.org Source/include/queue.h" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/FreeRTOS.org Source/include/queue.h"/>
-<editorState selectionHorizontalPixel="0" selectionLength="10" selectionOffset="13272" selectionTopPixel="5355"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="timer.c" partName="timer.c" path="C:/TUHH/Studienarbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/Drivers/timer.c" title="timer.c" tooltip="RTOSDemo/Drivers/timer.c" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/Drivers/timer.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="85" selectionTopPixel="4182"/>
-</editor>
-<editor id="org.eclipse.cdt.ui.editor.CEditor" name="main.c" partName="main.c" path="C:/TUHH/Studienarbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/main.c" title="main.c" tooltip="RTOSDemo/main.c" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/main.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="8156" selectionTopPixel="2142"/>
+<editor focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="croutine.h" partName="croutine.h" path="C:/TUHH/Studienarbeit/freeRTOS/Source/include/croutine.h" title="croutine.h" tooltip="RTOSDemo/FreeRTOS.org Source/include/croutine.h" workbook="org.eclipse.ui.internal.EditorStack@ab5443">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/RTOSDemo/FreeRTOS.org Source/include/croutine.h"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="6639" selectionTopPixel="0"/>
 </editor>
 </editors>
 <views>
@@ -196,15 +172,20 @@
 <new_wizard_action id="org.eclipse.cdt.ui.wizards.NewClassCreationWizard"/>
 <perspective_action id="org.eclipse.debug.ui.DebugPerspective"/>
 <perspective_action id="org.eclipse.team.ui.TeamSynchronizingPerspective"/>
-<view id="org.eclipse.ui.views.ProblemView"/>
-<view id="org.eclipse.ui.views.TaskList"/>
-<view id="org.eclipse.ui.console.ConsoleView"/>
-<view id="org.eclipse.ui.views.PropertySheet"/>
-<view id="org.eclipse.search.ui.views.SearchView"/>
-<view id="org.eclipse.debug.ui.DebugView"/>
 <view id="org.eclipse.ui.navigator.ProjectExplorer"/>
 <view id="org.eclipse.ui.views.ResourceNavigator"/>
-<fastViewBars/>
+<fastViewBars>
+<fastViewBar fastViewLocation="1024" id="bottom" orientation="256" selectedTabId="org.eclipse.ui.views.ProblemView" style="0">
+<fastViews>
+<view id="org.eclipse.ui.views.ProblemView" ratio="0.3"/>
+<view id="org.eclipse.ui.views.TaskList" ratio="0.3"/>
+<view id="org.eclipse.ui.console.ConsoleView" ratio="0.3"/>
+<view id="org.eclipse.ui.views.PropertySheet" ratio="0.3"/>
+<view id="org.eclipse.search.ui.views.SearchView" ratio="0.3"/>
+<view id="org.eclipse.debug.ui.DebugView" ratio="0.3"/>
+</fastViews>
+</fastViewBar>
+</fastViewBars>
 <layout>
 <mainWindow>
 <info folder="true" part="topLeft">
@@ -228,21 +209,14 @@
 </info>
 <info part="org.eclipse.ui.editorss" ratio="0.19510439" ratioLeft="271" ratioRight="1118" relationship="2" relative="topLeft"/>
 <info folder="true" part="bottom" ratio="0.82929516" ratioLeft="753" ratioRight="155" relationship="4" relative="org.eclipse.ui.editorss">
-<folder activePageID="org.eclipse.ui.views.ProblemView" appearance="2" expanded="2">
-<page content="org.eclipse.ui.views.ProblemView" label="Problems"/>
-<page content="org.eclipse.ui.views.TaskList" label="Tasks"/>
-<page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
-<page content="org.eclipse.ui.views.PropertySheet" label="Properties"/>
-<page content="org.eclipse.search.ui.views.SearchView" label="Search"/>
-<page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
-<part id="0"/>
-<part id="1"/>
-<part id="2"/>
-<part id="3"/>
-<part id="4"/>
-<part id="5"/>
-</presentation>
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.ProblemView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.TaskList" label="LabelNotFound"/>
+<page content="org.eclipse.ui.console.ConsoleView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.PropertySheet" label="LabelNotFound"/>
+<page content="org.eclipse.search.ui.views.SearchView" label="LabelNotFound"/>
+<page content="org.eclipse.debug.ui.DebugView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 <info folder="true" part="topRight" ratio="0.75" ratioLeft="567" ratioRight="189" relationship="2" relative="org.eclipse.ui.editorss">
@@ -352,7 +326,6 @@
 <navigationHistory>
 <editors>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/units/buttonsUnit.c"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/units/unit.h"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/units/unit.c"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/FreeRTOS.org Source/portable/GCC/ARM_CM3/portmacro.h"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/units/buttonsUnit.h"/>
@@ -361,41 +334,16 @@
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/Drivers/timer.c"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/main.c"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/units/unit.h"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/API/buttons.c"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/main.c"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/FreeRTOS.org Source/include/croutine.h"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/units/unit.c"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/RTOSDemo/units/unit.h"/>
 </editors>
-<item historyLabel="buttonsUnit.c" index="0">
-<position info="not_deleted" x="1736" y="0"/>
-</item>
-<item historyLabel="buttonsUnit.c" index="0">
-<position info="not_deleted" x="1801" y="0"/>
-</item>
-<item historyLabel="buttonsUnit.c" index="0">
-<position info="not_deleted" x="1175" y="0"/>
-</item>
-<item historyLabel="unit.h" index="1">
-<position info="not_deleted" x="1485" y="94"/>
-</item>
-<item historyLabel="unit.c" index="2">
-<position info="not_deleted" x="2174" y="0"/>
-</item>
-<item historyLabel="buttonsUnit.c" index="0">
-<position info="not_deleted" x="2023" y="0"/>
-</item>
-<item historyLabel="unit.c" index="2">
-<position info="not_deleted" x="2146" y="0"/>
-</item>
-<item historyLabel="unit.h" index="1">
-<position info="not_deleted" x="887" y="0"/>
-</item>
-<item historyLabel="buttonsUnit.c" index="0">
-<position info="not_deleted" x="2023" y="0"/>
-</item>
-<item historyLabel="buttonsUnit.c" index="0">
-<position info="not_deleted" x="2076" y="0"/>
-</item>
 <item historyLabel="buttonsUnit.c" index="0">
 <position/>
 </item>
-<item historyLabel="portmacro.h" index="3">
+<item historyLabel="portmacro.h" index="2">
 <position info="not_deleted" x="4148" y="16"/>
 </item>
 <item historyLabel="buttonsUnit.c" index="0">
@@ -404,7 +352,7 @@
 <item historyLabel="buttonsUnit.c" index="0">
 <position info="not_deleted" x="842" y="22"/>
 </item>
-<item historyLabel="buttonsUnit.h" index="4">
+<item historyLabel="buttonsUnit.h" index="3">
 <position info="not_deleted" x="102" y="0"/>
 </item>
 <item historyLabel="buttonsUnit.c" index="0">
@@ -446,7 +394,7 @@
 <item historyLabel="buttonsUnit.c" index="0">
 <position info="not_deleted" x="1349" y="0"/>
 </item>
-<item historyLabel="buttons.c" index="5">
+<item historyLabel="buttons.c" index="4">
 <position info="not_deleted" x="981" y="0"/>
 </item>
 <item historyLabel="buttonsUnit.c" index="0">
@@ -464,13 +412,13 @@
 <item historyLabel="buttonsUnit.c" index="0">
 <position info="not_deleted" x="1315" y="0"/>
 </item>
-<item historyLabel="queue.h" index="6">
+<item historyLabel="queue.h" index="5">
 <position info="not_deleted" x="13272" y="10"/>
 </item>
 <item historyLabel="buttonsUnit.c" index="0">
 <position info="not_deleted" x="1315" y="0"/>
 </item>
-<item historyLabel="queue.h" index="6">
+<item historyLabel="queue.h" index="5">
 <position info="not_deleted" x="13272" y="10"/>
 </item>
 <item historyLabel="buttonsUnit.c" index="0">
@@ -494,23 +442,51 @@
 <item historyLabel="buttonsUnit.c" index="0">
 <position info="not_deleted" x="2189" y="0"/>
 </item>
-<item historyLabel="unit.c" index="2">
+<item historyLabel="unit.c" index="1">
 <position info="not_deleted" x="2146" y="0"/>
 </item>
-<item historyLabel="timer.c" index="7">
+<item historyLabel="timer.c" index="6">
 <position info="not_deleted" x="85" y="0"/>
 </item>
-<item historyLabel="main.c" index="8">
+<item historyLabel="main.c" index="7">
 <position info="not_deleted" x="8156" y="0"/>
 </item>
-<item historyLabel="unit.c" index="2">
+<item historyLabel="unit.c" index="1">
 <position info="not_deleted" x="562" y="0"/>
 </item>
-<item historyLabel="unit.h" index="9">
+<item historyLabel="unit.h" index="8">
 <position info="not_deleted" x="887" y="0"/>
 </item>
-<item active="true" historyLabel="unit.c" index="2">
+<item historyLabel="unit.c" index="1">
 <position info="not_deleted" x="562" y="0"/>
+</item>
+<item historyLabel="buttons.c" index="9"/>
+<item historyLabel="main.c" index="10">
+<position info="not_deleted" x="4" y="0"/>
+</item>
+<item historyLabel="croutine.h" index="11">
+<position info="not_deleted" x="6639" y="0"/>
+</item>
+<item historyLabel="main.c" index="10">
+<position info="not_deleted" x="3430" y="0"/>
+</item>
+<item historyLabel="croutine.h" index="11">
+<position info="not_deleted" x="6639" y="0"/>
+</item>
+<item historyLabel="unit.c" index="12">
+<position info="not_deleted" x="0" y="0"/>
+</item>
+<item historyLabel="croutine.h" index="11">
+<position info="not_deleted" x="6639" y="0"/>
+</item>
+<item historyLabel="unit.c" index="12">
+<position info="not_deleted" x="341" y="0"/>
+</item>
+<item historyLabel="unit.h" index="13">
+<position info="not_deleted" x="987" y="8"/>
+</item>
+<item active="true" historyLabel="unit.c" index="12">
+<position info="not_deleted" x="2445" y="8"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -525,10 +501,20 @@
 <trimItem IMemento.internal.id="org.eclise.ui.internal.FastViewBar"/>
 <trimItem IMemento.internal.id="org.eclipse.jface.action.StatusLineManager"/>
 <trimItem IMemento.internal.id="org.eclipse.ui.internal.progress.ProgressRegion"/>
+<trimItem IMemento.internal.id="bottom"/>
 </trimArea>
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="unit.h" tooltip="RTOSDemo/units/unit.h">
+<persistable path="/RTOSDemo/units/unit.h"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="unit.c" tooltip="RTOSDemo/units/unit.c">
+<persistable path="/RTOSDemo/units/unit.c"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="croutine.h" tooltip="RTOSDemo/FreeRTOS.org Source/include/croutine.h">
+<persistable path="/RTOSDemo/FreeRTOS.org Source/include/croutine.h"/>
+</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="main.c" tooltip="RTOSDemo/main.c">
 <persistable path="/RTOSDemo/main.c"/>
 </file>
@@ -547,12 +533,6 @@
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="portmacro.h" tooltip="RTOSDemo/FreeRTOS.org Source/portable/GCC/ARM_CM3/portmacro.h">
 <persistable path="/RTOSDemo/FreeRTOS.org Source/portable/GCC/ARM_CM3/portmacro.h"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="unit.c" tooltip="RTOSDemo/units/unit.c">
-<persistable path="/RTOSDemo/units/unit.c"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="unit.h" tooltip="RTOSDemo/units/unit.h">
-<persistable path="/RTOSDemo/units/unit.h"/>
-</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="buttonsUnit.c" tooltip="RTOSDemo/units/buttonsUnit.c">
 <persistable path="/RTOSDemo/units/buttonsUnit.c"/>
 </file>
@@ -570,9 +550,6 @@
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="muXML.h" tooltip="RTOSDemo/muXML/muXML.h">
 <persistable path="/RTOSDemo/muXML/muXML.h"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" name="muXML.c" tooltip="RTOSDemo/muXML/muXML.c">
-<persistable path="/RTOSDemo/muXML/muXML.c"/>
 </file>
 </mruList>
 </workbench>
