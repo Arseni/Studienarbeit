@@ -1,3 +1,7 @@
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "croutine.h"
+
 #include "unit.h"
 #include <string.h>
 
@@ -7,7 +11,17 @@ struct tUnitHandler
 	tUnit xUnit;
 	tBoolean bInUse;
 };
+
+struct tUnitJobHandler
+{
+	tUnitJob xJob;
+	xQueueHandle xResponseQueue;
+	int SeqNum;
+	int SecIntervall;
+};
+
 static struct tUnitHandler xUnits[UNIT_MAX_GLOBAL_UNITS];
+static struct tUnitJobHandler xJobs[UNIT_MAX_GLOBAL_JOBS_PARALLEL];
 
 static void Initialize(void)
 {
@@ -109,7 +123,7 @@ tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 }
 
 /**
- * TODO: Not yet implemented
+ * TODO: Not yet implemented, sollte aber sowas wie ein enqueue sein
  */
 tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, const tUnitValue value)
 {
@@ -123,7 +137,34 @@ tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, cons
  */
 void vUnitJobExtract(unsigned char * pData, unsigned int uDataLen)
 {
+	int i;
 	tUnitJob xJob;
 
 	// TODO: xJob = blblaextract();
+
+	// if(job == one shot)
+	// create coroutine mit nem freien xjobhandler slot
+	// if(job == cyclic)
+	// prüfe ob so einer existiert und passe ihn an, wenn nicht dann erstellen
+	// if(job == schliessen)
+	// suche den job und schließe ihn
+
+}
+
+void vJobHandlerCoRoutine( xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex )
+{
+	// Variables in co-routines must be declared static if they must maintain value across a blocking call.
+	// This may not be necessary for const variables.
+
+	// Must start every co-routine with a call to crSTART();
+    crSTART( xHandle );
+
+	// handle the job
+    do
+    {
+        crDELAY( xHandle, xJobs[uxIndex].SecIntervall * 1000 / portTICK_RATE_MS);
+    }while(xJobs[uxIndex].SecIntervall);
+
+    // Must end every co-routine with a call to crEND();
+    crEND();
 }

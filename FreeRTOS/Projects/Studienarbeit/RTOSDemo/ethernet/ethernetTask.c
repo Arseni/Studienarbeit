@@ -178,7 +178,9 @@ void vEthernetTask( void *pvParameters )
     }
 	prvSetMACAddress();	
 	
-
+	/* TODO: unit state machine
+	 *  ie init: cyclic broadcast, etc ...
+	 */
 	for( ;; )
 	{
 		/* Is there received data ready to be processed? */

@@ -5,8 +5,9 @@
 #define UNIT_MIDDLE_STRING	20
 #define UNIT_LONG_STRING		50
 
-#define UNIT_MAX_CAPABILITIES	5
-#define UNIT_MAX_GLOBAL_UNITS	5
+#define UNIT_MAX_CAPABILITIES			5
+#define UNIT_MAX_GLOBAL_UNITS			5
+#define UNIT_MAX_GLOBAL_JOBS_PARALLEL	10
 
 /* Library includes. */
 #include "hw_types.h"
@@ -38,6 +39,7 @@ typedef struct
 
 typedef struct
 {
+	char unitName[UNIT_MIDDLE_STRING];
 	tUnitCapability xCapability;
 	uip_ipaddr_t xSrcAddr;
 	u16_t uSrcPort;

@@ -1,4 +1,7 @@
 
+#include "freertos.h"
+#include "task.h"
+
 /* Library includes. */
 #include "hw_types.h"
 #include "gpio.h"
@@ -32,17 +35,36 @@ static xQueueHandle xButtonQueue;
 
 static void buttonArrowsPressed(unsigned char ucPins)
 {
+	// We have not woken a task at the start of the ISR.
+	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 	tButton btnPressed = ucPins & BUTTON_ARROW_PINS;
+
 	if(btnPressed)
-		xQueueSendFromISR(xButtonQueue, &btnPressed, portMAX_DELAY);
+		xQueueSendFromISR(xButtonQueue, &btnPressed, &xHigherPriorityTaskWoken);
+
+	// Now the buffer is empty we can switch context if necessary.
+	if( xHigherPriorityTaskWoken )
+	{
+		// Actual macro used here is port specific.
+		taskYIELD();
+	}
 }
 static void buttonSelPressed(unsigned char ucPins)
 {
+	// We have not woken a task at the start of the ISR.
+	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 	tButton btnPressed = ucPins & BUTTON_SEL_PIN;
 	if(btnPressed)
 	{
 		btnPressed = BUTTON_SEL;
-		xQueueSendFromISR(xButtonQueue, &btnPressed, portMAX_DELAY);
+		xQueueSendFromISR(xButtonQueue, &btnPressed, &xHigherPriorityTaskWoken);
+	}
+
+	// Now the buffer is empty we can switch context if necessary.
+	if( xHigherPriorityTaskWoken )
+	{
+		// Actual macro used here is port specific.
+		taskYIELD();
 	}
 }
 
