@@ -1,6 +1,9 @@
 /* Scheduler includes. */
 #include "FreeRTOS.h"
 #include "queue.h"
+#include "croutine.h"
+
+#include "OLEDDisplay/oledDisplay.h"
 
 #include "buttonsUnit.h"
 #include "buttons.h"
@@ -24,7 +27,7 @@ union xValue
 }xValue;
 }tBtnUnitQueueItem;
 
-static xQueueHandle xQueue;
+static xQueueHandle xQueue = NULL;
 static tUnit * xBtnUnit;
 
 void vBtnUnitTask(void * pvParameters)
@@ -51,9 +54,11 @@ void vBtnUnitTask(void * pvParameters)
 			switch(xQueueItem.eType)
 			{
 			case BUTTON:
+				vOledDbg1("Button: ", xQueueItem.xValue.xButton);
 				// a button has been pressed... do something
 				break;
 			case JOB:
+				vOledDbg("Job");
 				// a job arrived, handle it
 				break;
 			}
@@ -67,13 +72,12 @@ static void vButtonPress(tButton button)
 	item.eType = BUTTON;
 	item.xValue.xButton = button;
 
-	xQueueSend(xQueue, &item, portMAX_DELAY);
+	if(xQueue != NULL)
+		xQueueSend(xQueue, &item, portMAX_DELAY);
 }
 
 /**
- * This is a callback function to deal with an incomong job
- * It will run in a foreign task so make sure to sync the job
- * if you want to deal with it in your unit task
+ * Use this function to validate, format and enqueue the Job only!
  */
 static void vBtnUnitNewJob(tUnitJob Job)
 {
@@ -94,16 +98,13 @@ static void vBtnUnitNewJob(tUnitJob Job)
 	return;
 
 	parameters_valid:
-	// assert protocol frame
-	// TODO : uhm check if ack is even valid !?
-	if(Job.bAck)
-	{
-		bUnitSend(xBtnUnit, pxDstCapability, (tUnitValue){"ACK"});
-	}
 
-	// queue job
+	// format
 	item.eType = JOB;
 	item.xValue.xJob = Job;
-	xQueueSend(xQueue, &item, portMAX_DELAY);
+
+	// enqueue
+	if(xQueue != NULL)
+		xQueueSend(xQueue, &item, portMAX_DELAY);
 
 }

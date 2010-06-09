@@ -72,5 +72,6 @@ tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);
 tBoolean xUnitUnlink(tUnit * pUnit);
 tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
 tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, tUnitValue value);
+void vUnitJobExtract(unsigned char * pData, unsigned int uDataLen);
 
 #endif

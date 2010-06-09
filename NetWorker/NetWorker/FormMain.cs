@@ -20,7 +20,7 @@ namespace NetWorker
         private void button1_Click(object sender, EventArgs e)
         {
             TcpClient client = new TcpClient();
-            client.Connect("192.168.0.13", 1100);
+            client.Connect("192.168.10.227", 1100);
 
             client.Close();
         }
@@ -28,8 +28,8 @@ namespace NetWorker
         private void button2_Click(object sender, EventArgs e)
         {
             UdpClient client = new UdpClient();
-            client.Connect("192.168.0.13", 1101);
-            client.Send(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, 10);
+            client.Connect("192.168.10.227", 1101);
+            client.Send(ASCIIEncoding.Default.GetBytes("Buttons\0"), 8);
             client.Close();
         }
     }

@@ -3,6 +3,8 @@
 #include "udpHandler.h"
 #include "uip.h"
 
+#include "units/unit.h"
+
 #include <string.h>
 
 #ifndef NULL
@@ -21,7 +23,8 @@ udpHandler_appcall(void)
 {
 	if(uip_newdata())
 	{
-		vOledDbg1("UDP: port ", HTONS(uip_udp_conn->rport));
+		//vOledDbg1("UDP: port ", HTONS(uip_udp_conn->rport));
+		vUnitJobExtract(uip_appdata, uip_datalen());
 	}
 	if(uip_udp_conn->rport == HTONS(1001)) {
 		if(uip_poll()) {
@@ -44,7 +47,7 @@ udpHandler_init(void)
 	uip_ipaddr_t addr;
 	struct uip_udp_conn *c;
 
-	uip_ipaddr(&addr, 192,168,0,199);
+	uip_ipaddr(&addr, 192,168,10,222); //0,0,0,0);
 	c = uip_udp_new(&addr, HTONS(0));
 
 	if(c != NULL) {

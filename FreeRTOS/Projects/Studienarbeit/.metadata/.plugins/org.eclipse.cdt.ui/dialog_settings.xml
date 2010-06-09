@@ -10,6 +10,9 @@
 		<item value="227191" key="searchFlags"/>
 		<item value="false" key="caseSensitive"/>
 		<list key="previousPatterns">
+			<item value="ButtonState"/>
+			<item value="UIP_UDP_APPCALL"/>
+			<item value="udpHandler_appcall"/>
 			<item value="FALSE"/>
 			<item value="*uint16_t*"/>
 			<item value="uint16_t"/>

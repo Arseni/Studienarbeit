@@ -121,8 +121,6 @@ void vButtonTask(void * pvParameters)
 			if(callbackCollection[i] != NULL)
 				callbackCollection[i](btnPressed);
 		}
-		sprintf(msg.pcMessage, "btn: %04X", btnPressed);
-		xQueueSend( xOLEDQueue, &msg, portMAX_DELAY);
 	}
 }
 

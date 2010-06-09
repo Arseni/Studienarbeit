@@ -95,7 +95,7 @@ tBoolean xUnitUnlink(tUnit * pUnit)
 
 
 /**
- * TODO: funktioniert das wirklich so? ich mein mit capability = capability
+ *
  */
 tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 {
@@ -115,7 +115,8 @@ tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 	{
 		if(!UNIT_CAPABILITY_VALID(pUnit->xCapabilities[i]))
 		{
-			pUnit->xCapabilities[i] = Capability;
+			memcpy(pUnit->xCapabilities[i].Type, Capability.Type, sizeof(Capability.Type));
+			pUnit->xCapabilities[i].pxDependancy = Capability.pxDependancy;
 			return true;
 		}
 	}
@@ -131,7 +132,7 @@ tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, cons
 }
 
 /**
- * Es muss noch eine Funktion gebaut werden, die als Callback fungiert für neue jobs
+ * Es muss noch eine Funktion gebaut werden, die fungiert für neue jobs
  * Die kann dann co-routines erstellen und löschen für periodische Jobs
  * das wars erstmal...
  */
@@ -140,6 +141,14 @@ void vUnitJobExtract(unsigned char * pData, unsigned int uDataLen)
 	int i;
 	tUnitJob xJob;
 
+	strcpy(xJob.unitName, pData);
+	strcpy(xJob.xCapability.Type, "ButtonState");
+
+	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
+	{
+		if(xUnits[i].bInUse && strcmp(xUnits[i].xUnit.Name, xJob.unitName) == 0)
+			xUnits[i].xUnit.vNewJob(xJob);
+	}
 	// TODO: xJob = blblaextract();
 
 	// if(job == one shot)
@@ -149,22 +158,4 @@ void vUnitJobExtract(unsigned char * pData, unsigned int uDataLen)
 	// if(job == schliessen)
 	// suche den job und schließe ihn
 
-}
-
-void vJobHandlerCoRoutine( xCoRoutineHandle xHandle, unsigned portBASE_TYPE uxIndex )
-{
-	// Variables in co-routines must be declared static if they must maintain value across a blocking call.
-	// This may not be necessary for const variables.
-
-	// Must start every co-routine with a call to crSTART();
-    crSTART( xHandle );
-
-	// handle the job
-    do
-    {
-        crDELAY( xHandle, xJobs[uxIndex].SecIntervall * 1000 / portTICK_RATE_MS);
-    }while(xJobs[uxIndex].SecIntervall);
-
-    // Must end every co-routine with a call to crEND();
-    crEND();
 }

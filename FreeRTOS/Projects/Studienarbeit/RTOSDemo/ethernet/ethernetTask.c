@@ -80,8 +80,8 @@
 /* IP address configuration. */
 #define uipIP_ADDR0		192
 #define uipIP_ADDR1		168
-#define uipIP_ADDR2		0 //10
-#define uipIP_ADDR3		13 //227
+#define uipIP_ADDR2		10 // 0
+#define uipIP_ADDR3		227 // 13
 
 /* How long to wait before attempting to connect the MAC again. */
 #define uipINIT_WAIT    100

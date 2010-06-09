@@ -6,4 +6,6 @@
  */
 #define BTN_UNIT_MAX_QUEUE_LEN	10
 
+void vBtnUnitTask(void * pvParameters);
+
 #endif
