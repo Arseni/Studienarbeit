@@ -22,15 +22,24 @@ struct tUnitJobHandler
 
 static struct tUnitHandler xUnits[UNIT_MAX_GLOBAL_UNITS];
 static struct tUnitJobHandler xJobs[UNIT_MAX_GLOBAL_JOBS_PARALLEL];
+static xQueueHandle xJobQueue = NULL;
+
+static tBoolean InitXmit()
+{
+	// send broadcast message
+	// receive answer
+	// check and return
+	return true;
+}
 
 static void Initialize(void)
 {
+	int i;
 	static tBoolean isInitialized = false;
 
 	if(isInitialized)
 		return;
 
-	int i;
 	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
 	{
 		xUnits[i].bInUse = false;
@@ -39,6 +48,31 @@ static void Initialize(void)
 	isInitialized = true;
 }
 
+void vUnitHandlerTask(void * pvParameters)
+{
+	int i;
+	tUnitJob xNewJob;
+	xJobQueue = xQueueCreate(UNIT_JOB_QUEUE_LENGTH, sizeof(tUnitJob));
+	while(!InitXmit())
+		vTaskDelay(INITIAL_BROADCAST_SEND_PERIOD / portTICK_RATE_MS);
+	for(;;)
+	{
+		// Task only runs if a new job has been received
+		if(xQueueReceive(xJobQueue, &xNewJob, portMAX_DELAY))
+		{
+			// Search corresponding unit and call its job handler
+			for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
+			{
+				// corresponding unit found
+				if(xUnits[i].bInUse && strcmp(xUnits[i].xUnit.Name, xNewJob.unitName) == 0)
+				{
+					xUnits[i].xUnit.vNewJob(xNewJob);
+					// TODO Handle handle handle
+				}
+			}
+		}
+	}
+}
 
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived)
 {
@@ -144,18 +178,7 @@ void vUnitJobExtract(unsigned char * pData, unsigned int uDataLen)
 	strcpy(xJob.unitName, pData);
 	strcpy(xJob.xCapability.Type, "ButtonState");
 
-	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
-	{
-		if(xUnits[i].bInUse && strcmp(xUnits[i].xUnit.Name, xJob.unitName) == 0)
-			xUnits[i].xUnit.vNewJob(xJob);
-	}
 	// TODO: xJob = blblaextract();
 
-	// if(job == one shot)
-	// create coroutine mit nem freien xjobhandler slot
-	// if(job == cyclic)
-	// prüfe ob so einer existiert und passe ihn an, wenn nicht dann erstellen
-	// if(job == schliessen)
-	// suche den job und schließe ihn
-
+	xQueueSend(xJobQueue, &xJob, UNIT_MAX_WAITTIME_ON_FULL_QUEUE/portTICK_RATE_MS );
 }

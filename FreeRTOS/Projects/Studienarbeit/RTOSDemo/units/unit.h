@@ -8,6 +8,9 @@
 #define UNIT_MAX_CAPABILITIES			5
 #define UNIT_MAX_GLOBAL_UNITS			5
 #define UNIT_MAX_GLOBAL_JOBS_PARALLEL	10
+#define UNIT_JOB_QUEUE_LENGTH			10
+#define UNIT_MAX_WAITTIME_ON_FULL_QUEUE 1000
+#define INITIAL_BROADCAST_SEND_PERIOD	1000
 
 /* Library includes. */
 #include "hw_types.h"
@@ -68,6 +71,7 @@ typedef struct
 	tcbUnitNewJob vNewJob;
 }tUnit;
 
+void vUnitHandlerTask(void * pvParameters);
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);
 tBoolean xUnitUnlink(tUnit * pUnit);
 tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
