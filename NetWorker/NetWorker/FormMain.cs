@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Net.Sockets;
+using System.Net;
 
 namespace NetWorker
 {
@@ -31,6 +32,16 @@ namespace NetWorker
             client.Connect("192.168.10.227", 1101);
             client.Send(ASCIIEncoding.Default.GetBytes("Buttons\0"), 8);
             client.Close();
+        }
+
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+  /*          UdpClient client = new UdpClient();
+            IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse("192.168.10.227"), 1101);
+            client.Connect(endPoint);
+
+            byte[] rx = client.Receive(ref endPoint);
+*/
         }
     }
 }

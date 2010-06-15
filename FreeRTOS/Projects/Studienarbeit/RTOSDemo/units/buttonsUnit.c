@@ -54,7 +54,7 @@ void vBtnUnitTask(void * pvParameters)
 			switch(xQueueItem.eType)
 			{
 			case BUTTON:
-				vOledDbg1("Button: ", xQueueItem.xValue.xButton);
+				vOledDbg1("Button", xQueueItem.xValue.xButton);
 				// a button has been pressed... do something
 				break;
 			case JOB:

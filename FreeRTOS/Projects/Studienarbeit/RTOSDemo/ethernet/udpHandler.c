@@ -21,19 +21,26 @@ static struct uip_udp_conn *resolv_conn = NULL;
 void
 udpHandler_appcall(void)
 {
+	if(uip_poll())
+	{
+		vUnitCheckUdpEntries();
+	}
 	if(uip_newdata())
 	{
 		//vOledDbg1("UDP: port ", HTONS(uip_udp_conn->rport));
-		vUnitJobExtract(uip_appdata, uip_datalen());
+		vUnitNewUdpData(uip_appdata, uip_datalen());
+		//vUnitJobExtract(uip_appdata, uip_datalen());
 	}
+	/*
 	if(uip_udp_conn->rport == HTONS(1001)) {
 		if(uip_poll()) {
-			//check_entries();
+			check_entries();
 		}
 		if(uip_newdata()) {
-			//newdata();
+			newdata();
 		}
 	}
+	*/
 }
 
 /*---------------------------------------------------------------------------*/
@@ -47,8 +54,8 @@ udpHandler_init(void)
 	uip_ipaddr_t addr;
 	struct uip_udp_conn *c;
 
-	uip_ipaddr(&addr, 192,168,10,222); //0,0,0,0);
-	c = uip_udp_new(&addr, HTONS(0));
+	uip_ipaddr(&addr, 0xFF,0xFF,0xFF,0xFF);// 192,168,10,222); //0,0,0,0);
+	c = uip_udp_new(&addr, HTONS(50001));
 
 	if(c != NULL) {
 		uip_udp_bind(c, HTONS(1101));

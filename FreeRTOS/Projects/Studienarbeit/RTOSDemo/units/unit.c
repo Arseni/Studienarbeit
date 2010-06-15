@@ -27,6 +27,10 @@ static xQueueHandle xJobQueue = NULL;
 static tBoolean InitXmit()
 {
 	// send broadcast message
+	strcpy(uip_appdata, "I am here...");
+	uip_udp_send(strlen("I am here...")+1);
+
+	return false;
 	// receive answer
 	// check and return
 	return true;
@@ -170,7 +174,7 @@ tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, cons
  * Die kann dann co-routines erstellen und löschen für periodische Jobs
  * das wars erstmal...
  */
-void vUnitJobExtract(unsigned char * pData, unsigned int uDataLen)
+void vUnitNewUdpData(unsigned char * pData, unsigned int uDataLen)
 {
 	int i;
 	tUnitJob xJob;
@@ -181,4 +185,10 @@ void vUnitJobExtract(unsigned char * pData, unsigned int uDataLen)
 	// TODO: xJob = blblaextract();
 
 	xQueueSend(xJobQueue, &xJob, UNIT_MAX_WAITTIME_ON_FULL_QUEUE/portTICK_RATE_MS );
+}
+
+void vUnitCheckUdpEntries(void)
+{
+	strcpy(uip_appdata, "Here I am...");
+	uip_udp_send(strlen("Here I am...")+1);
 }
