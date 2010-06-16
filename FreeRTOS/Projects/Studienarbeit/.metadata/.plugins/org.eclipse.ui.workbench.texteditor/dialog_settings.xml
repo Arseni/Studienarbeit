@@ -13,16 +13,16 @@
 		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="vCoRoutineAddToDelayedList" key="selection"/>
+		<item value="bUnitRead" key="selection"/>
 		<list key="findhistory">
+			<item value="bUnitRead"/>
+			<item value="xJobQueue"/>
+			<item value="udpHandler_init"/>
 			<item value="vCoRoutineAddToDelayedList"/>
 			<item value="callbackCollection"/>
 			<item value="managed"/>
 			<item value="welcome"/>
 			<item value="resolv_conf"/>
-			<item value="resolv_query"/>
-			<item value="newdata"/>
-			<item value="che"/>
 		</list>
 		<list key="replacehistory">
 			<item value="tCOMPort"/>

@@ -1,9 +1,12 @@
 #include "FreeRTOS.h"
 #include "queue.h"
+#include "semphr.h"
 #include "croutine.h"
 
 #include "unit.h"
 #include <string.h>
+
+#include "OLEDDisplay/oledDisplay.h"
 
 
 struct tUnitHandler
@@ -20,20 +23,55 @@ struct tUnitJobHandler
 	int SecIntervall;
 };
 
+
+
 static struct tUnitHandler xUnits[UNIT_MAX_GLOBAL_UNITS];
 static struct tUnitJobHandler xJobs[UNIT_MAX_GLOBAL_JOBS_PARALLEL];
-static xQueueHandle xJobQueue = NULL;
+static xQueueHandle xJobQueue = NULL, xRxQueue = NULL;
+static xSemaphoreHandle xSmphrDataPresent = NULL, xSmphrSendComplete = NULL;
+static unsigned char txBuffer[200];
+static unsigned int txBufferLen = 0;
+static tBoolean newTxData = false;
+static tBoolean syncRxFlag = false;
 
 static tBoolean InitXmit()
 {
-	// send broadcast message
-	strcpy(uip_appdata, "I am here...");
-	uip_udp_send(strlen("I am here...")+1);
+	static int uid=0;
+	int i, rxLen;
+	uip_ipaddr_t host;
+	struct tData sender;
 
+
+	uip_gethostaddr(host);
+
+	strcpy(txBuffer, "<epm uid=\"0\" ack=\"yes\" home=\"192.168.10.227:50001\">");
+	//sprintf(txBuffer, "<epm uid=\"%d\" ack=\"yes\" home=\"%d.%d.%d.%d:%d\">", uid, host[0]&0xFF, host[0]>>8, host[1]&0xFF, host[1]>>8, COMM_PORT);
+
+	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
+	{
+		if(xUnits[i].bInUse)
+		{
+			strcat(txBuffer, "<unit name=\"");
+			strcat(txBuffer, xUnits[i].xUnit.Name);
+			strcat(txBuffer, "\"/>");
+			//sprintf(txBuffer+strlen(txBuffer), "<unit name=\"%s\"/>", xUnits[i].xUnit.Name);
+		}
+	}
+	strcat(txBuffer, "</epm>");
+
+	bUnitSend(txBuffer, strlen(txBuffer));
+
+	bUnitRead(txBuffer, &sender, 1000);
+	// TODO auspacken und auf ack überprüfen
+	if(strcmp(txBuffer, "ack") == 0)
+	{
+		vOledDbg("connected");
+		//udpHandler_init(sender.sender[0]&0xFF, sender.sender[0]>>8, sender.sender[1]&0xFF, sender.sender[1]>>8, COMM_PORT, COMM_PORT);
+		return true;
+	}
+	uid++;
 	return false;
-	// receive answer
-	// check and return
-	return true;
+	//return true;
 }
 
 static void Initialize(void)
@@ -57,12 +95,16 @@ void vUnitHandlerTask(void * pvParameters)
 	int i;
 	tUnitJob xNewJob;
 	xJobQueue = xQueueCreate(UNIT_JOB_QUEUE_LENGTH, sizeof(tUnitJob));
+	xRxQueue = xQueueCreate(1, sizeof(struct tData));
+	vSemaphoreCreateBinary(xSmphrSendComplete);
+	xSemaphoreGive(xSmphrSendComplete);
+
 	while(!InitXmit())
 		vTaskDelay(INITIAL_BROADCAST_SEND_PERIOD / portTICK_RATE_MS);
 	for(;;)
 	{
 		// Task only runs if a new job has been received
-		if(xQueueReceive(xJobQueue, &xNewJob, portMAX_DELAY))
+		if(xJobQueue != NULL && xQueueReceive(xJobQueue, &xNewJob, portMAX_DELAY))
 		{
 			// Search corresponding unit and call its job handler
 			for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
@@ -162,33 +204,81 @@ tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 }
 
 /**
- * TODO: Not yet implemented, sollte aber sowas wie ein enqueue sein
+ * schickt Daten an buffer, der weiter an buffer und so weiter... am ende über UDP am Empfänger juhu
  */
-tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, const tUnitValue value)
+tBoolean bUnitSend(const unsigned char * data, int dataLen)//const tUnit * pUnit, const tUnitCapability * Capability, const tUnitValue value)
 {
-	return true;
+	if(xSmphrSendComplete != NULL)
+		xSemaphoreTake(xSmphrSendComplete, portMAX_DELAY);
+	else
+		return false;
+	if(data != txBuffer)
+		memcpy(txBuffer, data, dataLen);
+	txBufferLen = dataLen;
+	newTxData = true;
 }
+
+tBoolean bUnitRead(unsigned char * buffer, struct tData * sender, portTickType timeout)
+{
+	syncRxFlag = true;
+
+	if(xRxQueue != NULL && xQueueReceive(xRxQueue, sender, timeout/configTICK_RATE_HZ))
+	{
+		memcpy(buffer, sender->data, sender->dataLen);
+		return true;
+	}
+	else
+	{
+		sender->dataLen = 0;
+		sender->data = NULL;
+		return false;
+	}
+
+}
+
 
 /**
  * Es muss noch eine Funktion gebaut werden, die fungiert für neue jobs
  * Die kann dann co-routines erstellen und löschen für periodische Jobs
  * das wars erstmal...
  */
-void vUnitNewUdpData(unsigned char * pData, unsigned int uDataLen)
+void vUnitNewUdpData(unsigned char * pData, unsigned int uDataLen, uip_ipaddr_t * sender)
 {
 	int i;
 	tUnitJob xJob;
 
-	strcpy(xJob.unitName, pData);
-	strcpy(xJob.xCapability.Type, "ButtonState");
+	if(syncRxFlag)
+	{
+		struct tData enqueueData;
+		enqueueData.data = pData;
+		enqueueData.dataLen = uDataLen;
+		uip_ipaddr_copy(&(enqueueData.sender), sender);
+		if(xRxQueue != NULL)
+			xQueueSend(xRxQueue, &enqueueData, 0);
+		syncRxFlag = false;
+	}
 
-	// TODO: xJob = blblaextract();
+	if(memcmp(pData, "TEL:", 4) == 0)
+	{
+		pData += 4;
+		strcpy(xJob.unitName, pData);
+		strcpy(xJob.xCapability.Type, pData+strlen(pData)+1);
 
-	xQueueSend(xJobQueue, &xJob, UNIT_MAX_WAITTIME_ON_FULL_QUEUE/portTICK_RATE_MS );
+		// TODO: xJob = blblaextract();
+
+		if(xJobQueue != NULL)
+			xQueueSend(xJobQueue, &xJob, UNIT_MAX_WAITTIME_ON_FULL_QUEUE/portTICK_RATE_MS );
+	}
 }
 
 void vUnitCheckUdpEntries(void)
 {
-	strcpy(uip_appdata, "Here I am...");
-	uip_udp_send(strlen("Here I am...")+1);
+	if(newTxData)
+	{
+		memcpy(uip_appdata, txBuffer, txBufferLen);
+		uip_udp_send(txBufferLen);
+		newTxData = false;
+	}
+	if(xSmphrSendComplete != NULL)
+		xSemaphoreGive(xSmphrSendComplete);
 }

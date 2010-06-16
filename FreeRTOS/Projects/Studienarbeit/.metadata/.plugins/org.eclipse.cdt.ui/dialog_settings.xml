@@ -10,6 +10,11 @@
 		<item value="227191" key="searchFlags"/>
 		<item value="false" key="caseSensitive"/>
 		<list key="previousPatterns">
+			<item value="bUnitRead"/>
+			<item value="uip_ipaddr_t"/>
+			<item value="*zero*"/>
+			<item value="uip_slen"/>
+			<item value="vUnitJobExtract"/>
 			<item value="uip_appdata"/>
 			<item value="ButtonState"/>
 			<item value="UIP_UDP_APPCALL"/>

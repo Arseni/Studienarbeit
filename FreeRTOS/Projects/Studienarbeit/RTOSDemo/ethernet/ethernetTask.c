@@ -59,6 +59,7 @@
 #include "semphr.h"
 
 #include "OLEDDisplay/oledDisplay.h"
+#include "units/unit.h"
 
 /* uip includes. */
 #include "hw_types.h"
@@ -170,7 +171,7 @@ void vEthernetTask( void *pvParameters )
 	uip_ipaddr( xIPAddr, uipIP_ADDR0, uipIP_ADDR1, uipIP_ADDR2, uipIP_ADDR3 );
 	uip_sethostaddr( xIPAddr );
 	tcpHandler_init();
-	udpHandler_init();
+	udpHandler_init(INITIAL_ADDR, INITIAL_PORT, INITIAL_PORT);
 
 	while( vInitEMAC() != pdPASS )
     {
@@ -235,7 +236,7 @@ void vEthernetTask( void *pvParameters )
 						uip_arp_out();
 						prvENET_Send();
 					}
-				}	
+				}
 
 				// Handle all UDP connections
 				for( i = 0; i < UIP_UDP_CONNS; i++ )

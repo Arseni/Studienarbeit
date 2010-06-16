@@ -41,18 +41,19 @@
  * $Id: resolv.h,v 1.4 2006/06/11 21:46:37 adam Exp $
  *
  */
-#ifndef __RESOLV_H__
-#define __RESOLV_H__
+#ifndef UDP_HANDLER_H
+#define UDP_HANDLER_H
+
+#include "uipopt.h"
+//#include "uip.h"
 
 typedef int uip_udp_appstate_t;
 void udpHandler_appcall(void);
 #define UIP_UDP_APPCALL udpHandler_appcall
 
-#include "uipopt.h"
-
 /* Functions. */
-void udpHandler_init(void);
-
-#endif /* __RESOLV_H__ */
+void udpHandler_init(u8_t addr0, u8_t addr1, u8_t addr2, u8_t addr3, u16_t rPort, u16_t lPort);
+void * xUdpHandlerGetHost(void);
+#endif /* UDP_HANDLER_H */
 
 /** @} */

@@ -12,6 +12,10 @@
 #define UNIT_MAX_WAITTIME_ON_FULL_QUEUE 1000
 #define INITIAL_BROADCAST_SEND_PERIOD	1000
 
+#define INITIAL_ADDR	0xFF,0xFF,0xFF,0xFF
+#define INITIAL_PORT	50001
+#define COMM_PORT		50001
+
 /* Library includes. */
 #include "hw_types.h"
 #include "uip.h"
@@ -71,12 +75,20 @@ typedef struct
 	tcbUnitNewJob vNewJob;
 }tUnit;
 
+struct tData
+{
+	unsigned char * data;
+	int dataLen;
+	uip_ipaddr_t sender;
+};
+
 void vUnitHandlerTask(void * pvParameters);
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);
 tBoolean xUnitUnlink(tUnit * pUnit);
 tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
-tBoolean bUnitSend(const tUnit * pUnit, const tUnitCapability * Capability, tUnitValue value);
-void vUnitNewUdpData(unsigned char * pData, unsigned int uDataLen);
+tBoolean bUnitSend(const unsigned char * data, int dataLen);
+tBoolean bUnitRead(unsigned char * buffer, struct tData * sender, portTickType timeout);
+void vUnitNewUdpData(unsigned char * pData, unsigned int uDataLen, uip_ipaddr_t * sender);
 void vUnitCheckUdpEntries(void);
 
 #endif

@@ -28,7 +28,7 @@ udpHandler_appcall(void)
 	if(uip_newdata())
 	{
 		//vOledDbg1("UDP: port ", HTONS(uip_udp_conn->rport));
-		vUnitNewUdpData(uip_appdata, uip_datalen());
+		vUnitNewUdpData(uip_appdata, uip_datalen(), &(uip_udp_conn->ripaddr));
 		//vUnitJobExtract(uip_appdata, uip_datalen());
 	}
 	/*
@@ -48,17 +48,20 @@ udpHandler_appcall(void)
  * Initalize the resolver.
  */
 /*---------------------------------------------------------------------------*/
-void
-udpHandler_init(void)
+static struct uip_udp_conn * c = NULL;
+
+void udpHandler_init(u8_t addr0, u8_t addr1, u8_t addr2, u8_t addr3, u16_t rPort, u16_t lPort)
 {
 	uip_ipaddr_t addr;
-	struct uip_udp_conn *c;
 
-	uip_ipaddr(&addr, 0xFF,0xFF,0xFF,0xFF);// 192,168,10,222); //0,0,0,0);
-	c = uip_udp_new(&addr, HTONS(50001));
+	if(c != NULL)
+		uip_udp_remove(c);
+
+	uip_ipaddr(&addr, addr0,addr1,addr2,addr3);//192,168,10,222);//0xFF,0xFF,0xFF,0xFF); //0,0,0,0);
+	c = uip_udp_new(&addr, HTONS(rPort));
 
 	if(c != NULL) {
-		uip_udp_bind(c, HTONS(1101));
+		uip_udp_bind(c, HTONS(lPort));
 	}
 }
 /*---------------------------------------------------------------------------*/
