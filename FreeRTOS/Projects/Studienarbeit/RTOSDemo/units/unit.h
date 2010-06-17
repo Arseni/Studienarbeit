@@ -75,20 +75,11 @@ typedef struct
 	tcbUnitNewJob vNewJob;
 }tUnit;
 
-struct tData
-{
-	unsigned char * data;
-	int dataLen;
-	uip_ipaddr_t sender;
-};
+
 
 void vUnitHandlerTask(void * pvParameters);
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);
 tBoolean xUnitUnlink(tUnit * pUnit);
 tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
-tBoolean bUnitSend(const unsigned char * data, int dataLen);
-tBoolean bUnitRead(unsigned char * buffer, struct tData * sender, portTickType timeout);
-void vUnitNewUdpData(unsigned char * pData, unsigned int uDataLen, uip_ipaddr_t * sender);
-void vUnitCheckUdpEntries(void);
 
 #endif

@@ -45,15 +45,20 @@
 #define UDP_HANDLER_H
 
 #include "uipopt.h"
-//#include "uip.h"
+#include "hw_types.h"
+
+#define MAX_RX_HANDLERS	5
+
+typedef void (* tOnSendComplete) (tBoolean success);
+typedef void (* tOnReceiveComplete) (u8_t * data, int dataLen);
 
 typedef int uip_udp_appstate_t;
 void udpHandler_appcall(void);
 #define UIP_UDP_APPCALL udpHandler_appcall
 
 /* Functions. */
-void udpHandler_init(u8_t addr0, u8_t addr1, u8_t addr2, u8_t addr3, u16_t rPort, u16_t lPort);
-void * xUdpHandlerGetHost(void);
+void udpHandler_init(void);
+
 #endif /* UDP_HANDLER_H */
 
 /** @} */

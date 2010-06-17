@@ -39,7 +39,6 @@ static tBoolean InitXmit()
 	static int uid=0;
 	int i, rxLen;
 	uip_ipaddr_t host;
-	struct tData sender;
 
 
 	uip_gethostaddr(host);
@@ -59,9 +58,9 @@ static tBoolean InitXmit()
 	}
 	strcat(txBuffer, "</epm>");
 
-	bUnitSend(txBuffer, strlen(txBuffer));
+	//bUnitSend(txBuffer, strlen(txBuffer));
 
-	bUnitRead(txBuffer, &sender, 1000);
+	//bUnitRead(txBuffer, &sender, 1000);
 	// TODO auspacken und auf ack überprüfen
 	if(strcmp(txBuffer, "ack") == 0)
 	{
@@ -95,12 +94,9 @@ void vUnitHandlerTask(void * pvParameters)
 	int i;
 	tUnitJob xNewJob;
 	xJobQueue = xQueueCreate(UNIT_JOB_QUEUE_LENGTH, sizeof(tUnitJob));
-	xRxQueue = xQueueCreate(1, sizeof(struct tData));
-	vSemaphoreCreateBinary(xSmphrSendComplete);
-	xSemaphoreGive(xSmphrSendComplete);
 
-	while(!InitXmit())
-		vTaskDelay(INITIAL_BROADCAST_SEND_PERIOD / portTICK_RATE_MS);
+	//while(!InitXmit())
+	//	vTaskDelay(INITIAL_BROADCAST_SEND_PERIOD / portTICK_RATE_MS);
 	for(;;)
 	{
 		// Task only runs if a new job has been received
@@ -201,84 +197,4 @@ tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 		}
 	}
 	return false;
-}
-
-/**
- * schickt Daten an buffer, der weiter an buffer und so weiter... am ende über UDP am Empfänger juhu
- */
-tBoolean bUnitSend(const unsigned char * data, int dataLen)//const tUnit * pUnit, const tUnitCapability * Capability, const tUnitValue value)
-{
-	if(xSmphrSendComplete != NULL)
-		xSemaphoreTake(xSmphrSendComplete, portMAX_DELAY);
-	else
-		return false;
-	if(data != txBuffer)
-		memcpy(txBuffer, data, dataLen);
-	txBufferLen = dataLen;
-	newTxData = true;
-}
-
-tBoolean bUnitRead(unsigned char * buffer, struct tData * sender, portTickType timeout)
-{
-	syncRxFlag = true;
-
-	if(xRxQueue != NULL && xQueueReceive(xRxQueue, sender, timeout/configTICK_RATE_HZ))
-	{
-		memcpy(buffer, sender->data, sender->dataLen);
-		return true;
-	}
-	else
-	{
-		sender->dataLen = 0;
-		sender->data = NULL;
-		return false;
-	}
-
-}
-
-
-/**
- * Es muss noch eine Funktion gebaut werden, die fungiert für neue jobs
- * Die kann dann co-routines erstellen und löschen für periodische Jobs
- * das wars erstmal...
- */
-void vUnitNewUdpData(unsigned char * pData, unsigned int uDataLen, uip_ipaddr_t * sender)
-{
-	int i;
-	tUnitJob xJob;
-
-	if(syncRxFlag)
-	{
-		struct tData enqueueData;
-		enqueueData.data = pData;
-		enqueueData.dataLen = uDataLen;
-		uip_ipaddr_copy(&(enqueueData.sender), sender);
-		if(xRxQueue != NULL)
-			xQueueSend(xRxQueue, &enqueueData, 0);
-		syncRxFlag = false;
-	}
-
-	if(memcmp(pData, "TEL:", 4) == 0)
-	{
-		pData += 4;
-		strcpy(xJob.unitName, pData);
-		strcpy(xJob.xCapability.Type, pData+strlen(pData)+1);
-
-		// TODO: xJob = blblaextract();
-
-		if(xJobQueue != NULL)
-			xQueueSend(xJobQueue, &xJob, UNIT_MAX_WAITTIME_ON_FULL_QUEUE/portTICK_RATE_MS );
-	}
-}
-
-void vUnitCheckUdpEntries(void)
-{
-	if(newTxData)
-	{
-		memcpy(uip_appdata, txBuffer, txBufferLen);
-		uip_udp_send(txBufferLen);
-		newTxData = false;
-	}
-	if(xSmphrSendComplete != NULL)
-		xSemaphoreGive(xSmphrSendComplete);
 }

@@ -44,11 +44,13 @@ namespace NetWorker
         private void FormMain_Load(object sender, EventArgs e)
         {
             UdpClient client = new UdpClient();
-            IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse("192.168.10.227"), 50001);
-            client.Client.Bind(new IPEndPoint(IPAddress.Any, 50001));
-            client.Connect(endPoint);
-            
-            XmlDocument doc = new XmlDocument();
+            rEndpoint = new IPEndPoint(IPAddress.Parse("192.168.10.227"), 50001);
+            lEndpoint = new IPEndPoint(IPAddress.Any, 50001);
+            client.Client.Bind(lEndpoint);
+            client.Connect(rEndpoint);
+            client.Close();
+
+            /*XmlDocument doc = new XmlDocument();
             MemoryStream s = new MemoryStream(client.Receive(ref endPoint));
             doc.Load(s);
             
@@ -63,7 +65,7 @@ namespace NetWorker
             client.Connect(rEndpoint);
             string tx = "ack\0";
             client.Send(ASCIIEncoding.Default.GetBytes(tx), tx.Length);
-            client.Close();
+            client.Close();*/
         }
 
     }

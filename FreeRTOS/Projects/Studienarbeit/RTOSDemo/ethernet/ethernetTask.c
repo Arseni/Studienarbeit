@@ -171,7 +171,7 @@ void vEthernetTask( void *pvParameters )
 	uip_ipaddr( xIPAddr, uipIP_ADDR0, uipIP_ADDR1, uipIP_ADDR2, uipIP_ADDR3 );
 	uip_sethostaddr( xIPAddr );
 	tcpHandler_init();
-	udpHandler_init(INITIAL_ADDR, INITIAL_PORT, INITIAL_PORT);
+	udpHandler_init();
 
 	while( vInitEMAC() != pdPASS )
     {
@@ -179,9 +179,7 @@ void vEthernetTask( void *pvParameters )
     }
 	prvSetMACAddress();	
 	
-	/* TODO: unit state machine
-	 *  ie init: cyclic broadcast, etc ...
-	 */
+
 	for( ;; )
 	{
 		/* Is there received data ready to be processed? */

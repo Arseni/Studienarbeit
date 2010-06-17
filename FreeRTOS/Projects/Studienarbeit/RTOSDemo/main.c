@@ -127,7 +127,7 @@ tick hook. */
 #define mainBASIC_WEB_STACK_SIZE            ( configMINIMAL_STACK_SIZE * 3 )
 
 /* The OLED task uses the sprintf function so requires a little more stack too. */
-#define mainOLED_TASK_STACK_SIZE			( configMINIMAL_STACK_SIZE + 150 )
+#define mainOLED_TASK_STACK_SIZE			( configMINIMAL_STACK_SIZE + 100 )
 
 /* Task priorities. */
 #define mainQUEUE_POLL_PRIORITY				( tskIDLE_PRIORITY + 2 )
@@ -180,8 +180,8 @@ void vUARTTask(void * pvParameters)
 	xComOpen(1,2,3,4,5,6);
 	for(;;)
 	{
-		c = xComGetChar(1, 0);
-		vComPutChar(1, c, 0);
+		//c = xComGetChar(1, 0);
+		//vComPutChar(1, c, 0);
 		sprintf(msg.pcMessage, "Rx: '%c' (%02XH)", c, c);
 		xQueueSend(xOLEDQueue, &msg, portMAX_DELAY);
 	}
@@ -205,13 +205,11 @@ int main( void )
 {
 	prvSetupHardware();
 
-
-
 	/* Start the tasks defined within this file/specific to this demo. */
 	xTaskCreate( vOLEDTask, ( signed portCHAR * ) "OLED", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
 	//xTaskCreate( vTaskRefresh, ( signed portCHAR * ) "REFRESH", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-	xTaskCreate( vUARTTask, (signed portCHAR *) "UART", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
-	//xTaskCreate( vLEDTask, (signed portCHAR *) "LED", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
+	//xTaskCreate( vUARTTask, (signed portCHAR *) "UART", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
+	xTaskCreate( vLEDTask, (signed portCHAR *) "LED", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	xTaskCreate( vButtonTask, (signed portCHAR *) "Buttons", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	xTaskCreate( vEthernetTask, ( signed portCHAR * ) "uIP", mainBASIC_WEB_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
 	xTaskCreate( vBtnUnitTask, ( signed portCHAR * ) "Button Unit", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );

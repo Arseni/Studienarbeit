@@ -62,7 +62,7 @@ void vBtnUnitTask(void * pvParameters)
 				if(sendoutImmediate)
 				{
 					sprintf(tmpStr, "BtnPress:%d", xQueueItem.xValue.xButton);
-					bUnitSend(tmpStr, strlen(tmpStr));
+					//bUnitSend(tmpStr, strlen(tmpStr));
 				}
 				break;
 			case JOB:

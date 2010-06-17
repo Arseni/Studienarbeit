@@ -10,6 +10,12 @@
 		<item value="227191" key="searchFlags"/>
 		<item value="false" key="caseSensitive"/>
 		<list key="previousPatterns">
+			<item value="vMACHandleTask"/>
+			<item value="UIP_NEWDATA"/>
+			<item value="vOledDbg1"/>
+			<item value="vOledDbg"/>
+			<item value="*Rx:*"/>
+			<item value="Rx:"/>
 			<item value="bUnitRead"/>
 			<item value="uip_ipaddr_t"/>
 			<item value="*zero*"/>
