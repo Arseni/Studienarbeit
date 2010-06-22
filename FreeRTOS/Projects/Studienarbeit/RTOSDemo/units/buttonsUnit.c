@@ -29,6 +29,7 @@ union xValue
 
 static xQueueHandle xQueue = NULL;
 static tUnit * xBtnUnit;
+static tUnitCapability * ButtonStateCapability, * SendImmediateCapability;
 static char tmpStr[200]; // TODO delete me
 static tBoolean sendoutImmediate = false;
 
@@ -43,8 +44,8 @@ void vBtnUnitTask(void * pvParameters)
 
 	// init unit
 	xBtnUnit = xUnitCreate("Buttons", vBtnUnitNewJob);
-	bUnitAddCapability(xBtnUnit, (tUnitCapability){"ButtonState", NULL});
-	bUnitAddCapability(xBtnUnit, (tUnitCapability){"SendImmediate", NULL});
+	ButtonStateCapability = bUnitAddCapability(xBtnUnit, (tUnitCapability){"ButtonState", NULL});
+	SendImmediateCapability = bUnitAddCapability(xBtnUnit, (tUnitCapability){"SendImmediate", NULL});
 
 	// init internal
 	xQueue = xQueueCreate(BTN_UNIT_MAX_QUEUE_LEN, sizeof(tBtnUnitQueueItem));
@@ -59,10 +60,10 @@ void vBtnUnitTask(void * pvParameters)
 			case BUTTON:
 				vOledDbg1("Button", xQueueItem.xValue.xButton);
 				// a button has been pressed... do something
-				if(sendoutImmediate)
+				//if(sendoutImmediate)
 				{
 					sprintf(tmpStr, "BtnPress:%d", xQueueItem.xValue.xButton);
-					//bUnitSend(tmpStr, strlen(tmpStr));
+					bUnitSend(xBtnUnit, ButtonStateCapability, tmpStr);
 				}
 				break;
 			case JOB:

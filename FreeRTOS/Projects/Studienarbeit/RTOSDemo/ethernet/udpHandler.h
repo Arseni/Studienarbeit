@@ -49,15 +49,25 @@
 
 #define MAX_RX_HANDLERS	5
 
+typedef struct
+{
+	u16_t rAddr[2];
+	u16_t rPort;
+	u16_t lPort;
+}uip_udp_endpoint_t;
+
 typedef void (* tOnSendComplete) (tBoolean success);
-typedef void (* tOnReceiveComplete) (u8_t * data, int dataLen);
+typedef void (* tOnReceiveComplete) (u8_t * data, int dataLen, uip_udp_endpoint_t sender);
 
 typedef int uip_udp_appstate_t;
 void udpHandler_appcall(void);
 #define UIP_UDP_APPCALL udpHandler_appcall
 
 /* Functions. */
-void udpHandler_init(void);
+void udpHandler_init(uip_udp_endpoint_t endpoint);
+tBoolean bUdpSendAsync(const unsigned char * data, int dataLen);
+tBoolean bUdpReceiveAsync(tOnReceiveComplete callback, int packages);
+tBoolean bUdpCancelReceive(tOnReceiveComplete callback);
 
 #endif /* UDP_HANDLER_H */
 

@@ -4,10 +4,10 @@
 #include "croutine.h"
 
 #include "unit.h"
+#include "udpHandler.h"
 #include <string.h>
 
 #include "OLEDDisplay/oledDisplay.h"
-
 
 struct tUnitHandler
 {
@@ -23,80 +23,48 @@ struct tUnitJobHandler
 	int SecIntervall;
 };
 
-
-
 static struct tUnitHandler xUnits[UNIT_MAX_GLOBAL_UNITS];
 static struct tUnitJobHandler xJobs[UNIT_MAX_GLOBAL_JOBS_PARALLEL];
-static xQueueHandle xJobQueue = NULL, xRxQueue = NULL;
-static xSemaphoreHandle xSmphrDataPresent = NULL, xSmphrSendComplete = NULL;
+static xQueueHandle xJobQueue = NULL;
 static unsigned char txBuffer[200];
-static unsigned int txBufferLen = 0;
-static tBoolean newTxData = false;
-static tBoolean syncRxFlag = false;
+static tBoolean ack = false;
 
-static tBoolean InitXmit()
+static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
 {
-	static int uid=0;
-	int i, rxLen;
-	uip_ipaddr_t host;
-
-
-	uip_gethostaddr(host);
-
-	strcpy(txBuffer, "<epm uid=\"0\" ack=\"yes\" home=\"192.168.10.227:50001\">");
-	//sprintf(txBuffer, "<epm uid=\"%d\" ack=\"yes\" home=\"%d.%d.%d.%d:%d\">", uid, host[0]&0xFF, host[0]>>8, host[1]&0xFF, host[1]>>8, COMM_PORT);
-
-	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
+	if(strcmp(data, "ack"))
 	{
-		if(xUnits[i].bInUse)
-		{
-			strcat(txBuffer, "<unit name=\"");
-			strcat(txBuffer, xUnits[i].xUnit.Name);
-			strcat(txBuffer, "\"/>");
-			//sprintf(txBuffer+strlen(txBuffer), "<unit name=\"%s\"/>", xUnits[i].xUnit.Name);
-		}
+		bUdpReceiveAsync(InitXmitRxCallback, 1);
 	}
-	strcat(txBuffer, "</epm>");
-
-	//bUnitSend(txBuffer, strlen(txBuffer));
-
-	//bUnitRead(txBuffer, &sender, 1000);
-	// TODO auspacken und auf ack überprüfen
-	if(strcmp(txBuffer, "ack") == 0)
+	else
 	{
-		vOledDbg("connected");
-		//udpHandler_init(sender.sender[0]&0xFF, sender.sender[0]>>8, sender.sender[1]&0xFF, sender.sender[1]>>8, COMM_PORT, COMM_PORT);
-		return true;
+		ack = true;
+		//udpHandler_init(sender);
 	}
-	uid++;
-	return false;
-	//return true;
 }
 
-static void Initialize(void)
+static int unitBuildInitialEpm(unsigned char * buffer)
 {
-	int i;
-	static tBoolean isInitialized = false;
-
-	if(isInitialized)
-		return;
-
-	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
-	{
-		xUnits[i].bInUse = false;
-	}
-
-	isInitialized = true;
+	strcpy(buffer, "<epm>FIXME</epm>");
+	return strlen(buffer);
 }
 
 void vUnitHandlerTask(void * pvParameters)
 {
-	int i;
+	int i, dataLen;
 	tUnitJob xNewJob;
+
 	xJobQueue = xQueueCreate(UNIT_JOB_QUEUE_LENGTH, sizeof(tUnitJob));
 
-	//while(!InitXmit())
-	//	vTaskDelay(INITIAL_BROADCAST_SEND_PERIOD / portTICK_RATE_MS);
+	// Init State
+	dataLen = unitBuildInitialEpm(txBuffer);
+	bUdpReceiveAsync(InitXmitRxCallback, 1);
+	while(!ack)
+	{
+		bUdpSendAsync(txBuffer, dataLen);
+		vTaskDelay(1000/portTICK_RATE_MS);
+	}
+
+	// Unit dispatch state
 	for(;;)
 	{
 		// Task only runs if a new job has been received
@@ -121,8 +89,6 @@ tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived)
 	int i;
 	tUnit * ret = NULL;
 
-	Initialize();
-
 	// Validate parameters
 	if(strlen(Name) < sizeof(ret->Name)) // Name fits in array?
 		goto parameters_valid;
@@ -134,7 +100,6 @@ tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived)
 	{
 		if(xUnits[i].bInUse == false)
 		{
-			xUnits[i].bInUse = true;
 			ret = &(xUnits[i].xUnit);
 			break;
 		}
@@ -147,6 +112,9 @@ tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived)
 		memset(ret, 0, sizeof(tUnit));
 		strcpy(ret->Name, Name);
 		ret->vNewJob = JobReceived;
+
+		//finally give the unit the InUse status
+		xUnits[i].bInUse = true;
 	}
 	return ret;
 }
@@ -173,7 +141,7 @@ tBoolean xUnitUnlink(tUnit * pUnit)
 /**
  *
  */
-tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
+tUnitCapability * bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 {
 	int i;
 
@@ -184,17 +152,34 @@ tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 		if(xUnits[i].bInUse && &(xUnits[i].xUnit) == pUnit)
 			goto parameters_valid;
 	}
-	return false;
+	return NULL;
 
 	parameters_valid:
 	for(i=0; i<UNIT_MAX_CAPABILITIES; i++)
 	{
 		if(!UNIT_CAPABILITY_VALID(pUnit->xCapabilities[i]))
 		{
-			memcpy(pUnit->xCapabilities[i].Type, Capability.Type, sizeof(Capability.Type));
 			pUnit->xCapabilities[i].pxDependancy = Capability.pxDependancy;
-			return true;
+			memcpy(pUnit->xCapabilities[i].Type, Capability.Type, sizeof(Capability.Type));
+			return &(pUnit->xCapabilities[i]);
 		}
 	}
-	return false;
+	return NULL;
+}
+
+tBoolean bUnitSend(tUnit * unit, tUnitCapability * capability, char * data)
+{
+	// TODO xmlBuildSendStringOderSo
+	strcpy(txBuffer, "<epm><unit name=\"");
+	strcat(txBuffer, unit->Name);
+	strcat(txBuffer, "\"><");
+	strcat(txBuffer, capability->Type);
+	strcat(txBuffer, ">");
+	strcat(txBuffer, data);
+	strcat(txBuffer, "</");
+	strcat(txBuffer, capability->Type);
+	strcat(txBuffer, ">");
+	strcat(txBuffer, "</unit></epm>");
+
+	bUdpSendAsync(txBuffer, strlen(txBuffer));
 }

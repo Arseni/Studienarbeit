@@ -31,17 +31,16 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.tbCapacity = new System.Windows.Forms.TextBox();
             this.tbUnit = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 12);
+            this.button1.Location = new System.Drawing.Point(12, 96);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
+            this.button1.Text = "receive";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -63,14 +62,6 @@
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
             // 
-            // tbCapacity
-            // 
-            this.tbCapacity.Location = new System.Drawing.Point(181, 127);
-            this.tbCapacity.Name = "tbCapacity";
-            this.tbCapacity.Size = new System.Drawing.Size(91, 20);
-            this.tbCapacity.TabIndex = 3;
-            this.tbCapacity.Text = "ButtonState";
-            // 
             // tbUnit
             // 
             this.tbUnit.Location = new System.Drawing.Point(93, 127);
@@ -85,7 +76,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
             this.Controls.Add(this.tbUnit);
-            this.Controls.Add(this.tbCapacity);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -102,7 +92,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.TextBox tbCapacity;
         private System.Windows.Forms.TextBox tbUnit;
     }
 }

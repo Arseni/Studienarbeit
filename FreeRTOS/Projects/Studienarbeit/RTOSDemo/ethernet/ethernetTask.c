@@ -75,14 +75,15 @@
 /* Demo includes. */
 #include "emac.h"
 #include "tcpHandler.h"
+#include "udpHandler.h"
 
 /*-----------------------------------------------------------*/
 
 /* IP address configuration. */
 #define uipIP_ADDR0		192
 #define uipIP_ADDR1		168
-#define uipIP_ADDR2		10 // 0
-#define uipIP_ADDR3		227 // 13
+#define uipIP_ADDR2		0 // 10
+#define uipIP_ADDR3		13 // 227
 
 /* How long to wait before attempting to connect the MAC again. */
 #define uipINIT_WAIT    100
@@ -155,6 +156,7 @@ void vEthernetTask( void *pvParameters )
 {
 	portBASE_TYPE i;
 	uip_ipaddr_t xIPAddr;
+	uip_udp_endpoint_t initialUdpEndpoint;
 	struct timer periodic_timer, arp_timer;
 
 	/* Enable/Reset the Ethernet Controller */
@@ -171,7 +173,11 @@ void vEthernetTask( void *pvParameters )
 	uip_ipaddr( xIPAddr, uipIP_ADDR0, uipIP_ADDR1, uipIP_ADDR2, uipIP_ADDR3 );
 	uip_sethostaddr( xIPAddr );
 	tcpHandler_init();
-	udpHandler_init();
+
+	// initialize udp connection
+	uip_ipaddr(initialUdpEndpoint.rAddr, 0xFF,0xFF,0xFF,0xFF);
+	initialUdpEndpoint.lPort = initialUdpEndpoint.rPort = 50001;
+	udpHandler_init(initialUdpEndpoint);
 
 	while( vInitEMAC() != pdPASS )
     {

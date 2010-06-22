@@ -23,9 +23,10 @@ namespace NetWorker
 
         private void button1_Click(object sender, EventArgs e)
         {
-            TcpClient client = new TcpClient();
-            client.Connect("192.168.10.227", 1100);
-
+            UdpClient client = new UdpClient();
+            client.Client.Bind(lEndpoint);
+            client.Connect(rEndpoint);
+            MessageBox.Show(ASCIIEncoding.Default.GetString(client.Receive(ref rEndpoint)));
             client.Close();
         }
 
@@ -34,7 +35,7 @@ namespace NetWorker
             UdpClient client = new UdpClient();
             client.Client.Bind(lEndpoint);
             client.Connect(rEndpoint);
-            string send = String.Format("TEL:{0}\0{1}\0", tbUnit.Text, tbCapacity.Text);
+            string send = tbUnit.Text;
             client.Send(ASCIIEncoding.Default.GetBytes(send), send.Length);
             client.Close();
         }
@@ -43,12 +44,12 @@ namespace NetWorker
         IPEndPoint rEndpoint, lEndpoint;
         private void FormMain_Load(object sender, EventArgs e)
         {
-            UdpClient client = new UdpClient();
-            rEndpoint = new IPEndPoint(IPAddress.Parse("192.168.10.227"), 50001);
+            //UdpClient client = new UdpClient();
+            rEndpoint = new IPEndPoint(IPAddress.Parse("192.168.0.13"/*10.227"*/), 50001);
             lEndpoint = new IPEndPoint(IPAddress.Any, 50001);
-            client.Client.Bind(lEndpoint);
-            client.Connect(rEndpoint);
-            client.Close();
+            //client.Client.Bind(lEndpoint);
+           // client.Connect(rEndpoint);
+           // client.Close();
 
             /*XmlDocument doc = new XmlDocument();
             MemoryStream s = new MemoryStream(client.Receive(ref endPoint));

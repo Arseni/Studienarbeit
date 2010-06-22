@@ -80,6 +80,7 @@ typedef struct
 void vUnitHandlerTask(void * pvParameters);
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);
 tBoolean xUnitUnlink(tUnit * pUnit);
-tBoolean bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
+tUnitCapability * bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
+tBoolean bUnitSend(tUnit * unit, tUnitCapability * capability, char * data);
 
 #endif

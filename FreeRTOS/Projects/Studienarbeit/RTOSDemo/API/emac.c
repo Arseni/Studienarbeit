@@ -189,6 +189,10 @@ unsigned long *pulSource;
 unsigned portSHORT * pus;
 unsigned portLONG ulNextWord;
 
+	/* Validate uip_buf */
+	if(uip_buf == NULL)
+		return;
+
 	/* Locate the data to be send. */
 	pus = ( unsigned portSHORT * ) uip_buf;
 
