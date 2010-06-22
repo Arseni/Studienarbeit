@@ -32,9 +32,9 @@ static void vUdpNewData()
 	int i;
 	tUnitJob xJob;
 	uip_udp_endpoint_t sender;
-	uip_ipaddr_copy(&(sender.rAddr), &(uip_conn->ripaddr));
-	sender.lPort = uip_conn->lport;
-	sender.rPort = uip_conn->rport;
+	uip_ipaddr_copy(sender.rAddr, uip_udp_conn->ripaddr);
+	sender.lPort = uip_udp_conn->lport;
+	sender.rPort = uip_udp_conn->rport;
 
 	for(i=0; i<MAX_RX_HANDLERS; i++)
 	{
@@ -121,6 +121,8 @@ tBoolean bUdpSendAsync(const unsigned char * data, int dataLen)//const tUnit * p
 	{
 		txBuffer = (unsigned char*)data;
 		txBufferLen = dataLen;
+
+		// force send instantly
 		if(c != NULL)
 		{
 			uip_udp_periodic_conn( c );
@@ -130,9 +132,6 @@ tBoolean bUdpSendAsync(const unsigned char * data, int dataLen)//const tUnit * p
 				prvENET_Send();
 			}
 		}
-
-		/*if(xEMACSemaphore != NULL)
-			xSemaphoreGive( xEMACSemaphore );*/
 		return true;
 	}
 	else

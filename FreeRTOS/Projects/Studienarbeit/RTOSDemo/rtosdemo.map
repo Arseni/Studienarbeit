@@ -3119,7 +3119,7 @@ END GROUP
                 0x2000a508                _ebss = .
 OUTPUT(RTOSDemo.axf elf32-littlearm)
 
-.debug_abbrev   0x00000000     0x3c33
+.debug_abbrev   0x00000000     0x3c24
  .debug_abbrev  0x00000000       0xf5 ./Drivers/adc.o
  .debug_abbrev  0x000000f5      0x156 ./Drivers/can.o
  .debug_abbrev  0x0000024b       0xd1 ./Drivers/comp.o
@@ -3158,23 +3158,23 @@ OUTPUT(RTOSDemo.axf elf32-littlearm)
  .debug_abbrev  0x000022c1      0x240 ./uip/uip.o
  .debug_abbrev  0x00002501      0x191 ./ethernet/tcpHandler.o
  .debug_abbrev  0x00002692      0x197 ./ethernet/ethernetTask.o
- .debug_abbrev  0x00002829      0x1cf ./ethernet/udpHandler.o
- .debug_abbrev  0x000029f8      0x1db ./muXML/muXML.o
- .debug_abbrev  0x00002bd3      0x14a ./muXML/muXMLTree.o
- .debug_abbrev  0x00002d1d       0xca ./muXML/muXMLAccess.o
- .debug_abbrev  0x00002de7      0x196 ./units/unit.o
- .debug_abbrev  0x00002f7d       0xf1 ./units/comportUnit.o
- .debug_abbrev  0x0000306e      0x17c ./units/buttonsUnit.o
- .debug_abbrev  0x000031ea      0x17f main.o
- .debug_abbrev  0x00003369       0xca ../../../Source/list.o
- .debug_abbrev  0x00003433      0x16f ../../../Source/queue.o
- .debug_abbrev  0x000035a2      0x183 ../../../Source/tasks.o
- .debug_abbrev  0x00003725      0x189 ../../../Source/croutine.o
- .debug_abbrev  0x000038ae      0x11c ../../../Source/portable/GCC/ARM_CM3/port.o
- .debug_abbrev  0x000039ca      0x167 ../../../Source/portable/MemMang/heap_2.o
- .debug_abbrev  0x00003b31      0x102 startup.o
+ .debug_abbrev  0x00002829      0x1c0 ./ethernet/udpHandler.o
+ .debug_abbrev  0x000029e9      0x1db ./muXML/muXML.o
+ .debug_abbrev  0x00002bc4      0x14a ./muXML/muXMLTree.o
+ .debug_abbrev  0x00002d0e       0xca ./muXML/muXMLAccess.o
+ .debug_abbrev  0x00002dd8      0x196 ./units/unit.o
+ .debug_abbrev  0x00002f6e       0xf1 ./units/comportUnit.o
+ .debug_abbrev  0x0000305f      0x17c ./units/buttonsUnit.o
+ .debug_abbrev  0x000031db      0x17f main.o
+ .debug_abbrev  0x0000335a       0xca ../../../Source/list.o
+ .debug_abbrev  0x00003424      0x16f ../../../Source/queue.o
+ .debug_abbrev  0x00003593      0x183 ../../../Source/tasks.o
+ .debug_abbrev  0x00003716      0x189 ../../../Source/croutine.o
+ .debug_abbrev  0x0000389f      0x11c ../../../Source/portable/GCC/ARM_CM3/port.o
+ .debug_abbrev  0x000039bb      0x167 ../../../Source/portable/MemMang/heap_2.o
+ .debug_abbrev  0x00003b22      0x102 startup.o
 
-.debug_info     0x00000000    0x12399
+.debug_info     0x00000000    0x12148
  .debug_info    0x00000000      0x8d3 ./Drivers/adc.o
  .debug_info    0x000008d3      0x991 ./Drivers/can.o
  .debug_info    0x00001264      0x26f ./Drivers/comp.o
@@ -3213,23 +3213,23 @@ OUTPUT(RTOSDemo.axf elf32-littlearm)
  .debug_info    0x0000b589      0xfb6 ./uip/uip.o
  .debug_info    0x0000c53f      0x477 ./ethernet/tcpHandler.o
  .debug_info    0x0000c9b6      0x6c2 ./ethernet/ethernetTask.o
- .debug_info    0x0000d078      0x7da ./ethernet/udpHandler.o
- .debug_info    0x0000d852      0x999 ./muXML/muXML.o
- .debug_info    0x0000e1eb      0x618 ./muXML/muXMLTree.o
- .debug_info    0x0000e803      0x31b ./muXML/muXMLAccess.o
- .debug_info    0x0000eb1e      0x6ca ./units/unit.o
- .debug_info    0x0000f1e8      0x253 ./units/comportUnit.o
- .debug_info    0x0000f43b      0x580 ./units/buttonsUnit.o
- .debug_info    0x0000f9bb      0x2c6 main.o
- .debug_info    0x0000fc81      0x2b1 ../../../Source/list.o
- .debug_info    0x0000ff32      0xa16 ../../../Source/queue.o
- .debug_info    0x00010948      0xfa0 ../../../Source/tasks.o
- .debug_info    0x000118e8      0x4ad ../../../Source/croutine.o
- .debug_info    0x00011d95      0x1cf ../../../Source/portable/GCC/ARM_CM3/port.o
- .debug_info    0x00011f64      0x2ba ../../../Source/portable/MemMang/heap_2.o
- .debug_info    0x0001221e      0x17b startup.o
+ .debug_info    0x0000d078      0x589 ./ethernet/udpHandler.o
+ .debug_info    0x0000d601      0x999 ./muXML/muXML.o
+ .debug_info    0x0000df9a      0x618 ./muXML/muXMLTree.o
+ .debug_info    0x0000e5b2      0x31b ./muXML/muXMLAccess.o
+ .debug_info    0x0000e8cd      0x6ca ./units/unit.o
+ .debug_info    0x0000ef97      0x253 ./units/comportUnit.o
+ .debug_info    0x0000f1ea      0x580 ./units/buttonsUnit.o
+ .debug_info    0x0000f76a      0x2c6 main.o
+ .debug_info    0x0000fa30      0x2b1 ../../../Source/list.o
+ .debug_info    0x0000fce1      0xa16 ../../../Source/queue.o
+ .debug_info    0x000106f7      0xfa0 ../../../Source/tasks.o
+ .debug_info    0x00011697      0x4ad ../../../Source/croutine.o
+ .debug_info    0x00011b44      0x1cf ../../../Source/portable/GCC/ARM_CM3/port.o
+ .debug_info    0x00011d13      0x2ba ../../../Source/portable/MemMang/heap_2.o
+ .debug_info    0x00011fcd      0x17b startup.o
 
-.debug_line     0x00000000     0x7153
+.debug_line     0x00000000     0x7116
  .debug_line    0x00000000      0x30d ./Drivers/adc.o
  .debug_line    0x0000030d      0x35a ./Drivers/can.o
  .debug_line    0x00000667       0xfb ./Drivers/comp.o
@@ -3268,21 +3268,21 @@ OUTPUT(RTOSDemo.axf elf32-littlearm)
  .debug_line    0x00004959      0x5cc ./uip/uip.o
  .debug_line    0x00004f25      0x1c2 ./ethernet/tcpHandler.o
  .debug_line    0x000050e7      0x279 ./ethernet/ethernetTask.o
- .debug_line    0x00005360      0x292 ./ethernet/udpHandler.o
- .debug_line    0x000055f2      0x3a3 ./muXML/muXML.o
- .debug_line    0x00005995      0x15f ./muXML/muXMLTree.o
- .debug_line    0x00005af4       0x61 ./muXML/muXMLAccess.o
- .debug_line    0x00005b55      0x24f ./units/unit.o
- .debug_line    0x00005da4      0x198 ./units/comportUnit.o
- .debug_line    0x00005f3c      0x1e9 ./units/buttonsUnit.o
- .debug_line    0x00006125      0x177 main.o
- .debug_line    0x0000629c      0x119 ../../../Source/list.o
- .debug_line    0x000063b5      0x424 ../../../Source/queue.o
- .debug_line    0x000067d9      0x4e6 ../../../Source/tasks.o
- .debug_line    0x00006cbf      0x19b ../../../Source/croutine.o
- .debug_line    0x00006e5a      0x14c ../../../Source/portable/GCC/ARM_CM3/port.o
- .debug_line    0x00006fa6      0x125 ../../../Source/portable/MemMang/heap_2.o
- .debug_line    0x000070cb       0x88 startup.o
+ .debug_line    0x00005360      0x255 ./ethernet/udpHandler.o
+ .debug_line    0x000055b5      0x3a3 ./muXML/muXML.o
+ .debug_line    0x00005958      0x15f ./muXML/muXMLTree.o
+ .debug_line    0x00005ab7       0x61 ./muXML/muXMLAccess.o
+ .debug_line    0x00005b18      0x24f ./units/unit.o
+ .debug_line    0x00005d67      0x198 ./units/comportUnit.o
+ .debug_line    0x00005eff      0x1e9 ./units/buttonsUnit.o
+ .debug_line    0x000060e8      0x177 main.o
+ .debug_line    0x0000625f      0x119 ../../../Source/list.o
+ .debug_line    0x00006378      0x424 ../../../Source/queue.o
+ .debug_line    0x0000679c      0x4e6 ../../../Source/tasks.o
+ .debug_line    0x00006c82      0x19b ../../../Source/croutine.o
+ .debug_line    0x00006e1d      0x14c ../../../Source/portable/GCC/ARM_CM3/port.o
+ .debug_line    0x00006f69      0x125 ../../../Source/portable/MemMang/heap_2.o
+ .debug_line    0x0000708e       0x88 startup.o
 
 .debug_frame    0x00000000     0x6468
  .debug_frame   0x00000000      0x37c ./Drivers/adc.o
@@ -3754,7 +3754,7 @@ OUTPUT(RTOSDemo.axf elf32-littlearm)
  .debug_str     0x00004722       0xa8 ./ethernet/ethernetTask.o
                                 0x3cd (size before relaxing)
  .debug_str     0x000047ca      0x196 ./ethernet/udpHandler.o
-                                0x459 (size before relaxing)
+                                0x390 (size before relaxing)
  .debug_str     0x00004960      0x4d4 ./muXML/muXML.o
                                 0x601 (size before relaxing)
  .debug_str     0x00004e34       0xf2 ./muXML/muXMLTree.o
