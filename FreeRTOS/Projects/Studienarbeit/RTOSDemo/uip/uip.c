@@ -1140,6 +1140,7 @@ uip_process(u8_t flag)
   goto drop;
 
  udp_found:
+  uip_ipaddr_copy(uip_udp_conn->appstate, BUF->srcipaddr);
   UIP_STAT(++uip_stat.udp.recv);
   uip_conn = NULL;
   uip_flags = UIP_NEWDATA;

@@ -32,9 +32,9 @@ static void vUdpNewData()
 	int i;
 	tUnitJob xJob;
 	uip_udp_endpoint_t sender;
-	uip_ipaddr_copy(sender.rAddr, uip_udp_conn->ripaddr);
-	sender.lPort = uip_udp_conn->lport;
-	sender.rPort = uip_udp_conn->rport;
+	uip_ipaddr_copy(sender.rAddr, uip_udp_conn->appstate);
+	sender.lPort = HTONS(uip_udp_conn->lport);
+	sender.rPort = HTONS(uip_udp_conn->rport);
 
 	for(i=0; i<MAX_RX_HANDLERS; i++)
 	{
@@ -66,7 +66,7 @@ static void vUdpCheckEntries(void)
 /** \internal
  * The main UDP function.
  */
-void udpHandler_appcall(void)
+void udpHandler_appcall()
 {
 	if(uip_poll())
 	{

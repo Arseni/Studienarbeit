@@ -60,7 +60,7 @@ void vBtnUnitTask(void * pvParameters)
 			case BUTTON:
 				vOledDbg1("Button", xQueueItem.xValue.xButton);
 				// a button has been pressed... do something
-				//if(sendoutImmediate)
+				if(sendoutImmediate)
 				{
 					sprintf(tmpStr, "BtnPress:%d", xQueueItem.xValue.xButton);
 					bUnitSend(xBtnUnit, ButtonStateCapability, tmpStr);

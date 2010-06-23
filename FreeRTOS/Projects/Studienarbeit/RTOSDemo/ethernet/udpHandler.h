@@ -59,8 +59,9 @@ typedef struct
 typedef void (* tOnSendComplete) (tBoolean success);
 typedef void (* tOnReceiveComplete) (u8_t * data, int dataLen, uip_udp_endpoint_t sender);
 
-typedef int uip_udp_appstate_t;
-void udpHandler_appcall(void);
+typedef u16_t uip_udp_appstate_t[2];
+
+void udpHandler_appcall();
 #define UIP_UDP_APPCALL udpHandler_appcall
 
 /* Functions. */

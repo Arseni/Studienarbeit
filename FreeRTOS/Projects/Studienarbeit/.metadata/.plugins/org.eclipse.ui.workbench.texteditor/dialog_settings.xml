@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item value="257" key="DIALOG_WIDTH"/>
+		<item value="237" key="DIALOG_WIDTH"/>
 		<item value="421" key="DIALOG_Y_ORIGIN"/>
+		<item value="362" key="DIALOG_HEIGHT"/>
 		<item value="763" key="DIALOG_X_ORIGIN"/>
-		<item value="380" key="DIALOG_HEIGHT"/>
-		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="1|Tahoma|8.25|0|WINDOWS|1|-11|0|0|0|400|0|0|0|1|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="copy" key="selection"/>
+		<item value="UIP_UDP_APPCALL" key="selection"/>
 		<list key="findhistory">
+			<item value="UIP_UDP_APPCALL"/>
+			<item value="struct uip_udp_conn"/>
+			<item value="uip_udp_conn"/>
+			<item value="UIP_UDP_CONN"/>
 			<item value="xEMACSemaphore"/>
 			<item value="copy"/>
 			<item value="port"/>
 			<item value="xSmphrSendComplete"/>
-			<item value="rx"/>
-			<item value="RX"/>
-			<item value="Rx"/>
-			<item value="bUnitRead"/>
 		</list>
 		<list key="replacehistory">
 			<item value="tCOMPort"/>

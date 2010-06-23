@@ -35,7 +35,7 @@ namespace NetWorker
             UdpClient client = new UdpClient();
             client.Client.Bind(lEndpoint);
             client.Connect(rEndpoint);
-            string send = tbUnit.Text;
+            string send = tbUnit.Text + "\0";
             client.Send(ASCIIEncoding.Default.GetBytes(send), send.Length);
             client.Close();
         }
@@ -46,7 +46,7 @@ namespace NetWorker
         {
             //UdpClient client = new UdpClient();
             rEndpoint = new IPEndPoint(IPAddress.Parse("192.168.0.13"/*10.227"*/), 50001);
-            lEndpoint = new IPEndPoint(IPAddress.Parse("192.168.0.194"), 50001);
+            lEndpoint = new IPEndPoint(IPAddress.Any, 50001);
             //client.Client.Bind(lEndpoint);
            // client.Connect(rEndpoint);
            // client.Close();

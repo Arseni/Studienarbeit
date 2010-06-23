@@ -38,10 +38,42 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
 	else
 	{
 		ack = true;
-		//udpHandler_init(sender);
+		udpHandler_init(sender);
 	}
 }
+static void DispatchXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
+{
+	int i;
+	tUnitJob xjob;
 
+	//build job out of datengrütze and enqueue it
+	char * pp;
+
+	/*pp = xjob.unitName;
+	while(*data != ';')
+		*pp++ = *data++;
+	*pp=0;data++;
+	pp = xjob.xCapability.Type;
+	while(*data != ';')
+		*pp++ = *data++;
+	*pp=0;data++;
+	pp = xjob.xCapability.Data;
+	while(*data != ';')
+		*pp++ = *data++;
+	*pp=0;*/
+	strcpy(xjob.unitName, "Buttons");
+	strcpy(xjob.xCapability.Type, data);
+	strcpy(xjob.xCapability.Data, "none");
+
+	//enqueue job to corresponding unit
+	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
+	{
+		if(xUnits[i].bInUse && strcmp(xUnits[i].xUnit.Name, xjob.unitName) == 0)
+		{
+			xUnits[i].xUnit.vNewJob(xjob);
+		}
+	}
+}
 static int unitBuildInitialEpm(unsigned char * buffer)
 {
 	strcpy(buffer, "<epm>FIXME</epm>");
@@ -65,23 +97,10 @@ void vUnitHandlerTask(void * pvParameters)
 	}
 
 	// Unit dispatch state
-	for(;;)
-	{
-		// Task only runs if a new job has been received
-		if(xJobQueue != NULL && xQueueReceive(xJobQueue, &xNewJob, portMAX_DELAY))
-		{
-			// Search corresponding unit and call its job handler
-			for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
-			{
-				// corresponding unit found
-				if(xUnits[i].bInUse && strcmp(xUnits[i].xUnit.Name, xNewJob.unitName) == 0)
-				{
-					xUnits[i].xUnit.vNewJob(xNewJob);
-					// TODO Handle handle handle
-				}
-			}
-		}
-	}
+	bUdpReceiveAsync(DispatchXmitRxCallback, -1);
+
+
+	while(true);
 }
 
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived)
