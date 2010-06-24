@@ -111,7 +111,7 @@ static int ReadSubElements (struct muXMLTreeElement **ppElement,
   return 0;
 }
 
-struct muXMLTree *muXMLTreeDecode (const char *XMLText,
+struct muXMLTree * muXMLTreeDecode (const char *XMLText,
                                    unsigned char *Data, int MaxSize,
                                    int SkipHeader,
                                    int *pUsage)
@@ -173,7 +173,14 @@ struct muXMLTree *muXMLTreeDecode (const char *XMLText,
     if (rc == muXML_ERROR) goto Error;
   } while (rc != muXML_FINISHED);
 
-  if (pUsage) *pUsage = MaxSize - (DataEnd - Data);
+  #ifdef FILE_INFO
+  p->StorageInfo.SpaceTotal = MaxSize;
+  p->StorageInfo.SpaceInUse = MaxSize - (DataEnd - Data);
+
+  if (pUsage) *pUsage =  p->StorageInfo.SpaceInUse;
+  #else
+  if (pUsage) *pUsage =  MaxSize - (DataEnd - Data);
+  #endif
   return p;
 
   Error:

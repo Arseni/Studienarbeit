@@ -7,6 +7,8 @@
 #include "udpHandler.h"
 #include <string.h>
 
+#include "muXML/muXMLAccess.h"
+
 #include "OLEDDisplay/oledDisplay.h"
 
 struct tUnitHandler
@@ -26,7 +28,8 @@ struct tUnitJobHandler
 static struct tUnitHandler xUnits[UNIT_MAX_GLOBAL_UNITS];
 static struct tUnitJobHandler xJobs[UNIT_MAX_GLOBAL_JOBS_PARALLEL];
 static xQueueHandle xJobQueue = NULL;
-static unsigned char txBuffer[200];
+static unsigned char txBuffer[1024];
+static unsigned char xmlBuffer[4000];
 static tBoolean ack = false;
 
 static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
@@ -43,24 +46,11 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
 }
 static void DispatchXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
 {
-	int i;
+	int i,j;
 	tUnitJob xjob;
 
 	//build job out of datengrütze and enqueue it
 	char * pp;
-
-	/*pp = xjob.unitName;
-	while(*data != ';')
-		*pp++ = *data++;
-	*pp=0;data++;
-	pp = xjob.xCapability.Type;
-	while(*data != ';')
-		*pp++ = *data++;
-	*pp=0;data++;
-	pp = xjob.xCapability.Data;
-	while(*data != ';')
-		*pp++ = *data++;
-	*pp=0;*/
 	strcpy(xjob.unitName, "Buttons");
 	strcpy(xjob.xCapability.Type, data);
 	strcpy(xjob.xCapability.Data, "none");
@@ -70,13 +60,37 @@ static void DispatchXmitRxCallback(unsigned char * data, int len, uip_udp_endpoi
 	{
 		if(xUnits[i].bInUse && strcmp(xUnits[i].xUnit.Name, xjob.unitName) == 0)
 		{
-			xUnits[i].xUnit.vNewJob(xjob);
+			for(j=0; j<UNIT_MAX_CAPABILITIES; j++)
+			{
+				if(strcmp(xUnits[i].xUnit.xCapabilities[j].Type, xjob.xCapability.Type) == 0)
+				{
+					// newJob(Capability, Data) müsst reichen
+					xUnits[i].xUnit.vNewJob(xjob);
+				}
+			}
 		}
 	}
 }
-static int unitBuildInitialEpm(unsigned char * buffer)
+static int unitBuildInitialEpm(unsigned char * buffer, int maxSize)
 {
-	strcpy(buffer, "<epm>FIXME</epm>");
+	int i;
+	void * pp = muXMLCreateTree(xmlBuffer, sizeof(xmlBuffer), "epm");
+	muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), "uid", "0");
+	muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), "ack", "yes");
+	muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), "home", "192.168.0.13:50001");
+	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
+	{
+		if(xUnits[i].bInUse)
+		{
+			muXMLCreateElement(pp, "unit");
+			muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, pp, "name", xUnits[i].xUnit.Name);
+			pp = muXMLAddElement((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), pp);
+		}
+	}
+
+
+	muXMLTreeEncode(buffer, maxSize, (struct muXMLTree*)xmlBuffer);
+
 	return strlen(buffer);
 }
 
@@ -88,7 +102,7 @@ void vUnitHandlerTask(void * pvParameters)
 	xJobQueue = xQueueCreate(UNIT_JOB_QUEUE_LENGTH, sizeof(tUnitJob));
 
 	// Init State
-	dataLen = unitBuildInitialEpm(txBuffer);
+	dataLen = unitBuildInitialEpm(txBuffer, sizeof(txBuffer));
 	bUdpReceiveAsync(InitXmitRxCallback, 1);
 	while(!ack)
 	{
@@ -98,8 +112,6 @@ void vUnitHandlerTask(void * pvParameters)
 
 	// Unit dispatch state
 	bUdpReceiveAsync(DispatchXmitRxCallback, -1);
-
-
 	while(true);
 }
 

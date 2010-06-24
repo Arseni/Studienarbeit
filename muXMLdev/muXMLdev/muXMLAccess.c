@@ -30,18 +30,33 @@ struct muXMLTreeElement* muXMLGetElementByName(struct muXMLTreeElement * pRoot,
 
 /*----------------------------      Writing      -----------------------------*/
 
+void * muXMLCreateTree(void * Buffer, int BufferLength, char * rootName)
+{
+	memset(Buffer, 0, sizeof(struct muXMLTree));
+	strcpy(((struct muXMLTree*)Buffer)->Root.Element.Name, rootName);
+	((struct muXMLTree*)Buffer)->StorageInfo.SpaceTotal = BufferLength;
+	return (struct muXMLTree*)Buffer + 1;
+}
+
+void muXMLCreateElement(void * Buffer, char * name)
+{
+	memset(Buffer, 0, sizeof(struct muXMLTreeElement));
+	strcpy(((struct muXMLTreeElement*)Buffer)->Element.Name, name);
+}
+
 /**
  * Ersetzt das Datum eines Elements durch ein neues. Passt dabei die Länge des
  * Baumes an.
  * @ pTree   : Pointer auf den Gesamtbaum, der bearbeitet wird
  * @ pElement: Pointer auf das Element, indem das Datum verädert werden soll
  * @ newData : Nullterminiterter String des neuen Datums
- * + return  : Passt nicht in den Buffer:1 , sonst 0
+ * + return  : Pointer auf ersten freien Platz im newData Buffer
  */
-int muXMLUpdateData(struct muXMLTree * pTree,
-					struct muXMLTreeElement * pElement,
-					char * newData)
+void * muXMLUpdateData(struct muXMLTree * pTree,
+					   struct muXMLTreeElement * pElement,
+					   char * newData)
 {
+#ifdef OBSOLETE
 	int i=0, dataLen = strlen(newData),
 		diff = dataLen - strlen(pElement->Data.Data);
 	char * pData;
@@ -78,4 +93,65 @@ int muXMLUpdateData(struct muXMLTree * pTree,
 	if(pElement->Next)
 		pElement->Next = (char*)pElement->Next + diff;
 	return 0;
+#endif
+	
+	pElement->Data.Data = newData;
+	pElement->Data.DataSize = strlen(newData);
+#ifdef FILE_INFO
+	// TODO update tree storage usage
+#endif
+	return newData + strlen(newData) + 1;
+}
+
+/**
+ * Ändert den Wert eines Attributs. Ist ein Attribut nicht vorhanden
+ * wird es eingerichtet
+ */
+int muXMLUpdateAttribute(struct muXMLTree * pTree,
+						 struct muXMLTreeElement * pElement,
+						 char * AttrName,
+						 char * AttrValue)
+{
+	int i;
+
+	//validate parameter (strlen etc)
+	if( (strlen(AttrName) > muXML_MAX_ATTRIBUTE) ||
+		(strlen(AttrValue) > muXML_MAX_VALUE) )
+		return 1;
+
+	
+	for(i=0; i<muXML_MAX_ATTRIBUTE_CNT; i++)
+	{
+		if(strcmp(pElement->Element.Attribute[i].Name, AttrName) == 0)
+		{
+			strcpy(pElement->Element.Attribute[i].Value, AttrValue);
+			return 0;
+		}
+	}
+	if(pElement->Element.nAttributes < muXML_MAX_ATTRIBUTE_CNT)
+	{
+		strcpy(pElement->Element.Attribute[pElement->Element.nAttributes].Name, AttrName);
+		strcpy(pElement->Element.Attribute[pElement->Element.nAttributes].Value, AttrValue);
+		pElement->Element.nAttributes++;
+		return 0;
+	}
+	return 2;
+}
+
+void * muXMLAddElement(struct muXMLTree * pTree,
+					   struct muXMLTreeElement * pElement,
+					   struct muXMLTreeElement * pNewElement)
+{
+	struct muXMLTreeElement * temp = pElement->SubElements;
+	// Das letzte Unterelement suchen
+	while(temp != NULL && temp->Next != NULL)
+		temp = temp->Next;
+	
+	if(temp == NULL)
+		pElement->SubElements = pNewElement;
+	else
+		temp->Next = pNewElement;
+	pNewElement->Next = NULL; // Notwendig?
+
+	return pNewElement + 1;
 }

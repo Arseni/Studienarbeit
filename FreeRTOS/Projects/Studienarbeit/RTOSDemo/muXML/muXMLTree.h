@@ -17,6 +17,11 @@
 
 #undef MUXMLTREE_HEADER
 
+struct muXMLStorageInfo {
+	int SpaceTotal;
+	int SpaceInUse;
+};
+
 struct muXMLTreeData {
   char *Data;                           /* eigentliche Daten */
   int DataSize;                         /* aktuelle Größe der Daten */
@@ -34,6 +39,11 @@ struct muXMLTree {
 #ifdef MUXMLTREE_HEADER
   struct muXML_State Header;            /* Headerinformationen
                                            (Version, Zeichenkodierung, ...) */
+#endif
+#ifdef FILE_INFO
+  struct muXMLStorageInfo StorageInfo;	 /* Beinhaltet Gesamt- und benutzte
+  										    Größe des zur Verfügung stehenden
+  											Speichers*/
 #endif
   struct muXMLTreeElement Root;         /* Wurzelelement */
 };

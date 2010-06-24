@@ -76,7 +76,6 @@ void udpHandler_appcall()
 	{
 		vOledDbg(uip_appdata);
 		vUdpNewData();
-		//vUnitJobExtract(uip_appdata, uip_datalen());
 		strcpy(uip_appdata, "OK");
 		uip_udp_send(2);
 	}

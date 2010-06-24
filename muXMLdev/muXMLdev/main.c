@@ -53,6 +53,17 @@ int main ()
   static const char XML2[] = "<epm dest=\"192.168.64.98:12345\" uid=\"5566\" withseqno=\"yes\" withreltime=\"yes\" ds=\"10m\" dt=\"2s\" ack=\"yes\"><unit><get>wheel:wheelstate</get></unit></epm>";
   static const char XML3[] = "<test><test2>test</test2><test2></test2></test>";
   
+  void * pp;
+  pp = muXMLCreateTree(Data, sizeof(Data), "epm");
+  muXMLUpdateAttribute(Data, &(((struct muXMLTree*)Data)->Root), "uid", "0");
+  muXMLUpdateAttribute(Data, &(((struct muXMLTree*)Data)->Root), "ack", "yes");
+  muXMLUpdateAttribute(Data, &(((struct muXMLTree*)Data)->Root), "home", "192.168.123.111:50001");
+  muXMLCreateElement(pp, "unit");
+  muXMLUpdateAttribute(Data, pp, "name", "power");
+  pp = muXMLAddElement(Data, &(((struct muXMLTree*)Data)->Root), pp);
+
+  muXMLTreeEncode(Stream, sizeof(Stream), Data);
+  
   p = muXMLTreeDecode(XML3, Data, sizeof(Data), 1, &Usage);
   if(p)
   {
