@@ -1,9 +1,12 @@
 #ifndef UNIT_H
 #define UNIT_H
 
+#define UNIT_TX_BUFFER_LEN			1024
+#define UNIT_XML_TREE_BUFFER_LEN	4000
+
 #define UNIT_SHORT_STRING	10
 #define UNIT_MIDDLE_STRING	20
-#define UNIT_LONG_STRING		50
+#define UNIT_LONG_STRING	50
 
 #define UNIT_MAX_CAPABILITIES			5
 #define UNIT_MAX_GLOBAL_UNITS			5
@@ -47,17 +50,9 @@ typedef struct
 
 typedef struct
 {
-	char unitName[UNIT_MIDDLE_STRING];
-	tUnitCapability xCapability;
-	uip_ipaddr_t xSrcAddr;
-	u16_t uSrcPort;
-	uip_ipaddr_t xDstAddr;
-	u16_t uDstPort;
-	tBoolean bSeqNo;
-	tBoolean bRelTime;
-	tBoolean bAck;
-	unsigned int uDs;
-	unsigned int uDt;
+	tUnitCapability * xCapability;
+	char data[UNIT_MIDDLE_STRING];
+	int uid;
 }tUnitJob;
 
 typedef struct

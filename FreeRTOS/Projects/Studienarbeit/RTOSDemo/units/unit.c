@@ -21,15 +21,26 @@ struct tUnitJobHandler
 {
 	tUnitJob xJob;
 	xQueueHandle xResponseQueue;
-	int SeqNum;
-	int SecIntervall;
+
+	tUnit * unit;
+	tUnitCapability * capability;
+	uip_udp_endpoint_t endpoint;
+
+	tBoolean seqNo;
+	tBoolean relTime;
+	tBoolean ack;
+	unsigned int ds;
+	unsigned int dt;
+
+	tBoolean inUse;
 };
 
 static struct tUnitHandler xUnits[UNIT_MAX_GLOBAL_UNITS];
 static struct tUnitJobHandler xJobs[UNIT_MAX_GLOBAL_JOBS_PARALLEL];
 static xQueueHandle xJobQueue = NULL;
-static unsigned char txBuffer[1024];
-static unsigned char xmlBuffer[4000];
+static xSemaphoreHandle xJobHandlerMutex;
+static unsigned char txBuffer[UNIT_TX_BUFFER_LEN];
+static unsigned char xmlBuffer[UNIT_XML_TREE_BUFFER_LEN];
 static tBoolean ack = false;
 
 static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
@@ -47,15 +58,37 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
 static void DispatchXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
 {
 	int i,j;
-	tUnitJob xjob;
+	struct tUnitJobHandler * xjob = NULL;
 
-	//build job out of datengrütze and enqueue it
-	char * pp;
-	strcpy(xjob.unitName, "Buttons");
-	strcpy(xjob.xCapability.Type, data);
-	strcpy(xjob.xCapability.Data, "none");
+	if(!xSemaphoreTake(xJobHandlerMutex, 200))
+	{
+		// failure !!
+	}
 
-	//enqueue job to corresponding unit
+	for (i = 0; i < UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
+	{
+		if (!xJobs[i].inUse)
+		{
+			xjob = &(xJobs[i]);
+			break;
+		}
+	}
+	xSemaphoreGive(xJobHandlerMutex);
+
+	if (xjob == NULL)
+	{
+		// over capacity !!
+	}
+	bUnitExtractJobHandle(xjob, data, sender);
+
+	if (xjob->inUse)
+	{
+	}
+
+
+
+
+/*	//enqueue job to corresponding unit
 	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
 	{
 		if(xUnits[i].bInUse && strcmp(xUnits[i].xUnit.Name, xjob.unitName) == 0)
@@ -69,7 +102,7 @@ static void DispatchXmitRxCallback(unsigned char * data, int len, uip_udp_endpoi
 				}
 			}
 		}
-	}
+	}*/
 }
 static int unitBuildInitialEpm(unsigned char * buffer, int maxSize)
 {
@@ -100,7 +133,7 @@ void vUnitHandlerTask(void * pvParameters)
 	tUnitJob xNewJob;
 
 	xJobQueue = xQueueCreate(UNIT_JOB_QUEUE_LENGTH, sizeof(tUnitJob));
-
+	xJobHandlerMutex = xSemaphoreCreateMutex();
 	// Init State
 	dataLen = unitBuildInitialEpm(txBuffer, sizeof(txBuffer));
 	bUdpReceiveAsync(InitXmitRxCallback, 1);
@@ -112,7 +145,13 @@ void vUnitHandlerTask(void * pvParameters)
 
 	// Unit dispatch state
 	bUdpReceiveAsync(DispatchXmitRxCallback, -1);
-	while(true);
+	while(true)
+	{
+		xQueueReceive(xJobQueue, &xNewJob, portMAX_DELAY);
+		for(i=0; i<UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
+		{
+		}
+	}
 }
 
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived)
