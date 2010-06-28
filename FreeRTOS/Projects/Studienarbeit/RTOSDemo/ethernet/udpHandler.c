@@ -2,6 +2,10 @@
 #include "task.h"
 #include "semphr.h"
 
+#include "hw_types.h"
+#include "hw_memmap.h"
+#include "ethernet.h"
+
 #include "OLEDDisplay/oledDisplay.h"
 
 #include "udpHandler.h"
@@ -76,9 +80,8 @@ void udpHandler_appcall()
 	{
 		vOledDbg(uip_appdata);
 		vUdpNewData();
-		strcpy(uip_appdata, "OK");
-		uip_udp_send(2);
 	}
+	EthernetIntEnable( ETH_BASE, ETH_INT_RX );
 }
 
 

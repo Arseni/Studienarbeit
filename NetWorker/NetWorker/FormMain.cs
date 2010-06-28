@@ -35,15 +35,20 @@ namespace NetWorker
             UdpClient client = new UdpClient();
             client.Client.Bind(lEndpoint);
             client.Connect(rEndpoint);
-            string send = tbUnit.Text + "\0";
+            string send = buildXMLString();
             client.Send(ASCIIEncoding.Default.GetBytes(send), send.Length);
             client.Close();
+        }
+
+        private string buildXMLString()
+        {
+            return "<epm><unit name=\"Buttons\"><SendImmediate/></unit></epm>\0";
         }
 
 
         IPEndPoint rEndpoint, lEndpoint;
         private void FormMain_Load(object sender, EventArgs e)
-        {
+        {          
             //UdpClient client = new UdpClient();
             rEndpoint = new IPEndPoint(IPAddress.Parse("192.168.0.13"/*10.227"*/), 50001);
             lEndpoint = new IPEndPoint(IPAddress.Any, 50001);
@@ -67,6 +72,16 @@ namespace NetWorker
             string tx = "ack\0";
             client.Send(ASCIIEncoding.Default.GetBytes(tx), tx.Length);
             client.Close();*/
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            UdpClient client = new UdpClient();
+            client.Client.Bind(lEndpoint);
+            client.Connect(rEndpoint);
+            string send = "<epm><unit><ack/></unit></epm>\0";
+            client.Send(ASCIIEncoding.Default.GetBytes(send), send.Length);
+            client.Close();
         }
 
     }

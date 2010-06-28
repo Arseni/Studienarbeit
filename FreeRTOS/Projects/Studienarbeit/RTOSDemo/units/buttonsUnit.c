@@ -68,9 +68,9 @@ void vBtnUnitTask(void * pvParameters)
 				break;
 			case JOB:
 				strcpy(tmpStr, "Job: ");
-				strcat(tmpStr, xQueueItem.xValue.xJob.xCapability.Type);
+				strcat(tmpStr, xQueueItem.xValue.xJob.xCapability->Name);
 				vOledDbg(tmpStr);
-				if(strcmp(xQueueItem.xValue.xJob.xCapability.Type, "SendImmediate") == 0)
+				if(strcmp(xQueueItem.xValue.xJob.xCapability->Name, "SendImmediate") == 0)
 				{
 					sendoutImmediate = true;
 				}
@@ -100,19 +100,7 @@ static void vBtnUnitNewJob(tUnitJob Job)
 	tUnitCapability * pxDstCapability;
 	tBtnUnitQueueItem item;
 
-	// Validate job
-	for(i=0; i<UNIT_MAX_CAPABILITIES; i++)
-	{
-		if(!UNIT_CAPABILITIES_CMP(xBtnUnit->xCapabilities[i], Job.xCapability))
-		{
-
-			pxDstCapability = &(xBtnUnit->xCapabilities[i]);
-			goto parameters_valid;
-		}
-	}
-	return;
-
-	parameters_valid:
+	// TODO Validate job
 
 	// format
 	item.eType = JOB;

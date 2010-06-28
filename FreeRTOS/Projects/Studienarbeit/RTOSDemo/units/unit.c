@@ -11,6 +11,9 @@
 
 #include "OLEDDisplay/oledDisplay.h"
 
+#define NEW_UID() (unitJobUID++)
+#define SUPER_UNIT ((tUnit*)(-1))
+
 struct tUnitHandler
 {
 	tUnit xUnit;
@@ -23,7 +26,6 @@ struct tUnitJobHandler
 	xQueueHandle xResponseQueue;
 
 	tUnit * unit;
-	tUnitCapability * capability;
 	uip_udp_endpoint_t endpoint;
 
 	tBoolean seqNo;
@@ -37,15 +39,43 @@ struct tUnitJobHandler
 
 static struct tUnitHandler xUnits[UNIT_MAX_GLOBAL_UNITS];
 static struct tUnitJobHandler xJobs[UNIT_MAX_GLOBAL_JOBS_PARALLEL];
+static tUnitCapability xGlobalUnitCapability;
 static xQueueHandle xJobQueue = NULL;
 static xSemaphoreHandle xJobHandlerMutex;
 static unsigned char txBuffer[UNIT_TX_BUFFER_LEN];
 static unsigned char xmlBuffer[UNIT_XML_TREE_BUFFER_LEN];
 static tBoolean ack = false;
+static unsigned int unitJobUID;
+
+static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char * data, uip_udp_endpoint_t sender);
+static struct tUnitJobHandler * unitGetFreeJobHandler()
+{
+	struct tUnitJobHandler * ret = NULL;
+	int i;
+
+	if(!xSemaphoreTake(xJobHandlerMutex, portMAX_DELAY))
+	{
+		return NULL;
+	}
+
+	for (i = 0; i < UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
+	{
+		if (!xJobs[i].inUse)
+		{
+			ret = &(xJobs[i]);
+			ret->inUse = true;
+			break;
+		}
+	}
+	xSemaphoreGive(xJobHandlerMutex);
+	return ret;
+}
 
 static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
 {
-	if(strcmp(data, "ack"))
+	struct tUnitJobHandler * xjob = unitGetFreeJobHandler();
+	unitExtractJobHandle(xjob, data, sender);
+	if(strcmp(xjob->xJob.xCapability->Name, "ack"))
 	{
 		bUdpReceiveAsync(InitXmitRxCallback, 1);
 	}
@@ -55,55 +85,121 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
 		udpHandler_init(sender);
 	}
 }
+
+/**
+ * Was noch fehlt ist, dass globale Jobs übernommen werden und der timer gestartet wird etc etc etc...
+ * noch viel zu tun
+ */
 static void DispatchXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
 {
 	int i,j;
 	struct tUnitJobHandler * xjob = NULL;
 
-	if(!xSemaphoreTake(xJobHandlerMutex, 200))
-	{
-		// failure !!
-	}
-
-	for (i = 0; i < UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
-	{
-		if (!xJobs[i].inUse)
-		{
-			xjob = &(xJobs[i]);
-			break;
-		}
-	}
-	xSemaphoreGive(xJobHandlerMutex);
-
-	if (xjob == NULL)
-	{
-		// over capacity !!
-	}
-	bUnitExtractJobHandle(xjob, data, sender);
+	xjob = unitGetFreeJobHandler();
+	unitExtractJobHandle(xjob, data, sender);
 
 	if (xjob->inUse)
 	{
+		xjob->unit->vNewJob(xjob->xJob);
 	}
+}
 
+static tUnit * unitGetUnitByName(char * Name)
+{
+	int i;
 
+	if(Name == NULL)
+		return NULL;
 
-
-/*	//enqueue job to corresponding unit
 	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
 	{
-		if(xUnits[i].bInUse && strcmp(xUnits[i].xUnit.Name, xjob.unitName) == 0)
+		if(xUnits[i].bInUse && strcmp(xUnits[i].xUnit.Name, Name) == 0)
 		{
-			for(j=0; j<UNIT_MAX_CAPABILITIES; j++)
-			{
-				if(strcmp(xUnits[i].xUnit.xCapabilities[j].Type, xjob.xCapability.Type) == 0)
-				{
-					// newJob(Capability, Data) müsst reichen
-					xUnits[i].xUnit.vNewJob(xjob);
-				}
-			}
+			return &(xUnits[i].xUnit);
 		}
-	}*/
+	}
+	return NULL;
 }
+
+static tUnitCapability * unitGetCapabilityByName(tUnit * unit, char * Name)
+{
+	int i;
+
+	if(unit == NULL || Name == NULL)
+		return NULL;
+
+	if(unit == SUPER_UNIT)
+	{
+		strcpy(xGlobalUnitCapability.Name, Name);
+		return &xGlobalUnitCapability;
+	}
+
+	for(i=0; i<UNIT_MAX_CAPABILITIES; i++)
+	{
+		if(strcmp(unit->xCapabilities[i].Name, Name) == 0)
+			return &(unit->xCapabilities[i]);
+	}
+	return NULL;
+}
+
+/**
+ * TODO: ack ds, dt etc + global dedicated
+ */
+static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char * data, uip_udp_endpoint_t sender)
+{
+	struct muXMLTree * tree = muXMLTreeDecode(data, xmlBuffer, sizeof(xmlBuffer), 0, NULL);
+	struct muXMLTreeElement * element;
+	char * tmpStr;
+
+	if(tree == NULL)
+	{
+		handler->inUse = false;
+		return;
+	}
+
+	// unit extraction
+	element = muXMLGetElementByName(&(tree->Root), "unit");
+	if(element == NULL)
+	{
+		handler->inUse = false;
+		return;
+	}
+	tmpStr = muXMLGetAttributeByName(element, "name");
+	if(tmpStr == NULL)
+	{
+		handler->unit = SUPER_UNIT;
+	}
+	else
+	{
+		handler->unit = unitGetUnitByName(tmpStr);
+	}
+
+	// capability extraction
+	element = element->SubElements;
+	if(element == NULL)
+	{
+		handler->inUse = false;
+		return;
+	}
+	handler->xJob.xCapability = unitGetCapabilityByName(handler->unit, element->Element.Name);
+	if(handler->xJob.xCapability == NULL)
+	{
+		handler->inUse = false;
+		return;
+	}
+	if(element->Data.DataSize < UNIT_MIDDLE_STRING-1)
+	{
+		strncpy(handler->xJob.data, element->Data.Data, element->Data.DataSize);
+	}
+	else
+	{
+		handler->inUse = false;
+		return;
+	}
+	handler->xJob.uid = NEW_UID();
+	handler->inUse = true;
+}
+
 static int unitBuildInitialEpm(unsigned char * buffer, int maxSize)
 {
 	int i;
@@ -145,13 +241,13 @@ void vUnitHandlerTask(void * pvParameters)
 
 	// Unit dispatch state
 	bUdpReceiveAsync(DispatchXmitRxCallback, -1);
-	while(true)
+	while(true);/*
 	{
 		xQueueReceive(xJobQueue, &xNewJob, portMAX_DELAY);
 		for(i=0; i<UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
 		{
 		}
-	}
+	}*/
 }
 
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived)
@@ -230,7 +326,7 @@ tUnitCapability * bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 		if(!UNIT_CAPABILITY_VALID(pUnit->xCapabilities[i]))
 		{
 			pUnit->xCapabilities[i].pxDependancy = Capability.pxDependancy;
-			memcpy(pUnit->xCapabilities[i].Type, Capability.Type, sizeof(Capability.Type));
+			memcpy(pUnit->xCapabilities[i].Name, Capability.Name, sizeof(Capability.Name));
 			return &(pUnit->xCapabilities[i]);
 		}
 	}
@@ -243,11 +339,11 @@ tBoolean bUnitSend(tUnit * unit, tUnitCapability * capability, char * data)
 	strcpy(txBuffer, "<epm><unit name=\"");
 	strcat(txBuffer, unit->Name);
 	strcat(txBuffer, "\"><");
-	strcat(txBuffer, capability->Type);
+	strcat(txBuffer, capability->Name);
 	strcat(txBuffer, ">");
 	strcat(txBuffer, data);
 	strcat(txBuffer, "</");
-	strcat(txBuffer, capability->Type);
+	strcat(txBuffer, capability->Name);
 	strcat(txBuffer, ">");
 	strcat(txBuffer, "</unit></epm>");
 

@@ -242,8 +242,8 @@ unsigned portLONG ulTemp;
 	/* Was it an Rx interrupt? */
 	if( ulTemp & ETH_INT_RX )
 	{
-		xSemaphoreGiveFromISR( xMACInterruptSemaphore, &xHigherPriorityTaskWoken );
 		EthernetIntDisable( ETH_BASE, ETH_INT_RX );
+		xSemaphoreGiveFromISR( xMACInterruptSemaphore, &xHigherPriorityTaskWoken );
 	}
 		
     /* Switch to the uIP task. */
@@ -309,7 +309,7 @@ portBASE_TYPE xSwitchRequired = pdFALSE;
 			}
 		}
 		
-		EthernetIntEnable( ETH_BASE, ETH_INT_RX );
+		// TODO rausgenommen: EthernetIntEnable( ETH_BASE, ETH_INT_RX );
 	}
 }
 

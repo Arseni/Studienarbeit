@@ -40,13 +40,13 @@ typedef struct
 
 typedef struct
 {
-	char Type[UNIT_MIDDLE_STRING];
+	char Name[UNIT_MIDDLE_STRING];
 	char Data[UNIT_MIDDLE_STRING];
 	void * pxDependancy;
 }tUnitCapability;
 
-#define UNIT_CAPABILITY_VALID(X) (strlen(X.Type)>0?true:false)
-#define UNIT_CAPABILITIES_CMP(X,Y) (strcmp(X.Type, Y.Type))
+#define UNIT_CAPABILITY_VALID(X) (strlen(X.Name)>0?true:false)
+#define UNIT_CAPABILITIES_CMP(X,Y) (strcmp(X.Name, Y.Name))
 
 typedef struct
 {

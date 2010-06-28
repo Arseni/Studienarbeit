@@ -157,3 +157,18 @@ void * muXMLAddElement(struct muXMLTree * pTree,
 
 	return pNewElement + 1;
 }
+
+char * muXMLGetAttributeByName(struct muXMLTreeElement * pElement, char * Name)
+{
+	int i;
+	for(i=0; i<muXML_MAX_ATTRIBUTE_CNT;i++)
+	{
+		if(strcmp(pElement->Element.Attribute[i].Name, Name) == 0)
+		{
+			return pElement->Element.Attribute[i].Value;
+		}
+	}
+	return NULL;
+}
+
+

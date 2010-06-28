@@ -38,7 +38,7 @@ static inline void vOledDbg(char * s)
 	if(xOLEDQueue == NULL)
 		return;
 	xOLEDMessage msg;
-	strcpy(msg.pcMessage, s);
+	memcpy(msg.pcMessage, s, LCD_MESSAGE_MAX_LENGTH);
 	xQueueSend(xOLEDQueue, &msg, portMAX_DELAY);
 }
 

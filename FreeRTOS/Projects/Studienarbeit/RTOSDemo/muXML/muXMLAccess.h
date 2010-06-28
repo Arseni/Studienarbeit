@@ -20,4 +20,6 @@ void * muXMLUpdateData(struct muXMLTree * pTree,
 
 void * muXMLCreateTree(void * Buffer, int BufferLength, char * rootName);
 void muXMLCreateElement(void * Buffer, char * name);
+
+char * muXMLGetAttributeByName(struct muXMLTreeElement * pElement, char * Name);
 #endif /* MUXML_H */
