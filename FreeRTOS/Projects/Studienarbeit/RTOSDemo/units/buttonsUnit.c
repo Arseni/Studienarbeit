@@ -44,6 +44,7 @@ void vBtnUnitTask(void * pvParameters)
 
 	// init unit
 	xBtnUnit = xUnitCreate("Buttons", vBtnUnitNewJob);
+	bUnitAddCapability(xBtnUnit, (tUnitCapability){"ack", NULL});
 	ButtonStateCapability = bUnitAddCapability(xBtnUnit, (tUnitCapability){"ButtonState", NULL});
 	SendImmediateCapability = bUnitAddCapability(xBtnUnit, (tUnitCapability){"SendImmediate", NULL});
 
@@ -62,8 +63,10 @@ void vBtnUnitTask(void * pvParameters)
 				// a button has been pressed... do something
 				if(sendoutImmediate)
 				{
-					sprintf(tmpStr, "BtnPress:%d", xQueueItem.xValue.xButton);
-					bUnitSend(xBtnUnit, ButtonStateCapability, tmpStr);
+					sprintf(xQueueItem.xValue.xJob.data, "BtnPress:%d", xQueueItem.xValue.xButton);
+					xQueueItem.xValue.xJob.xCapability = ButtonStateCapability;
+					xQueueItem.xValue.xJob.uid = -1;
+					bUnitSend(xBtnUnit, xQueueItem.xValue.xJob);
 				}
 				break;
 			case JOB:
@@ -73,6 +76,8 @@ void vBtnUnitTask(void * pvParameters)
 				if(strcmp(xQueueItem.xValue.xJob.xCapability->Name, "SendImmediate") == 0)
 				{
 					sendoutImmediate = true;
+					strcpy(xQueueItem.xValue.xJob.data, "ack");
+					bUnitSend(xBtnUnit, xQueueItem.xValue.xJob);
 				}
 				// a job arrived, handle it
 				break;

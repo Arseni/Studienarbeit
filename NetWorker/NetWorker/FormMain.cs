@@ -37,6 +37,20 @@ namespace NetWorker
             client.Connect(rEndpoint);
             string send = buildXMLString();
             client.Send(ASCIIEncoding.Default.GetBytes(send), send.Length);
+            while (true)
+            {
+                Stream s = new MemoryStream(client.Receive(ref rEndpoint));
+                XmlDataDocument doc = new XmlDataDocument();
+                try
+                {
+                    doc.Load(s);
+                    richTextBox1.AppendText(String.Format("{0} - {1}\r\n", doc["epm"]["unit"].Attributes["name"].Value,
+                                                                       doc["epm"]["unit"].InnerXml));
+                    richTextBox1.Refresh();
+                    this.Refresh();
+                }
+                catch { }
+            }
             client.Close();
         }
 

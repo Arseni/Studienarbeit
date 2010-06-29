@@ -41,7 +41,6 @@ typedef struct
 typedef struct
 {
 	char Name[UNIT_MIDDLE_STRING];
-	char Data[UNIT_MIDDLE_STRING];
 	void * pxDependancy;
 }tUnitCapability;
 
@@ -77,6 +76,11 @@ void vUnitHandlerTask(void * pvParameters);
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);
 tBoolean xUnitUnlink(tUnit * pUnit);
 tUnitCapability * bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
-tBoolean bUnitSend(tUnit * unit, tUnitCapability * capability, char * data);
+
+tUnit * unitGetUnitByName(char * Name);
+tUnitCapability * unitGetCapabilityByName(tUnit * unit, char * Name);
+
+tBoolean bUnitSend(tUnit * unit, tUnitJob xjob);
+
 
 #endif

@@ -14,6 +14,9 @@
 #define NEW_UID() (unitJobUID++)
 #define SUPER_UNIT ((tUnit*)(-1))
 
+#define STATUS_USE_SEQ_NO	(1<<0)
+#define STATUS_USE_UID		(1<<1)
+
 struct tUnitHandler
 {
 	tUnit xUnit;
@@ -28,11 +31,13 @@ struct tUnitJobHandler
 	tUnit * unit;
 	uip_udp_endpoint_t endpoint;
 
-	tBoolean seqNo;
+	int uid;
+	int seqNo;
 	tBoolean relTime;
 	tBoolean ack;
 	unsigned int ds;
 	unsigned int dt;
+	char statusFlags;
 
 	tBoolean inUse;
 };
@@ -104,7 +109,7 @@ static void DispatchXmitRxCallback(unsigned char * data, int len, uip_udp_endpoi
 	}
 }
 
-static tUnit * unitGetUnitByName(char * Name)
+tUnit * unitGetUnitByName(char * Name)
 {
 	int i;
 
@@ -121,7 +126,7 @@ static tUnit * unitGetUnitByName(char * Name)
 	return NULL;
 }
 
-static tUnitCapability * unitGetCapabilityByName(tUnit * unit, char * Name)
+tUnitCapability * unitGetCapabilityByName(tUnit * unit, char * Name)
 {
 	int i;
 
@@ -333,19 +338,44 @@ tUnitCapability * bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
 	return NULL;
 }
 
-tBoolean bUnitSend(tUnit * unit, tUnitCapability * capability, char * data)
+static char * intToStr(char * buffer, int number)
 {
-	// TODO xmlBuildSendStringOderSo
-	strcpy(txBuffer, "<epm><unit name=\"");
-	strcat(txBuffer, unit->Name);
-	strcat(txBuffer, "\"><");
-	strcat(txBuffer, capability->Name);
-	strcat(txBuffer, ">");
-	strcat(txBuffer, data);
-	strcat(txBuffer, "</");
-	strcat(txBuffer, capability->Name);
-	strcat(txBuffer, ">");
-	strcat(txBuffer, "</unit></epm>");
+	sprintf(buffer, "%d", number);
+	return buffer;
+}
+
+tBoolean bUnitSend(tUnit * unit, tUnitJob xjob)
+{
+	int i;
+	struct tUnitJobHandler * handler = NULL;
+	void * pp, * p;
+	char tmpStr[UNIT_MIDDLE_STRING];
+
+	for(i=0; i<UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
+	{
+		if(xjob.uid == xJobs[i].xJob.uid)
+		{
+			handler = &xJobs[i];
+			break;
+		}
+	}
+
+	pp = muXMLCreateTree(xmlBuffer, sizeof(xmlBuffer), "epm");
+	if(handler->statusFlags & STATUS_USE_SEQ_NO)
+		muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), "seqno", intToStr(tmpStr, handler->seqNo));
+	if(handler->statusFlags & STATUS_USE_UID)
+		muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), "seqno", intToStr(tmpStr, handler->uid));
+
+	muXMLCreateElement(pp, "unit");
+	muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, pp, "name", unit->Name);
+	p = pp;
+	pp = muXMLAddElement((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), pp);
+
+	muXMLCreateElement(pp, xjob.xCapability->Name);
+	muXMLUpdateData((struct muXMLTree*)xmlBuffer, pp, xjob.data);
+	muXMLAddElement((struct muXMLTree*)xmlBuffer, p, pp);
+
+	muXMLTreeEncode(txBuffer, sizeof(txBuffer), (struct muXMLTree*)xmlBuffer);
 
 	bUdpSendAsync(txBuffer, strlen(txBuffer));
 }
