@@ -44,10 +44,9 @@ namespace NetWorker
                 try
                 {
                     doc.Load(s);
-                    richTextBox1.AppendText(String.Format("{0} - {1}\r\n", doc["epm"]["unit"].Attributes["name"].Value,
-                                                                       doc["epm"]["unit"].InnerXml));
-                    richTextBox1.Refresh();
-                    this.Refresh();
+                    string txt = doc.InnerXml;
+                    MessageBox.Show(txt);//String.Format("{0} - {1}\r\n", doc["epm"]["unit"].Attributes["name"].Value,
+                                          //                             doc["epm"]["unit"].InnerXml));
                 }
                 catch { }
             }
@@ -56,7 +55,7 @@ namespace NetWorker
 
         private string buildXMLString()
         {
-            return "<epm><unit name=\"Buttons\"><SendImmediate/></unit></epm>\0";
+            return "<epm ack=\"yes\" uid=\"5544\" withseqno=\"yes\"><unit name=\"Buttons\"><ButtonState sendonarrival=\"yes\"/></unit></epm>\0";
         }
 
 

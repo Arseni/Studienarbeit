@@ -10,7 +10,7 @@
 #include "unit.h"
 
 static void vButtonPress(tButton button);
-static void vBtnUnitNewJob(tUnitJob Job);
+static tBoolean vBtnUnitNewJob(tUnitJob Job);
 
 typedef struct
 {
@@ -32,10 +32,11 @@ static tUnit * xBtnUnit;
 static tUnitCapability * ButtonStateCapability, * SendImmediateCapability;
 static char tmpStr[200]; // TODO delete me
 static tBoolean sendoutImmediate = false;
+int sendoutImmediateUid = 0;
 
 void vBtnUnitTask(void * pvParameters)
 {
-
+	int i;
 	tBtnUnitQueueItem xQueueItem;
 
 	// init buttons driver
@@ -46,7 +47,6 @@ void vBtnUnitTask(void * pvParameters)
 	xBtnUnit = xUnitCreate("Buttons", vBtnUnitNewJob);
 	bUnitAddCapability(xBtnUnit, (tUnitCapability){"ack", NULL});
 	ButtonStateCapability = bUnitAddCapability(xBtnUnit, (tUnitCapability){"ButtonState", NULL});
-	SendImmediateCapability = bUnitAddCapability(xBtnUnit, (tUnitCapability){"SendImmediate", NULL});
 
 	// init internal
 	xQueue = xQueueCreate(BTN_UNIT_MAX_QUEUE_LEN, sizeof(tBtnUnitQueueItem));
@@ -65,7 +65,7 @@ void vBtnUnitTask(void * pvParameters)
 				{
 					sprintf(xQueueItem.xValue.xJob.data, "BtnPress:%d", xQueueItem.xValue.xButton);
 					xQueueItem.xValue.xJob.xCapability = ButtonStateCapability;
-					xQueueItem.xValue.xJob.uid = -1;
+					xQueueItem.xValue.xJob.uid = sendoutImmediateUid;
 					bUnitSend(xBtnUnit, xQueueItem.xValue.xJob);
 				}
 				break;
@@ -73,12 +73,7 @@ void vBtnUnitTask(void * pvParameters)
 				strcpy(tmpStr, "Job: ");
 				strcat(tmpStr, xQueueItem.xValue.xJob.xCapability->Name);
 				vOledDbg(tmpStr);
-				if(strcmp(xQueueItem.xValue.xJob.xCapability->Name, "SendImmediate") == 0)
-				{
-					sendoutImmediate = true;
-					strcpy(xQueueItem.xValue.xJob.data, "ack");
-					bUnitSend(xBtnUnit, xQueueItem.xValue.xJob);
-				}
+
 				// a job arrived, handle it
 				break;
 			}
@@ -99,13 +94,27 @@ static void vButtonPress(tButton button)
 /**
  * Use this function to validate, format and enqueue the Job only!
  */
-static void vBtnUnitNewJob(tUnitJob Job)
+static eUnitJobState vBtnUnitNewJob(tUnitJob Job)
 {
 	int i;
+	eUnitJobState ret = 0;
 	tUnitCapability * pxDstCapability;
 	tBtnUnitQueueItem item;
 
 	// TODO Validate job
+	if(Job.xCapability == ButtonStateCapability)
+	{
+		for(i=0;i<Job.parametersCnt;i++)
+		{
+			if( (strcmp(Job.parameter[i].Name, "sendonarrival") == 0)
+				&& (strcmp(Job.parameter[i].Value, "yes") == 0) )
+			{
+				sendoutImmediate = true;
+				sendoutImmediateUid = Job.uid;
+				ret |= JOB_STORE;
+			}
+		}
+	}
 
 	// format
 	item.eType = JOB;
@@ -115,4 +124,5 @@ static void vBtnUnitNewJob(tUnitJob Job)
 	if(xQueue != NULL)
 		xQueueSend(xQueue, &item, portMAX_DELAY);
 
+	return ret | JOB_ACK;
 }

@@ -14,8 +14,10 @@
 #define NEW_UID() (unitJobUID++)
 #define SUPER_UNIT ((tUnit*)(-1))
 
-#define STATUS_USE_SEQ_NO	(1<<0)
-#define STATUS_USE_UID		(1<<1)
+#define STATUS_USE_SEQ_NO		(1<<0)
+#define STATUS_USE_UID			(1<<1)
+#define STATUS_ACK_REQUESTED	(1<<2)
+#define STATUS_SEND_ON_ARRIVE	(1<<3)
 
 struct tUnitHandler
 {
@@ -39,6 +41,7 @@ struct tUnitJobHandler
 	unsigned int dt;
 	char statusFlags;
 
+	tBoolean store;
 	tBoolean inUse;
 };
 
@@ -98,14 +101,32 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
 static void DispatchXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
 {
 	int i,j;
+	eUnitJobState state = 0;
 	struct tUnitJobHandler * xjob = NULL;
 
 	xjob = unitGetFreeJobHandler();
+	if(xjob == NULL)
+		return;
+
 	unitExtractJobHandle(xjob, data, sender);
 
-	if (xjob->inUse)
+	if (!xjob->inUse)
 	{
-		xjob->unit->vNewJob(xjob->xJob);
+		// TODO fehler
+	}
+
+	state = xjob->unit->vNewJob(xjob->xJob);
+
+	if(state & JOB_STORE)
+		xjob->store = true;
+
+	if(xjob->statusFlags & STATUS_ACK_REQUESTED && state & JOB_ACK)
+	{
+		tUnitJob job;
+		job.xCapability = unitGetCapabilityByName(xjob->unit, "ack");
+		job.uid = xjob->xJob.uid;
+		*(job.data) = 0;
+		bUnitSend(xjob->unit, job);
 	}
 }
 
@@ -152,6 +173,7 @@ tUnitCapability * unitGetCapabilityByName(tUnit * unit, char * Name)
  */
 static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char * data, uip_udp_endpoint_t sender)
 {
+	int i;
 	struct muXMLTree * tree = muXMLTreeDecode(data, xmlBuffer, sizeof(xmlBuffer), 0, NULL);
 	struct muXMLTreeElement * element;
 	char * tmpStr;
@@ -160,6 +182,28 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 	{
 		handler->inUse = false;
 		return;
+	}
+
+	// epm attributes to flags
+	handler->statusFlags = 0;
+	for(i=0; i<tree->Root.Element.nAttributes; i++)
+	{
+		if(strcmp(tree->Root.Element.Attribute[i].Name, "ack") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "yes") == 0)
+			handler->statusFlags |= STATUS_ACK_REQUESTED;
+		if(strcmp(tree->Root.Element.Attribute[i].Name, "uid") == 0)
+		{
+			handler->uid = atoi(tree->Root.Element.Attribute[i].Value);
+			handler->statusFlags |= STATUS_USE_UID;
+		}
+		if(strcmp(tree->Root.Element.Attribute[i].Name, "withseqno") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "yes") == 0)
+		{
+			handler->statusFlags |= STATUS_USE_SEQ_NO;
+			handler->seqNo = 1;
+		}
+		if(strcmp(tree->Root.Element.Attribute[i].Name, "sendonarrival") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "yes") == 0)
+		{
+			handler->statusFlags |= STATUS_SEND_ON_ARRIVE;
+		}
 	}
 
 	// unit extraction
@@ -187,6 +231,8 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 		return;
 	}
 	handler->xJob.xCapability = unitGetCapabilityByName(handler->unit, element->Element.Name);
+	handler->xJob.parameter = element->Element.Attribute;
+	handler->xJob.parametersCnt = element->Element.nAttributes;
 	if(handler->xJob.xCapability == NULL)
 	{
 		handler->inUse = false;
@@ -361,10 +407,10 @@ tBoolean bUnitSend(tUnit * unit, tUnitJob xjob)
 	}
 
 	pp = muXMLCreateTree(xmlBuffer, sizeof(xmlBuffer), "epm");
-	if(handler->statusFlags & STATUS_USE_SEQ_NO)
-		muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), "seqno", intToStr(tmpStr, handler->seqNo));
+	if((handler->statusFlags & STATUS_USE_SEQ_NO) && (handler->xJob.xCapability == xjob.xCapability))
+		muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), "seqno", intToStr(tmpStr, handler->seqNo++));
 	if(handler->statusFlags & STATUS_USE_UID)
-		muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), "seqno", intToStr(tmpStr, handler->uid));
+		muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, &(((struct muXMLTree*)xmlBuffer)->Root), "uid", intToStr(tmpStr, handler->uid));
 
 	muXMLCreateElement(pp, "unit");
 	muXMLUpdateAttribute((struct muXMLTree*)xmlBuffer, pp, "name", unit->Name);
@@ -378,4 +424,7 @@ tBoolean bUnitSend(tUnit * unit, tUnitJob xjob)
 	muXMLTreeEncode(txBuffer, sizeof(txBuffer), (struct muXMLTree*)xmlBuffer);
 
 	bUdpSendAsync(txBuffer, strlen(txBuffer));
+
+	if(!handler->store)
+		handler->inUse = false;
 }

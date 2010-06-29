@@ -22,6 +22,7 @@
 /* Library includes. */
 #include "hw_types.h"
 #include "uip.h"
+#include "muXML/muXML.h"
 #include <string.h>
 
 typedef enum
@@ -29,6 +30,12 @@ typedef enum
 	UNIT_READY,
 	UNIT_BUSY
 }eUnitState;
+
+typedef enum
+{
+	JOB_ACK = (1<<0),
+	JOB_STORE = (1<<1)
+}eUnitJobState;
 
 typedef struct
 {
@@ -51,6 +58,8 @@ typedef struct
 {
 	tUnitCapability * xCapability;
 	char data[UNIT_MIDDLE_STRING];
+	struct muXML_Attribute * parameter;
+	int parametersCnt;
 	int uid;
 }tUnitJob;
 
@@ -59,7 +68,7 @@ typedef struct
 	char Text[UNIT_MIDDLE_STRING];
 }tUnitValue;
 
-typedef void (* tcbUnitNewJob) (tUnitJob xNewJob);
+typedef eUnitJobState (* tcbUnitNewJob) (tUnitJob xNewJob);
 
 typedef struct
 {

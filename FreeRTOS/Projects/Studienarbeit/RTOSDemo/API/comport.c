@@ -62,7 +62,7 @@ xComPortHandle xComOpen( tCOMPort ePort, tBaud eWantedBaud, tParity eWantedParit
 {
 	Init();
 
-	UARTConfigSetExpClk(UART0_BASE, SysCtlClockGet(), 9600, UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
+	UARTConfigSetExpClk(UART0_BASE, SysCtlClockGet(), 57600, UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
 	UARTEnable(UART0_BASE);
 }
 void vComWrite( xComPortHandle pxPort, const signed char * const pcString, unsigned short usStringLength )
@@ -77,7 +77,7 @@ signed portBASE_TYPE xComGetChar( xComPortHandle pxPort, portTickType xBlockTime
 }
 void vComPutChar( xComPortHandle pxPort, signed char cOutChar, portTickType xBlockTime )
 {
-	UARTCharPut(UART0_BASE, 'A');
+	UARTCharPut(UART0_BASE, 0x55);
 }
 portBASE_TYPE xComWaitForSemaphore( xComPortHandle xPort )
 {
