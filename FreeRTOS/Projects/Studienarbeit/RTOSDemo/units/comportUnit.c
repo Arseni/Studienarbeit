@@ -5,14 +5,23 @@
 #include "task.h"
 #include "semphr.h"
 
+#include "muXML/muXMLAccess.h"
+
 #include "unit.h"
 #include "comportUnit.h"
 
+static tUnit * serComUnit;
+static tUnitCapability * readCapability, * writeCapability;
+int stx = -1, etx = -1, sendoutImmediateUid;
+tBoolean sendoutImmediate = false;
+
 /**
- *  Semapthore, die die interkommunikation synchronisiert
- *  zwischen Jobdispatcher und comport
+ * Callback Funktion für Eintreffen eines Jobs
+ * Diese Funktion wird vom UDP Task als Job Handler aufgerufen
+ * und muss den darin befindlichen Job in den Unit Task
+ * synchronisieren
  */
-xSemaphoreHandle xComportUnitTaskSemaphore;
+static eUnitJobState vComportUnitJobReceived(struct muXMLTreeElement * job, int uid);
 
 /**
  * Description !!!
@@ -26,7 +35,10 @@ void vComportUnitTask( void *pvParameters )
 	xComOpen(1,2,3,4,5,6);
 
 	// Setup Unit
-	vSemaphoreCreateBinary( xComportUnitTaskSemaphore );
+	serComUnit = xUnitCreate("SerCom", vComportUnitJobReceived);
+	bUnitAddCapability(serComUnit, (tUnitCapability){"ack", NULL});
+	writeCapability = bUnitAddCapability(serComUnit, (tUnitCapability){"write", NULL});
+	readCapability = bUnitAddCapability(serComUnit, (tUnitCapability){"read", NULL});
 
 	// Periodic
 	for(;;)
@@ -40,6 +52,32 @@ void vComportUnitTask( void *pvParameters )
 /*
  * Callback für Unit müssste sowas sein wie: entsperre semaphore, schreibe daten in queue
  */
-void vComportUnitJobReceived(tUnitJob job)
+static eUnitJobState vComportUnitJobReceived(struct muXMLTreeElement * job, int uid)
 {
+	char * tmpVal;
+	eUnitJobState ret = 0;
+
+	if(strcmp(job->SubElements->Element.Name, readCapability->Name) == 0)
+	{
+		tmpVal = muXMLGetAttributeByName(job->SubElements, "stx");
+		if(tmpVal != NULL)
+			stx = *tmpVal;
+		else
+			stx = -1;
+
+		tmpVal = muXMLGetAttributeByName(job->SubElements, "etx");
+		if(tmpVal != NULL)
+			etx = *tmpVal;
+		else
+			etx = -1;
+
+		if(strcmp(muXMLGetAttributeByName(job->SubElements, "sendonarrival"), "yes") == 0)
+		{
+			sendoutImmediate = true;
+			sendoutImmediateUid = uid;
+			ret |= JOB_STORE;
+		}
+	}
+
+	return ret | JOB_ACK;
 }

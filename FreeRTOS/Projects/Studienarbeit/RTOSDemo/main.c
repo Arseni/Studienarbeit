@@ -208,7 +208,7 @@ int main( void )
 	/* Start the tasks defined within this file/specific to this demo. */
 	xTaskCreate( vOLEDTask, ( signed portCHAR * ) "OLED", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
 	//xTaskCreate( vTaskRefresh, ( signed portCHAR * ) "REFRESH", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-	xTaskCreate( vUARTTask, (signed portCHAR *) "UART", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
+	//xTaskCreate( vUARTTask, (signed portCHAR *) "UART", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	xTaskCreate( vLEDTask, (signed portCHAR *) "LED", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	xTaskCreate( vButtonTask, (signed portCHAR *) "Buttons", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	xTaskCreate( vEthernetTask, ( signed portCHAR * ) "uIP", mainBASIC_WEB_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );

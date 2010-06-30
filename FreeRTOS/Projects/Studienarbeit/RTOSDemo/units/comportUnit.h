@@ -5,10 +5,4 @@
  */
 void vComportUnitTask( void *pvParameters );
 
-/**
- * Callback Funktion für Eintreffen eines Jobs
- * Diese Funktion wird vom UDP Task als Job Handler aufgerufen
- * und muss den darin befindlichen Job in den Unit Task
- * synchronisieren
- */
-void vComportUnitJobReceived(tUnitJob job);
+

@@ -40,10 +40,11 @@ void * muXMLCreateTree(void * Buffer, int BufferLength, char * rootName)
 	return (struct muXMLTree*)Buffer + 1;
 }
 
-void muXMLCreateElement(void * Buffer, char * name)
+void * muXMLCreateElement(void * Buffer, char * name)
 {
 	memset(Buffer, 0, sizeof(struct muXMLTreeElement));
 	strcpy(((struct muXMLTreeElement*)Buffer)->Element.Name, name);
+	return ((struct muXMLTreeElement*)Buffer) + 1;
 }
 
 /**
@@ -54,8 +55,7 @@ void muXMLCreateElement(void * Buffer, char * name)
  * @ newData : Nullterminiterter String des neuen Datums
  * + return  : Pointer auf ersten freien Platz im newData Buffer
  */
-void * muXMLUpdateData(struct muXMLTree * pTree,
-					   struct muXMLTreeElement * pElement,
+void * muXMLUpdateData(struct muXMLTreeElement * pElement,
 					   char * newData)
 {
 #ifdef OBSOLETE
@@ -109,8 +109,7 @@ void * muXMLUpdateData(struct muXMLTree * pTree,
  * Ändert den Wert eines Attributs. Ist ein Attribut nicht vorhanden
  * wird es eingerichtet
  */
-int muXMLUpdateAttribute(struct muXMLTree * pTree,
-						 struct muXMLTreeElement * pElement,
+int muXMLUpdateAttribute(struct muXMLTreeElement * pElement,
 						 char * AttrName,
 						 char * AttrValue)
 {
@@ -140,8 +139,7 @@ int muXMLUpdateAttribute(struct muXMLTree * pTree,
 	return 2;
 }
 
-void * muXMLAddElement(struct muXMLTree * pTree,
-					   struct muXMLTreeElement * pElement,
+void * muXMLAddElement(struct muXMLTreeElement * pElement,
 					   struct muXMLTreeElement * pNewElement)
 {
 	struct muXMLTreeElement * temp = pElement->SubElements;
@@ -161,7 +159,7 @@ void * muXMLAddElement(struct muXMLTree * pTree,
 char * muXMLGetAttributeByName(struct muXMLTreeElement * pElement, char * Name)
 {
 	int i;
-	for(i=0; i<muXML_MAX_ATTRIBUTE_CNT;i++)
+	for(i=0; i<pElement->Element.nAttributes;i++)
 	{
 		if(strcmp(pElement->Element.Attribute[i].Name, Name) == 0)
 		{

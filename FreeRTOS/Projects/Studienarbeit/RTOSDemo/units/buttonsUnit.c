@@ -5,12 +5,14 @@
 
 #include "OLEDDisplay/oledDisplay.h"
 
+#include "muXML/muXMLAccess.h"
+
 #include "buttonsUnit.h"
 #include "buttons.h"
 #include "unit.h"
 
 static void vButtonPress(tButton button);
-static tBoolean vBtnUnitNewJob(tUnitJob Job);
+static tBoolean vBtnUnitNewJob(struct muXMLTreeElement * Job, int uid);
 
 typedef struct
 {
@@ -23,7 +25,6 @@ enum eType
 union xValue
 {
 	tButton xButton;
-	tUnitJob xJob;
 }xValue;
 }tBtnUnitQueueItem;
 
@@ -63,15 +64,36 @@ void vBtnUnitTask(void * pvParameters)
 				// a button has been pressed... do something
 				if(sendoutImmediate)
 				{
-					sprintf(xQueueItem.xValue.xJob.data, "BtnPress:%d", xQueueItem.xValue.xButton);
-					xQueueItem.xValue.xJob.xCapability = ButtonStateCapability;
-					xQueueItem.xValue.xJob.uid = sendoutImmediateUid;
-					bUnitSend(xBtnUnit, xQueueItem.xValue.xJob);
+					static char outTree[800];
+					char * next, * this;
+
+					next = muXMLCreateElement(outTree, xBtnUnit->Name);
+
+					// if an error accured, add error attribute to unit or something
+					this = next;
+					muXMLCreateElement(next, ButtonStateCapability->Name);
+					muXMLUpdateAttribute((struct muXMLTreeElement *)this, "cause", "press");
+					next = muXMLAddElement((struct muXMLTreeElement *)outTree, (struct muXMLTreeElement *)this);
+
+					*next = 0;
+					if(xQueueItem.xValue.xButton & BUTTON_LEFT)
+						strcat(next, "left");
+					if(xQueueItem.xValue.xButton & BUTTON_RIGHT)
+						strcat(next, "right");
+					if(xQueueItem.xValue.xButton & BUTTON_UP)
+						strcat(next, "up");
+					if(xQueueItem.xValue.xButton & BUTTON_DOWN)
+						strcat(next, "down");
+					if(xQueueItem.xValue.xButton & BUTTON_SEL)
+						strcat(next, "sel");
+
+					next = muXMLUpdateData((struct muXMLTreeElement *)this, next);
+					bUnitSend((struct muXMLTreeElement *)outTree, sendoutImmediateUid);//xBtnUnit, xQueueItem.xValue.xJob);
 				}
 				break;
 			case JOB:
 				strcpy(tmpStr, "Job: ");
-				strcat(tmpStr, xQueueItem.xValue.xJob.xCapability->Name);
+				//strcat(tmpStr, xQueueItem.xValue.xJob.xCapability->Name);
 				vOledDbg(tmpStr);
 
 				// a job arrived, handle it
@@ -94,24 +116,35 @@ static void vButtonPress(tButton button)
 /**
  * Use this function to validate, format and enqueue the Job only!
  */
-static eUnitJobState vBtnUnitNewJob(tUnitJob Job)
+static eUnitJobState vBtnUnitNewJob(struct muXMLTreeElement * job, int uid)
 {
 	int i;
 	eUnitJobState ret = 0;
+	if(strcmp(muXMLGetAttributeByName(job->SubElements, "sendonarrival"), "yes")==0)
+	{
+		ret = JOB_STORE | JOB_ACK;
+		sendoutImmediateUid = uid;
+		sendoutImmediate = true;
+	}
+	/*
 	tUnitCapability * pxDstCapability;
 	tBtnUnitQueueItem item;
 
 	// TODO Validate job
 	if(Job.xCapability == ButtonStateCapability)
 	{
+		if(strcmp(muXMLGetAttributeByName("sendonarrival"), "yes") == 0)
+		{
+			sendoutImmediate = true;
+			sendoutImmediateUid = Job.uid;
+			ret |= JOB_STORE;
+		}
 		for(i=0;i<Job.parametersCnt;i++)
 		{
 			if( (strcmp(Job.parameter[i].Name, "sendonarrival") == 0)
 				&& (strcmp(Job.parameter[i].Value, "yes") == 0) )
 			{
-				sendoutImmediate = true;
-				sendoutImmediateUid = Job.uid;
-				ret |= JOB_STORE;
+
 			}
 		}
 	}
@@ -123,6 +156,6 @@ static eUnitJobState vBtnUnitNewJob(tUnitJob Job)
 	// enqueue
 	if(xQueue != NULL)
 		xQueueSend(xQueue, &item, portMAX_DELAY);
-
-	return ret | JOB_ACK;
+	*/
+	return ret;
 }

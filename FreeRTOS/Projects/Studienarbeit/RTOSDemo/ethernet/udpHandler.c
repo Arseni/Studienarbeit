@@ -34,7 +34,6 @@ static struct ReceiveCompleteCallbackHandler
 static void vUdpNewData()
 {
 	int i;
-	tUnitJob xJob;
 	uip_udp_endpoint_t sender;
 	uip_ipaddr_copy(sender.rAddr, uip_udp_conn->appstate);
 	sender.lPort = HTONS(uip_udp_conn->lport);
@@ -134,13 +133,17 @@ tBoolean bUdpSendAsync(const unsigned char * data, int dataLen)//const tUnit * p
 				prvENET_Send();
 			}
 		}
-		return true;
+		else
+			return false;
 	}
 	else
 	{
 		return false;
 	}
+
+	return true;
 }
+
 tBoolean bUdpReceiveAsync(tOnReceiveComplete callback, int packages)
 {
 	int i;

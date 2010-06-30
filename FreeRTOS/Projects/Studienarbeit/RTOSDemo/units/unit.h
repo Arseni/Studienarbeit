@@ -22,7 +22,7 @@
 /* Library includes. */
 #include "hw_types.h"
 #include "uip.h"
-#include "muXML/muXML.h"
+#include "muXML/muXMLTree.h"
 #include <string.h>
 
 typedef enum
@@ -56,19 +56,10 @@ typedef struct
 
 typedef struct
 {
-	tUnitCapability * xCapability;
-	char data[UNIT_MIDDLE_STRING];
-	struct muXML_Attribute * parameter;
-	int parametersCnt;
-	int uid;
-}tUnitJob;
-
-typedef struct
-{
 	char Text[UNIT_MIDDLE_STRING];
 }tUnitValue;
 
-typedef eUnitJobState (* tcbUnitNewJob) (tUnitJob xNewJob);
+typedef eUnitJobState (* tcbUnitNewJob) (struct muXMLTreeElement * Job, int uid);
 
 typedef struct
 {
@@ -89,7 +80,7 @@ tUnitCapability * bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
 tUnit * unitGetUnitByName(char * Name);
 tUnitCapability * unitGetCapabilityByName(tUnit * unit, char * Name);
 
-tBoolean bUnitSend(tUnit * unit, tUnitJob xjob);
+tBoolean bUnitSend(struct muXMLTreeElement * xjob, int uid);
 
 
 #endif

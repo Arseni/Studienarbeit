@@ -37,7 +37,7 @@ namespace NetWorker
             client.Connect(rEndpoint);
             string send = buildXMLString();
             client.Send(ASCIIEncoding.Default.GetBytes(send), send.Length);
-            while (true)
+            /*while (true)
             {
                 Stream s = new MemoryStream(client.Receive(ref rEndpoint));
                 XmlDataDocument doc = new XmlDataDocument();
@@ -49,7 +49,7 @@ namespace NetWorker
                                           //                             doc["epm"]["unit"].InnerXml));
                 }
                 catch { }
-            }
+            }*/
             client.Close();
         }
 
