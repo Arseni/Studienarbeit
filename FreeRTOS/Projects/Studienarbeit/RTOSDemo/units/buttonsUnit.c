@@ -65,15 +65,11 @@ void vBtnUnitTask(void * pvParameters)
 				if(sendoutImmediate)
 				{
 					static char outTree[800];
-					char * next, * this;
-
-					next = muXMLCreateElement(outTree, xBtnUnit->Name);
+					char * next;
 
 					// if an error accured, add error attribute to unit or something
-					this = next;
-					muXMLCreateElement(next, ButtonStateCapability->Name);
-					muXMLUpdateAttribute((struct muXMLTreeElement *)this, "cause", "press");
-					next = muXMLAddElement((struct muXMLTreeElement *)outTree, (struct muXMLTreeElement *)this);
+					next = muXMLCreateElement(outTree, ButtonStateCapability->Name);
+					muXMLUpdateAttribute((struct muXMLTreeElement *)outTree, "cause", "press");
 
 					*next = 0;
 					if(xQueueItem.xValue.xButton & BUTTON_LEFT)
@@ -87,7 +83,7 @@ void vBtnUnitTask(void * pvParameters)
 					if(xQueueItem.xValue.xButton & BUTTON_SEL)
 						strcat(next, "sel");
 
-					next = muXMLUpdateData((struct muXMLTreeElement *)this, next);
+					next = muXMLUpdateData((struct muXMLTreeElement *)outTree, next);
 					bUnitSend((struct muXMLTreeElement *)outTree, sendoutImmediateUid);//xBtnUnit, xQueueItem.xValue.xJob);
 				}
 				break;
@@ -120,7 +116,7 @@ static eUnitJobState vBtnUnitNewJob(struct muXMLTreeElement * job, int uid)
 {
 	int i;
 	eUnitJobState ret = 0;
-	if(strcmp(muXMLGetAttributeByName(job->SubElements, "sendonarrival"), "yes")==0)
+	if(strcmp(muXMLGetAttributeByName(job, "sendonarrival"), "yes")==0)
 	{
 		ret = JOB_STORE | JOB_ACK;
 		sendoutImmediateUid = uid;

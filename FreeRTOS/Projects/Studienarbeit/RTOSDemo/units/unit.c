@@ -82,7 +82,7 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
 {
 	struct tUnitJobHandler * xjob = unitGetFreeJobHandler();
 	unitExtractJobHandle(xjob, data, sender);
-	if(strcmp(xjob->job->SubElements->Element.Name, "ack"))
+	if(strcmp(xjob->job->Element.Name, "ack"))
 	{
 		bUdpReceiveAsync(InitXmitRxCallback, 1);
 	}
@@ -97,14 +97,15 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
  * Was noch fehlt ist, dass globale Jobs übernommen werden und der timer gestartet wird etc etc etc...
  * noch viel zu tun
  */
-static void DispatchXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
+static void DispatchXmitRxCallback(unsigned char * data, int len,
+		uip_udp_endpoint_t sender)
 {
-	int i,j;
+	int i, j;
 	eUnitJobState state = 0;
 	struct tUnitJobHandler * xjob = NULL;
 
 	xjob = unitGetFreeJobHandler();
-	if(xjob == NULL)
+	if (xjob == NULL)
 		return;
 
 	unitExtractJobHandle(xjob, data, sender);
@@ -117,18 +118,18 @@ static void DispatchXmitRxCallback(unsigned char * data, int len, uip_udp_endpoi
 
 	state = xjob->unit->vNewJob(xjob->job, xjob->internal_uid);
 
-	if(state & JOB_STORE)
+	if (state & JOB_STORE)
 		xjob->store = true;
 
-	if(xjob->statusFlags & STATUS_ACK_REQUESTED && state & JOB_ACK)
+	if (xjob->statusFlags & STATUS_ACK_REQUESTED && state & JOB_ACK)
 	{
 		/*static char buffer[400];
-		char * next;
-		next = muXMLCreateElement(buffer, xjob->unit->Name);
-		muXMLCreateElement(next, "ack");
-		muXMLAddElement(buffer, next);
+		 char * next;
+		 next = muXMLCreateElement(buffer, xjob->unit->Name);
+		 muXMLCreateElement(next, "ack");
+		 muXMLAddElement(buffer, next);
 
-		bUnitSend(buffer, xjob->internal_uid);*/
+		 bUnitSend(buffer, xjob->internal_uid);*/
 	}
 }
 
@@ -226,7 +227,12 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 	}
 
 	// capability extraction
-	handler->job = element;
+	handler->job = element->SubElements;
+	if(handler->job == NULL)
+	{
+		handler->inUse = false;
+		return;
+	}
 
 	handler->internal_uid = NEW_UID();
 	handler->inUse = true;
@@ -391,7 +397,10 @@ tBoolean bUnitSend(struct muXMLTreeElement * xjob, int uid)
 	if(handler->statusFlags & STATUS_USE_UID)
 		muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "uid", intToStr(tmpStr, handler->uid));
 
-	muXMLAddElement(&(((struct muXMLTree*)xmlBuffer)->Root), xjob);
+	muXMLCreateElement(pp, handler->unit->Name);
+	muXMLAddElement(&(((struct muXMLTree*)xmlBuffer)->Root), pp);
+
+	muXMLAddElement((struct muXMLTree*)pp, xjob);
 
 	muXMLTreeEncode(txBuffer, sizeof(txBuffer), (struct muXMLTree*)xmlBuffer);
 
