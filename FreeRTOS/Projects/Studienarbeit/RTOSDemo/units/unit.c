@@ -11,7 +11,7 @@
 
 #include "OLEDDisplay/oledDisplay.h"
 
-#define NEW_UID() (unitJobUID++)
+#define NEW_UID() (++unitJobUID)
 #define SUPER_UNIT ((tUnit*)(-1))
 
 #define STATUS_USE_SEQ_NO		(1<<0)
@@ -41,6 +41,7 @@ struct tUnitJobHandler
 	unsigned int dt;
 	char statusFlags;
 
+	portTickType startTime;
 	tBoolean store;
 	tBoolean inUse;
 };
@@ -71,6 +72,7 @@ static struct tUnitJobHandler * unitGetFreeJobHandler()
 		{
 			ret = &(xJobs[i]);
 			ret->inUse = true;
+			ret->startTime = xTaskGetTickCount();
 			break;
 		}
 	}
@@ -90,6 +92,7 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
 	{
 		ack = true;
 		udpHandler_init(sender);
+		xjob->inUse = false;
 	}
 }
 
@@ -123,13 +126,11 @@ static void DispatchXmitRxCallback(unsigned char * data, int len,
 
 	if (xjob->statusFlags & STATUS_ACK_REQUESTED && state & JOB_ACK)
 	{
-		/*static char buffer[400];
-		 char * next;
-		 next = muXMLCreateElement(buffer, xjob->unit->Name);
-		 muXMLCreateElement(next, "ack");
-		 muXMLAddElement(buffer, next);
+		struct muXMLTreeElement element;
+		muXMLCreateElement(&element, "ack");
+		muXMLUpdateAttribute(&element, "cmd", muXMLGetAttributeByName(xjob->job, "name"));
 
-		 bUnitSend(buffer, xjob->internal_uid);*/
+		bUnitSend(&element, xjob->internal_uid);
 	}
 }
 
@@ -263,7 +264,7 @@ static int unitBuildInitialEpm(unsigned char * buffer, int maxSize)
 
 void vUnitHandlerTask(void * pvParameters)
 {
-	int dataLen;
+	int dataLen, i;
 
 	xJobHandlerMutex = xSemaphoreCreateMutex();
 	// Init State
@@ -277,13 +278,30 @@ void vUnitHandlerTask(void * pvParameters)
 
 	// Unit dispatch state
 	bUdpReceiveAsync(DispatchXmitRxCallback, -1);
-	while(true);/*
+
+	while(true)
 	{
-		xQueueReceive(xJobQueue, &xNewJob, portMAX_DELAY);
-		for(i=0; i<UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
+		// check the unit job internals
+		vTaskDelay(UNIT_JOB_VALIDATION_INTERVALL);
+
+		// get exclusive access to jobhandlers
+		xSemaphoreTake(xJobHandlerMutex, portMAX_DELAY);
+
+		for (i = 0; i < UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
 		{
+			if(xJobs[i].inUse // if active, ...
+			&& !xJobs[i].store // ... not selfcontrolled periodic, ...
+			&& xTaskGetTickCount() - xJobs[i].startTime > UNIT_JOB_TIMEOUT)// ... and overdue
+			{
+				struct muXMLTreeElement err;
+				muXMLCreateElement(&err, xJobs[i].job->Element.Name);
+				muXMLUpdateAttribute(&err, "error", "timeout");
+				bUnitSend(&err, xJobs[i].internal_uid);
+			}
 		}
-	}*/
+		//release jobhandlers
+		xSemaphoreGive(xJobHandlerMutex);
+	}
 }
 
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived)
@@ -391,6 +409,10 @@ tBoolean bUnitSend(struct muXMLTreeElement * xjob, int uid)
 		}
 	}
 
+	if(handler->unit == NULL
+	|| handler->unit == SUPER_UNIT)
+		return false;
+
 	pp = muXMLCreateTree(xmlBuffer, sizeof(xmlBuffer), "epm");
 	if(handler->statusFlags & STATUS_USE_SEQ_NO)
 		muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "seqno", intToStr(tmpStr, handler->seqNo++));
@@ -400,7 +422,7 @@ tBoolean bUnitSend(struct muXMLTreeElement * xjob, int uid)
 	muXMLCreateElement(pp, handler->unit->Name);
 	muXMLAddElement(&(((struct muXMLTree*)xmlBuffer)->Root), pp);
 
-	muXMLAddElement((struct muXMLTree*)pp, xjob);
+	muXMLAddElement((struct muXMLTreeElement*)pp, xjob);
 
 	muXMLTreeEncode(txBuffer, sizeof(txBuffer), (struct muXMLTree*)xmlBuffer);
 

@@ -64,12 +64,13 @@ void vBtnUnitTask(void * pvParameters)
 				// a button has been pressed... do something
 				if(sendoutImmediate)
 				{
-					static char outTree[800];
+					static struct muXMLTreeElement element;
+					static char dataBuff[6];
 					char * next;
 
 					// if an error accured, add error attribute to unit or something
-					next = muXMLCreateElement(outTree, ButtonStateCapability->Name);
-					muXMLUpdateAttribute((struct muXMLTreeElement *)outTree, "cause", "press");
+					next = muXMLCreateElement(&element, ButtonStateCapability->Name);
+					muXMLUpdateAttribute(&element, "cause", "press");
 
 					*next = 0;
 					if(xQueueItem.xValue.xButton & BUTTON_LEFT)
@@ -83,8 +84,8 @@ void vBtnUnitTask(void * pvParameters)
 					if(xQueueItem.xValue.xButton & BUTTON_SEL)
 						strcat(next, "sel");
 
-					next = muXMLUpdateData((struct muXMLTreeElement *)outTree, next);
-					bUnitSend((struct muXMLTreeElement *)outTree, sendoutImmediateUid);//xBtnUnit, xQueueItem.xValue.xJob);
+					next = muXMLUpdateData(&element, next);
+					bUnitSend(&element, sendoutImmediateUid);//xBtnUnit, xQueueItem.xValue.xJob);
 				}
 				break;
 			case JOB:
@@ -121,6 +122,10 @@ static eUnitJobState vBtnUnitNewJob(struct muXMLTreeElement * job, int uid)
 		ret = JOB_STORE | JOB_ACK;
 		sendoutImmediateUid = uid;
 		sendoutImmediate = true;
+	}
+	else
+	{
+		ret = JOB_ACK;
 	}
 	/*
 	tUnitCapability * pxDstCapability;
