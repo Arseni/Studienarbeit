@@ -116,6 +116,7 @@
 
 #include "units/unit.h"
 #include "units/buttonsUnit.h"
+#include "units/unitTimer.h"
 
 /*-----------------------------------------------------------*/
 
@@ -214,10 +215,7 @@ int main( void )
 	xTaskCreate( vEthernetTask, ( signed portCHAR * ) "uIP", mainBASIC_WEB_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
 	xTaskCreate( vBtnUnitTask, ( signed portCHAR * ) "Button Unit", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
 	xTaskCreate( vUnitHandlerTask,  ( signed portCHAR * ) "Unit Handler", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-
-
-	/* Configure the high frequency interrupt used to measure the interrupt	jitter time. */
-	//vSetupHighFrequencyTimer();
+	xTaskCreate( vUnitTimerTask,  ( signed portCHAR * ) "Timer Task", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
 
 	/* Start the scheduler. */
 	vTaskStartScheduler();

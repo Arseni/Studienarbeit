@@ -1,7 +1,6 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "semphr.h"
-#include "croutine.h"
 
 #include "unit.h"
 #include "udpHandler.h"
@@ -17,7 +16,7 @@
 #define STATUS_USE_SEQ_NO		(1<<0)
 #define STATUS_USE_UID			(1<<1)
 #define STATUS_ACK_REQUESTED	(1<<2)
-#define STATUS_SEND_ON_ARRIVE	(1<<3)
+#define STATUS_PERIODIC			(1<<3)
 
 struct tUnitHandler
 {
@@ -101,10 +100,58 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
  * noch viel zu tun
  */
 static void DispatchXmitRxCallback(unsigned char * data, int len,
+		uip_udp_endpoint_t sender);
+static void DispatchXmitRxCallbackDelegate(void * pvParameters, int parameterCnt)
+{
+	unsigned char * data;
+	int len;
+	uip_udp_endpoint_t sender;
+
+	if(parameterCnt < 3)
+		return;
+
+	data = (unsigned char*)pvParameters;
+	pvParameters += sizeof(unsigned char*);
+
+	len = *((int *)pvParameters);
+	pvParameters += sizeof(int);
+
+	sender = *((uip_udp_endpoint_t *)pvParameters);
+
+	DispatchXmitRxCallback(data, len, sender);
+}
+
+static void RunJobHandler(struct tUnitJobHandler * xjob)
+{
+	eUnitJobState state = 0;
+
+	state = xjob->unit->vNewJob(xjob->job, xjob->internal_uid);
+
+	if (state & JOB_STORE)
+		xjob->store = true;
+
+	if (state & JOB_ACK)
+	{
+		if (xjob->statusFlags & STATUS_PERIODIC)
+		{
+			xjob->store = true;
+			vUnitTimerStart(xjob->dt, RunJobHandler, xjob);
+		}
+		if (xjob->statusFlags & STATUS_ACK_REQUESTED)
+		{
+			struct muXMLTreeElement element;
+			muXMLCreateElement(&element, "ack");
+			muXMLUpdateAttribute(&element, "cmd", muXMLGetAttributeByName(xjob->job, "name"));
+
+			bUnitSend(&element, xjob->internal_uid);
+		}
+	}
+}
+
+static void DispatchXmitRxCallback(unsigned char * data, int len,
 		uip_udp_endpoint_t sender)
 {
 	int i, j;
-	eUnitJobState state = 0;
 	struct tUnitJobHandler * xjob = NULL;
 
 	xjob = unitGetFreeJobHandler();
@@ -119,19 +166,7 @@ static void DispatchXmitRxCallback(unsigned char * data, int len,
 		// TODO fehler
 	}
 
-	state = xjob->unit->vNewJob(xjob->job, xjob->internal_uid);
-
-	if (state & JOB_STORE)
-		xjob->store = true;
-
-	if (xjob->statusFlags & STATUS_ACK_REQUESTED && state & JOB_ACK)
-	{
-		struct muXMLTreeElement element;
-		muXMLCreateElement(&element, "ack");
-		muXMLUpdateAttribute(&element, "cmd", muXMLGetAttributeByName(xjob->job, "name"));
-
-		bUnitSend(&element, xjob->internal_uid);
-	}
+	RunJobHandler(xjob);
 }
 
 tUnit * unitGetUnitByName(char * Name)
@@ -204,9 +239,11 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 			handler->statusFlags |= STATUS_USE_SEQ_NO;
 			handler->seqNo = 1;
 		}
-		if(strcmp(tree->Root.Element.Attribute[i].Name, "sendonarrival") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "yes") == 0)
+		if(strcmp(tree->Root.Element.Attribute[i].Name, "dt") == 0)
 		{
-			handler->statusFlags |= STATUS_SEND_ON_ARRIVE;
+			handler->dt = atoi(tree->Root.Element.Attribute[i].Value);
+			if(handler->dt)
+				handler->statusFlags |= STATUS_PERIODIC;
 		}
 	}
 
@@ -291,7 +328,7 @@ void vUnitHandlerTask(void * pvParameters)
 		{
 			if(xJobs[i].inUse // if active, ...
 			&& !xJobs[i].store // ... not selfcontrolled periodic, ...
-			&& xTaskGetTickCount() - xJobs[i].startTime > UNIT_JOB_TIMEOUT)// ... and overdue
+			&& xTaskGetTickCount() - xJobs[i].startTime > UNIT_JOB_TIMEOUT / portTICK_RATE_MS)// ... and overdue
 			{
 				struct muXMLTreeElement err;
 				muXMLCreateElement(&err, xJobs[i].job->Element.Name);

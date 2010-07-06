@@ -73,6 +73,26 @@ TimerBaseValid(unsigned long ulBase)
 //! \return None.
 //
 //*****************************************************************************
+
+struct timerISRHandler
+{
+	void (*callback) (void);
+	unsigned long ulIntFlags;
+};
+static struct timerISRHandler timerISRHandlers[TIMER_MAX_ISR_HANDLERS];
+
+void
+TIMER0A_ISR(void)
+{
+	int i;
+	for(i=0; i<TIMER_MAX_ISR_HANDLERS;i++)
+	{
+		if(timerISRHandlers[i].callback != NULL)
+			timerISRHandlers[i].callback();
+	}
+	TimerIntClear(TIMER0_BASE, 0xFF); // clear all interrupts
+}
+
 void
 TimerEnable(unsigned long ulBase, unsigned long ulTimer)
 {
@@ -832,6 +852,7 @@ void
 TimerIntRegister(unsigned long ulBase, unsigned long ulTimer,
                  void (*pfnHandler)(void))
 {
+	int i;
     //
     // Check the arguments.
     //
@@ -854,7 +875,13 @@ TimerIntRegister(unsigned long ulBase, unsigned long ulTimer,
         //
         // Register the interrupt handler.
         //
-        IntRegister(ulBase, pfnHandler);
+        //IntRegister(ulBase, pfnHandler);
+    	for(i=0; i< TIMER_MAX_ISR_HANDLERS; i++)
+    		if(timerISRHandlers[i].callback == NULL)
+    		{
+    			timerISRHandlers[i].callback = pfnHandler;
+    			break;
+    		}
 
         //
         // Enable the interrupt.

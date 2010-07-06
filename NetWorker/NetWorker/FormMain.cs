@@ -55,7 +55,7 @@ namespace NetWorker
 
         private string buildXMLString()
         {
-            return "<epm ack=\"yes\" uid=\"5544\" withseqno=\"yes\"><unit name=\"Buttons\"><ButtonState sendonarrival=\"yes\"/></unit></epm>\0";
+            return "<epm uid=\"5544\" withseqno=\"yes\" dt=\"1000ms\"><unit name=\"Buttons\"><ButtonState/></unit></epm>\0";
         }
 
 

@@ -38,6 +38,13 @@ extern "C"
 
 //*****************************************************************************
 //
+// Settings for the API usage.
+//
+//*****************************************************************************
+#define TIMER_MAX_ISR_HANDLERS	20	//Maximum amount of callbacks that can be registered at a time for all GPIO interrupts
+
+//*****************************************************************************
+//
 // Values that can be passed to TimerConfigure as the ulConfig parameter.
 //
 //*****************************************************************************

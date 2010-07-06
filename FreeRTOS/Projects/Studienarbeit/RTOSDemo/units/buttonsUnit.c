@@ -125,6 +125,7 @@ static eUnitJobState vBtnUnitNewJob(struct muXMLTreeElement * job, int uid)
 	}
 	else
 	{
+		vOledDbg("job");
 		ret = JOB_ACK;
 	}
 	/*
