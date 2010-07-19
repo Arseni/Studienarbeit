@@ -46,8 +46,6 @@ void vBtnUnitTask(void * pvParameters)
 
 	// init unit
 	xBtnUnit = xUnitCreate("Buttons", vBtnUnitNewJob);
-	bUnitAddCapability(xBtnUnit, (tUnitCapability){"ack", NULL});
-	ButtonStateCapability = bUnitAddCapability(xBtnUnit, (tUnitCapability){"ButtonState", NULL});
 
 	// init internal
 	xQueue = xQueueCreate(BTN_UNIT_MAX_QUEUE_LEN, sizeof(tBtnUnitQueueItem));

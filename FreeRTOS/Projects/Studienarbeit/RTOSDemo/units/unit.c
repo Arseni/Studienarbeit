@@ -186,27 +186,6 @@ tUnit * unitGetUnitByName(char * Name)
 	return NULL;
 }
 
-tUnitCapability * unitGetCapabilityByName(tUnit * unit, char * Name)
-{
-	int i;
-
-	if(unit == NULL || Name == NULL)
-		return NULL;
-
-	if(unit == SUPER_UNIT)
-	{
-		strcpy(xGlobalUnitCapability.Name, Name);
-		return &xGlobalUnitCapability;
-	}
-
-	for(i=0; i<UNIT_MAX_CAPABILITIES; i++)
-	{
-		if(strcmp(unit->xCapabilities[i].Name, Name) == 0)
-			return &(unit->xCapabilities[i]);
-	}
-	return NULL;
-}
-
 /**
  * TODO: ack ds, dt etc + global dedicated
  */
@@ -392,36 +371,6 @@ tBoolean xUnitUnlink(tUnit * pUnit)
 	parameters_valid:
 	memset(pUnit, 0, sizeof(tUnit));
 	return true;
-}
-
-
-/**
- *
- */
-tUnitCapability * bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability)
-{
-	int i;
-
-	// Validate parameters
-	// -> validate Unit pointer to be one of the global unit pool
-	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
-	{
-		if(xUnits[i].bInUse && &(xUnits[i].xUnit) == pUnit)
-			goto parameters_valid;
-	}
-	return NULL;
-
-	parameters_valid:
-	for(i=0; i<UNIT_MAX_CAPABILITIES; i++)
-	{
-		if(!UNIT_CAPABILITY_VALID(pUnit->xCapabilities[i]))
-		{
-			pUnit->xCapabilities[i].pxDependancy = Capability.pxDependancy;
-			memcpy(pUnit->xCapabilities[i].Name, Capability.Name, sizeof(Capability.Name));
-			return &(pUnit->xCapabilities[i]);
-		}
-	}
-	return NULL;
 }
 
 static char * intToStr(char * buffer, int number)

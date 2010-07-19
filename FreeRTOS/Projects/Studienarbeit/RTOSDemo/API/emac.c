@@ -264,52 +264,55 @@ portBASE_TYPE xSwitchRequired = pdFALSE;
 		/* Wait for something to do. */
 		xSemaphoreTake( xMACInterruptSemaphore, portMAX_DELAY );
 		
-		while( ( ulInt = ( EthernetIntStatus( ETH_BASE, pdFALSE ) & ETH_INT_RX ) ) != 0 )
-		{		
-			ulLength = HWREG( ETH_BASE + MAC_O_DATA );
-			
-			/* Leave room at the start of the buffer for the size. */
-			pulBuffer = ( unsigned long * ) &( ucRxBuffers[ ulNextRxBuffer ][ 2 ] );			
-			*pulBuffer = ( ulLength >> 16 );
-
-			/* Get the size of the data. */			
-			pulBuffer = ( unsigned long * ) &( ucRxBuffers[ ulNextRxBuffer ][ 4 ] );			
-			ulLength &= 0xFFFF;
-			
-			if( ulLength > 4 )
+		// make sure we won't write into a buffer, that is already written in and not read out
+		if(ulRxLength[ ulNextRxBuffer ] == 0)
+		{
+			while( ( ulInt = ( EthernetIntStatus( ETH_BASE, pdFALSE ) & ETH_INT_RX ) ) != 0 )
 			{
-				ulLength -= 4;
+				ulLength = HWREG( ETH_BASE + MAC_O_DATA );
 				
-				if( ulLength >= UIP_BUFSIZE )
-				{
-					/* The data won't fit in our buffer.  Ensure we don't
-					try to write into the buffer. */
-					ulLength = 0;
-				}
+				/* Leave room at the start of the buffer for the size. */
+				pulBuffer = ( unsigned long * ) &( ucRxBuffers[ ulNextRxBuffer ][ 2 ] );
+				*pulBuffer = ( ulLength >> 16 );
 
-				/* Read out the data into our buffer. */
-				for( i = 0; i < ulLength; i += sizeof( unsigned portLONG ) )
-				{
-					*pulBuffer = HWREG( ETH_BASE + MAC_O_DATA );
-					pulBuffer++;
-				}
+				/* Get the size of the data. */
+				pulBuffer = ( unsigned long * ) &( ucRxBuffers[ ulNextRxBuffer ][ 4 ] );
+				ulLength &= 0xFFFF;
 				
-				/* Store the length of the data into the separate array. */
-				ulRxLength[ ulNextRxBuffer ] = ulLength;
-				
-				/* Use the next buffer the next time through. */
-				ulNextRxBuffer++;
-				if( ulNextRxBuffer >= emacNUM_RX_BUFFERS )
+				if( ulLength > 4 )
 				{
-					ulNextRxBuffer = 0;
+					ulLength -= 4;
+
+					if( ulLength >= UIP_BUFSIZE )
+					{
+						/* The data won't fit in our buffer.  Ensure we don't
+						try to write into the buffer. */
+						ulLength = 0;
+					}
+
+					/* Read out the data into our buffer. */
+					for( i = 0; i < ulLength; i += sizeof( unsigned portLONG ) )
+					{
+						*pulBuffer = HWREG( ETH_BASE + MAC_O_DATA );
+						pulBuffer++;
+					}
+
+					/* Store the length of the data into the separate array. */
+					ulRxLength[ ulNextRxBuffer ] = ulLength;
+
+					/* Use the next buffer the next time through. */
+					ulNextRxBuffer++;
+					if( ulNextRxBuffer >= emacNUM_RX_BUFFERS )
+					{
+						ulNextRxBuffer = 0;
+					}
+
+					/* Ensure the uIP task is not blocked as data has arrived. */
+					xSemaphoreGive( xEMACSemaphore );
 				}
-		
-				/* Ensure the uIP task is not blocked as data has arrived. */
-				xSemaphoreGive( xEMACSemaphore );
 			}
 		}
-		
-		// TODO rausgenommen: EthernetIntEnable( ETH_BASE, ETH_INT_RX );
+		EthernetIntEnable( ETH_BASE, ETH_INT_RX );
 	}
 }
 

@@ -80,7 +80,7 @@ void udpHandler_appcall()
 		vOledDbg(uip_appdata);
 		vUdpNewData();
 	}
-	EthernetIntEnable( ETH_BASE, ETH_INT_RX );
+//	EthernetIntEnable( ETH_BASE, ETH_INT_RX );
 }
 
 

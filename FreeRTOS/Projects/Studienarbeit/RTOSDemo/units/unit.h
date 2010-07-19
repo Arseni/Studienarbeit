@@ -68,11 +68,8 @@ typedef struct
 	char Name[UNIT_MIDDLE_STRING];
 	tUnitVersion xVersion;
 	eUnitState xState;
-	tUnitCapability xCapabilities[UNIT_MAX_CAPABILITIES];
 	tcbUnitNewJob vNewJob;
 }tUnit;
-
-
 
 void vUnitHandlerTask(void * pvParameters);
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);
@@ -80,7 +77,6 @@ tBoolean xUnitUnlink(tUnit * pUnit);
 tUnitCapability * bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
 
 tUnit * unitGetUnitByName(char * Name);
-tUnitCapability * unitGetCapabilityByName(tUnit * unit, char * Name);
 
 tBoolean bUnitSend(struct muXMLTreeElement * xjob, int uid);
 

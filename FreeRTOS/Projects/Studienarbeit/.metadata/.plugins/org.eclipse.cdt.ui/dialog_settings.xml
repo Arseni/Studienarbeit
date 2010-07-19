@@ -11,6 +11,7 @@
 		<item value="227191" key="searchFlags"/>
 		<item value="false" key="caseSensitive"/>
 		<list key="previousPatterns">
+			<item value="EthernetIntEnable"/>
 			<item value="vMACHandleTask"/>
 			<item value="UIP_NEWDATA"/>
 			<item value="vOledDbg1"/>

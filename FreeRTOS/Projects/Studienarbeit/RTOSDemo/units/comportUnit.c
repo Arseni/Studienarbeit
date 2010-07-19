@@ -36,9 +36,6 @@ void vComportUnitTask( void *pvParameters )
 
 	// Setup Unit
 	serComUnit = xUnitCreate("SerCom", vComportUnitJobReceived);
-	bUnitAddCapability(serComUnit, (tUnitCapability){"ack", NULL});
-	writeCapability = bUnitAddCapability(serComUnit, (tUnitCapability){"write", NULL});
-	readCapability = bUnitAddCapability(serComUnit, (tUnitCapability){"read", NULL});
 
 	// Periodic
 	for(;;)
