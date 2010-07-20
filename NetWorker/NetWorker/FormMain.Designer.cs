@@ -37,7 +37,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 96);
+            this.button1.Location = new System.Drawing.Point(12, 328);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
@@ -47,7 +47,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(109, 125);
+            this.button2.Location = new System.Drawing.Point(109, 357);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 1;
@@ -57,7 +57,7 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(12, 154);
+            this.richTextBox1.Location = new System.Drawing.Point(12, 386);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(260, 96);
             this.richTextBox1.TabIndex = 2;
@@ -65,7 +65,7 @@
             // 
             // tbUnit
             // 
-            this.tbUnit.Location = new System.Drawing.Point(190, 128);
+            this.tbUnit.Location = new System.Drawing.Point(190, 360);
             this.tbUnit.Name = "tbUnit";
             this.tbUnit.Size = new System.Drawing.Size(82, 20);
             this.tbUnit.TabIndex = 4;
@@ -73,7 +73,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(67, 125);
+            this.button3.Location = new System.Drawing.Point(67, 357);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(36, 23);
             this.button3.TabIndex = 5;
@@ -85,7 +85,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(621, 499);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.tbUnit);
             this.Controls.Add(this.richTextBox1);
@@ -94,6 +94,7 @@
             this.Name = "FormMain";
             this.Text = "FormMain";
             this.Load += new System.EventHandler(this.FormMain_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

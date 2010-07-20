@@ -67,6 +67,7 @@ void udpHandler_appcall();
 /* Functions. */
 void udpHandler_init(uip_udp_endpoint_t endpoint);
 tBoolean bUdpSendAsync(const unsigned char * data, int dataLen);
+tBoolean bUdpSendTo(const unsigned char * data, int dataLen, uip_udp_endpoint_t dest);
 tBoolean bUdpReceiveAsync(tOnReceiveComplete callback, int packages);
 tBoolean bUdpCancelReceive(tOnReceiveComplete callback);
 

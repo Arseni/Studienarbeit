@@ -28,7 +28,7 @@
 xQueueHandle xOLEDQueue = NULL;
 
 /* The welcome text. */
-const portCHAR * const pcWelcomeMessage = "   Better than ever";
+char pcWelcomeMessage[mainMAX_MSG_LEN];
 
 /*
  * The display is written two by more than one task so is controlled by a
@@ -94,27 +94,30 @@ void ( *vOLEDClear )( void ) = NULL;
 
 	/* Initialise the OLED and display a startup message. */
 	vOLEDInit( ulSSI_FREQUENCY );
-	vOLEDStringDraw( "POWERED BY FreeRTOS", 0, 0, mainFULL_SCALE );
+	//vOLEDStringDraw( "POWERED BY FreeRTOS", 0, 0, mainFULL_SCALE );
 	vOLEDImageDraw( pucImage, 0, mainCHARACTER_HEIGHT + 1, bmpBITMAP_WIDTH, bmpBITMAP_HEIGHT );
 
 	for( ;; )
 	{
+		static unsigned int secsRunning = 0;
 		/* Wait for a message to arrive that requires displaying. */
-		xQueueReceive( xOLEDQueue, &xMessage, portMAX_DELAY );
-
-		/* Write the message on the next available row. */
-		ulY += mainCHARACTER_HEIGHT;
-		if( ulY >= ulMaxY )
+		sprintf(pcWelcomeMessage, "running: %d sec", secsRunning++);
+		vOLEDStringDraw( pcWelcomeMessage, 0, 0, mainFULL_SCALE );
+		if(xQueueReceive( xOLEDQueue, &xMessage, 1000 / portTICK_RATE_MS ))
 		{
-			ulY = mainCHARACTER_HEIGHT;
-			vOLEDClear();
-			vOLEDStringDraw( pcWelcomeMessage, 0, 0, mainFULL_SCALE );
-		}
+			/* Write the message on the next available row. */
+			ulY += mainCHARACTER_HEIGHT;
+			if( ulY >= ulMaxY )
+			{
+				ulY = mainCHARACTER_HEIGHT;
+				vOLEDClear();
+			}
 
-		/* Display the message along with the maximum jitter time from the
-		high priority time test. */
-		sprintf( cMessage, "%s", xMessage.pcMessage );
-		vOLEDStringDraw( cMessage, 0, ulY, mainFULL_SCALE );
+			/* Display the message along with the maximum jitter time from the
+			high priority time test. */
+			sprintf( cMessage, "%s", xMessage.pcMessage );
+			vOLEDStringDraw( cMessage, 0, ulY, mainFULL_SCALE );
+		}
 	}
 }
 /*-----------------------------------------------------------*/

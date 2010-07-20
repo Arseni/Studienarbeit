@@ -17,6 +17,7 @@
 #define STATUS_USE_UID			(1<<1)
 #define STATUS_ACK_REQUESTED	(1<<2)
 #define STATUS_PERIODIC			(1<<3)
+#define STATUS_DELETE			(1<<4)
 
 struct tUnitHandler
 {
@@ -99,6 +100,17 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
  * Was noch fehlt ist, dass globale Jobs übernommen werden und der timer gestartet wird etc etc etc...
  * noch viel zu tun
  */
+void deleteJobByUID(int uid)
+{
+	int i;
+	for (i = 0; i < UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
+	{
+		if (xJobs[i].inUse && xJobs[i].uid == uid)
+		{
+			xJobs[i].inUse = false;
+		}
+	}
+}
 static void DispatchXmitRxCallback(unsigned char * data, int len,
 		uip_udp_endpoint_t sender);
 static void DispatchXmitRxCallbackDelegate(void * pvParameters, int parameterCnt)
@@ -124,6 +136,9 @@ static void DispatchXmitRxCallbackDelegate(void * pvParameters, int parameterCnt
 static void RunJobHandler(struct tUnitJobHandler * xjob)
 {
 	eUnitJobState state = 0;
+
+	if(!xjob->inUse)
+		return;
 
 	state = xjob->unit->vNewJob(xjob->job, xjob->internal_uid);
 
@@ -164,6 +179,15 @@ static void DispatchXmitRxCallback(unsigned char * data, int len,
 	{
 		return;
 		// TODO fehler
+	}
+
+	memcpy(&(xjob->endpoint), &(sender), sizeof(uip_udp_endpoint_t));
+
+	// handle stored jobs
+	if(xjob->statusFlags & STATUS_DELETE)
+	{
+		xjob->inUse = false;
+		deleteJobByUID(xjob->uid);
 	}
 
 	RunJobHandler(xjob);
@@ -212,6 +236,7 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 		{
 			handler->uid = atoi(tree->Root.Element.Attribute[i].Value);
 			handler->statusFlags |= STATUS_USE_UID;
+			deleteJobByUID(handler->uid);
 		}
 		if(strcmp(tree->Root.Element.Attribute[i].Name, "withseqno") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "yes") == 0)
 		{
@@ -223,6 +248,10 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 			handler->dt = atoi(tree->Root.Element.Attribute[i].Value);
 			if(handler->dt)
 				handler->statusFlags |= STATUS_PERIODIC;
+		}
+		if(strcmp(tree->Root.Element.Attribute[i].Name, "reply") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "never") == 0)
+		{
+			handler->statusFlags |= STATUS_DELETE;
 		}
 	}
 
@@ -413,6 +442,7 @@ tBoolean bUnitSend(struct muXMLTreeElement * xjob, int uid)
 	muXMLTreeEncode(txBuffer, sizeof(txBuffer), (struct muXMLTree*)xmlBuffer);
 
 	bUdpSendAsync(txBuffer, strlen(txBuffer));
+	//bUdpSendTo(txBuffer, strlen(txBuffer), handler->endpoint);
 
 	if(!handler->store)
 		handler->inUse = false;

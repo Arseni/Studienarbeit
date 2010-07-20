@@ -21,6 +21,12 @@ namespace NetWorker
             InitializeComponent();
         }
 
+        public FormMain(EpmDeviceDescription target)
+            : this()
+        {
+            rEndpoint = new IPEndPoint(target.remoteIPAddr, target.remotePort);
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             UdpClient client = new UdpClient();
@@ -55,6 +61,7 @@ namespace NetWorker
 
         private string buildXMLString()
         {
+            //return "<epm uid=\"5544\" reply=\"never\"><unit name=\"Buttons\"><ButtonState/></unit></epm>\0";
             return "<epm uid=\"5544\" withseqno=\"yes\" dt=\"1000ms\"><unit name=\"Buttons\"><ButtonState/></unit></epm>\0";
         }
 
@@ -95,6 +102,11 @@ namespace NetWorker
             string send = "<epm><unit><ack/></unit></epm>\0";
             client.Send(ASCIIEncoding.Default.GetBytes(send), send.Length);
             client.Close();
+        }
+
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
 
     }

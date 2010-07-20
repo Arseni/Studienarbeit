@@ -314,6 +314,7 @@ void prvENET_Send(void);
 void prvSetMACAddress( void );
 void vEMACWaitForInput( void );
 unsigned int uiGetEMACRxData( unsigned char *ucBuffer );
+void uiAckRxData( void );
 
 
 #endif

@@ -6,6 +6,8 @@
 		<item value="true" key="askReindex"/>
 	</section>
 	<section name="completion_proposal_size">
+		<item value="319" key="size.x"/>
+		<item value="274" key="size.y"/>
 	</section>
 	<section name="PDOMSearchPage">
 		<item value="227191" key="searchFlags"/>

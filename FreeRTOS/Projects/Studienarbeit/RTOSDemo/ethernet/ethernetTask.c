@@ -221,6 +221,9 @@ void vEthernetTask( void *pvParameters )
 					prvENET_Send();
 				}
 			}
+
+			/* we ware done with that buffer slot */
+			uiAckRxData();
 		}
 		else
 		{

@@ -157,7 +157,7 @@ unsigned int iLen;
 		/* Leave room for the size at the start of the buffer. */
 		uip_buf = &( ucRxBuffers[ ulNextRxBuffer ][ 2 ] );
 		
-		ulRxLength[ ulNextRxBuffer ] = 0;
+		//ulRxLength[ ulNextRxBuffer ] = 0;
 		
 		ulNextRxBuffer++;
 		if( ulNextRxBuffer >= emacNUM_RX_BUFFERS )
@@ -167,6 +167,18 @@ unsigned int iLen;
 	}
 
     return iLen;
+}
+
+void uiAckRxData( void )
+{
+	int i;
+	for(i=0; i<emacNUM_RX_BUFFERS; i++)
+	{
+		if(uip_buf == &( ucRxBuffers[ i ][ 2 ]))
+		{
+			ulRxLength[ i ] = 0;
+		}
+	}
 }
 /*-----------------------------------------------------------*/
 

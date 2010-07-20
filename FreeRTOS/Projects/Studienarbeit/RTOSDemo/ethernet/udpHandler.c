@@ -144,6 +144,36 @@ tBoolean bUdpSendAsync(const unsigned char * data, int dataLen)//const tUnit * p
 	return true;
 }
 
+tBoolean bUdpSendTo(const unsigned char * data, int dataLen, uip_udp_endpoint_t dest)
+{
+	if(xSmphrSendComplete != NULL && xSemaphoreTake(xSmphrSendComplete, portMAX_DELAY))
+	{
+		udpHandler_init(dest);
+
+		txBuffer = (unsigned char*)data;
+		txBufferLen = dataLen;
+
+		// force send instantly
+		if(c != NULL)
+		{
+			uip_udp_periodic_conn( c );
+			if( uip_len > 0 )
+			{
+				uip_arp_out();
+				prvENET_Send();
+			}
+		}
+		else
+			return false;
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+
 tBoolean bUdpReceiveAsync(tOnReceiveComplete callback, int packages)
 {
 	int i;

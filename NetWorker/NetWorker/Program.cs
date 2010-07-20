@@ -15,7 +15,9 @@ namespace NetWorker
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormMain());
+            new FormScan().Show();
+            Application.Run();
+            
         }
     }
 }

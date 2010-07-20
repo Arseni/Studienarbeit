@@ -25,9 +25,9 @@
 /*
  * Größenbeschränkungen
  */
-#define muXML_MAX_NAME          16      /* max. Länge eines muXML-Tag-Namens */
-#define muXML_MAX_ATTRIBUTE     16      /* max. Länge eines Attributnamens */
-#define muXML_MAX_VALUE         12      /* max. Länge eines Attributwertes */
+#define muXML_MAX_NAME          20      /* max. Länge eines muXML-Tag-Namens */
+#define muXML_MAX_ATTRIBUTE     20      /* max. Länge eines Attributnamens */
+#define muXML_MAX_VALUE         20      /* max. Länge eines Attributwertes */
 #define muXML_MAX_ENTITY        4       /* max. Länge einer Entity */
 #define muXML_MAX_ATTRIBUTE_CNT 4       /* max. Anzahl an Attributen */
 #define muXML_MAX_EXTID         8       /* max. Länge ExternalID */
