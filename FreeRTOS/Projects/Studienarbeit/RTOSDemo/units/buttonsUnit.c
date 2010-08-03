@@ -30,7 +30,7 @@ union xValue
 
 static xQueueHandle xQueue = NULL;
 static tUnit * xBtnUnit;
-static tUnitCapability * ButtonStateCapability, * SendImmediateCapability;
+//static tUnitCapability * ButtonStateCapability, * SendImmediateCapability;
 static char tmpStr[200]; // TODO delete me
 static tBoolean sendoutImmediate = false;
 int sendoutImmediateUid = 0;
@@ -67,7 +67,7 @@ void vBtnUnitTask(void * pvParameters)
 					char * next;
 
 					// if an error accured, add error attribute to unit or something
-					next = muXMLCreateElement(&element, ButtonStateCapability->Name);
+					next = muXMLCreateElement(&element, "ButtonState");// ButtonStateCapability->Name);
 					muXMLUpdateAttribute(&element, "cause", "press");
 
 					*next = 0;
@@ -115,7 +115,7 @@ static eUnitJobState vBtnUnitNewJob(struct muXMLTreeElement * job, int uid)
 {
 	int i;
 	eUnitJobState ret = 0;
-	if(strcmp(muXMLGetAttributeByName(job, "sendonarrival"), "yes")==0)
+	if(strcmp(muXMLGetAttributeByName(job, "onchange"), "yes")==0)
 	{
 		ret = JOB_STORE | JOB_ACK;
 		sendoutImmediateUid = uid;

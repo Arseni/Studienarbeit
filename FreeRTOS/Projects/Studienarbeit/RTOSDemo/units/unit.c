@@ -3,6 +3,7 @@
 #include "semphr.h"
 
 #include "unit.h"
+#include "unitEPMOptions.h"
 #include "udpHandler.h"
 #include <string.h>
 
@@ -12,6 +13,9 @@
 
 #define NEW_UID() (++unitJobUID)
 #define SUPER_UNIT ((tUnit*)(-1))
+#define CHECK_ATTR_NAME(A) if(strcmp(tree->Root.Element.Attribute[i].Name, A) == 0)
+#define CHECK_ATTR_VALUE(A) if(strcmp(tree->Root.Element.Attribute[i].Value, A) == 0)
+#define ATTR_VALUE()	(tree->Root.Element.Attribute[i].Value)
 
 #define STATUS_USE_SEQ_NO		(1<<0)
 #define STATUS_USE_UID			(1<<1)
@@ -25,27 +29,6 @@ struct tUnitHandler
 	tBoolean bInUse;
 };
 
-struct tUnitJobHandler
-{
-	struct muXMLTreeElement * job;
-	int internal_uid;
-
-	tUnit * unit;
-	uip_udp_endpoint_t endpoint;
-
-	int uid;
-	int seqNo;
-	tBoolean relTime;
-	tBoolean ack;
-	unsigned int ds;
-	unsigned int dt;
-	char statusFlags;
-
-	portTickType startTime;
-	tBoolean store;
-	tBoolean inUse;
-};
-
 static struct tUnitHandler xUnits[UNIT_MAX_GLOBAL_UNITS];
 static struct tUnitJobHandler xJobs[UNIT_MAX_GLOBAL_JOBS_PARALLEL];
 static tUnitCapability xGlobalUnitCapability;
@@ -55,7 +38,9 @@ static unsigned char xmlBuffer[UNIT_XML_TREE_BUFFER_LEN];
 static tBoolean ack = false;
 static unsigned int unitJobUID;
 
+tBoolean bUnitSendTo(struct muXMLTreeElement * xjob, int uid, uip_udp_endpoint_t * dest);
 static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char * data, uip_udp_endpoint_t sender);
+
 static struct tUnitJobHandler * unitGetFreeJobHandler()
 {
 	struct tUnitJobHandler * ret = NULL;
@@ -133,7 +118,7 @@ static void DispatchXmitRxCallbackDelegate(void * pvParameters, int parameterCnt
 	DispatchXmitRxCallback(data, len, sender);
 }
 
-static void RunJobHandler(struct tUnitJobHandler * xjob)
+static void RunJobHandler(struct tUnitJobHandler * xjob, uip_udp_endpoint_t sender)
 {
 	eUnitJobState state = 0;
 
@@ -156,9 +141,9 @@ static void RunJobHandler(struct tUnitJobHandler * xjob)
 		{
 			struct muXMLTreeElement element;
 			muXMLCreateElement(&element, "ack");
-			muXMLUpdateAttribute(&element, "cmd", muXMLGetAttributeByName(xjob->job, "name"));
+			muXMLUpdateAttribute(&element, "cmd", xjob->job->Element.Name);
 
-			bUnitSend(&element, xjob->internal_uid);
+			bUnitSendTo(&element, xjob->internal_uid, &sender);
 		}
 	}
 }
@@ -173,6 +158,8 @@ static void DispatchXmitRxCallback(unsigned char * data, int len,
 	if (xjob == NULL)
 		return;
 
+	memcpy(&(xjob->endpoint), &(sender), sizeof(uip_udp_endpoint_t));
+
 	unitExtractJobHandle(xjob, data, sender);
 
 	if (!xjob->inUse)
@@ -181,8 +168,6 @@ static void DispatchXmitRxCallback(unsigned char * data, int len,
 		// TODO fehler
 	}
 
-	memcpy(&(xjob->endpoint), &(sender), sizeof(uip_udp_endpoint_t));
-
 	// handle stored jobs
 	if(xjob->statusFlags & STATUS_DELETE)
 	{
@@ -190,7 +175,7 @@ static void DispatchXmitRxCallback(unsigned char * data, int len,
 		deleteJobByUID(xjob->uid);
 	}
 
-	RunJobHandler(xjob);
+	RunJobHandler(xjob, sender);
 }
 
 tUnit * unitGetUnitByName(char * Name)
@@ -215,7 +200,7 @@ tUnit * unitGetUnitByName(char * Name)
  */
 static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char * data, uip_udp_endpoint_t sender)
 {
-	int i;
+	int i,j;
 	struct muXMLTree * tree = muXMLTreeDecode(data, xmlBuffer, sizeof(xmlBuffer), 0, NULL);
 	struct muXMLTreeElement * element;
 	char * tmpStr;
@@ -230,6 +215,15 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 	handler->statusFlags = 0;
 	for(i=0; i<tree->Root.Element.nAttributes; i++)
 	{
+#ifdef OBSOLETE
+		for(j=0; j<sizeof(unitEPMOption)/sizeof(struct tUnitEPMOption); j++)
+		{
+			if(strcmp(tree->Root.Element.Attribute[i].Name, unitEPMOption[j].Name) == 0)
+			{
+				unitEPMOption[i].preProcess(tree->Root.Element.Attribute[i].Value, handler, &(tree->Root));
+			}
+		}
+#endif
 		if(strcmp(tree->Root.Element.Attribute[i].Name, "ack") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "yes") == 0)
 			handler->statusFlags |= STATUS_ACK_REQUESTED;
 		if(strcmp(tree->Root.Element.Attribute[i].Name, "uid") == 0)
@@ -252,6 +246,15 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 		if(strcmp(tree->Root.Element.Attribute[i].Name, "reply") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "never") == 0)
 		{
 			handler->statusFlags |= STATUS_DELETE;
+		}
+		if(strcmp(tree->Root.Element.Attribute[i].Name, "reply") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "onchange") == 0)
+		{
+			// SINK
+			muXMLUpdateAttribute(tree->Root.SubElements->SubElements, "onchange", "yes");
+		}
+		CHECK_ATTR_NAME("dest")
+		{
+			uip_parseIpAddr(handler->endpoint.rAddr, &(handler->endpoint.rPort), ATTR_VALUE());
 		}
 	}
 
@@ -290,7 +293,7 @@ static int unitBuildInitialEpm(unsigned char * buffer, int maxSize)
 	void * pp = muXMLCreateTree(xmlBuffer, sizeof(xmlBuffer), "epm");
 	muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "uid", "0");
 	muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "ack", "yes");
-	muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "home", "192.168.0.13:50001");
+	muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "home", "192.168.0.13:50000");
 	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
 	{
 		if(xUnits[i].bInUse)
@@ -317,10 +320,10 @@ void vUnitHandlerTask(void * pvParameters)
 	bUdpReceiveAsync(InitXmitRxCallback, 1);
 	while(!ack)
 	{
-		bUdpSendAsync(txBuffer, dataLen);
+		//bUdpSendAsync(txBuffer, dataLen);
+		bUdpSendTo(txBuffer, dataLen, (uip_udp_endpoint_t){0xFFFF, 0xFFFF, 50001, 50000});
 		vTaskDelay(1000/portTICK_RATE_MS);
 	}
-
 	// Unit dispatch state
 	bUdpReceiveAsync(DispatchXmitRxCallback, -1);
 
@@ -407,8 +410,7 @@ static char * intToStr(char * buffer, int number)
 	sprintf(buffer, "%d", number);
 	return buffer;
 }
-
-tBoolean bUnitSend(struct muXMLTreeElement * xjob, int uid)
+tBoolean bUnitSendTo(struct muXMLTreeElement * xjob, int uid, uip_udp_endpoint_t * dest)
 {
 	int i;
 	struct tUnitJobHandler * handler = NULL;
@@ -434,16 +436,24 @@ tBoolean bUnitSend(struct muXMLTreeElement * xjob, int uid)
 	if(handler->statusFlags & STATUS_USE_UID)
 		muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "uid", intToStr(tmpStr, handler->uid));
 
-	muXMLCreateElement(pp, handler->unit->Name);
+	muXMLCreateElement(pp, "unit");
+	muXMLUpdateAttribute(pp, "name", handler->unit->Name);
 	muXMLAddElement(&(((struct muXMLTree*)xmlBuffer)->Root), pp);
 
 	muXMLAddElement((struct muXMLTreeElement*)pp, xjob);
 
 	muXMLTreeEncode(txBuffer, sizeof(txBuffer), (struct muXMLTree*)xmlBuffer);
 
-	bUdpSendAsync(txBuffer, strlen(txBuffer));
-	//bUdpSendTo(txBuffer, strlen(txBuffer), handler->endpoint);
+	//bUdpSendAsync(txBuffer, strlen(txBuffer));
+	if(dest == NULL)
+		bUdpSendTo(txBuffer, strlen(txBuffer), handler->endpoint);
+	else
+		bUdpSendTo(txBuffer, strlen(txBuffer), *dest);
 
 	if(!handler->store)
 		handler->inUse = false;
+}
+tBoolean bUnitSend(struct muXMLTreeElement * xjob, int uid)
+{
+	bUnitSendTo(xjob, uid, NULL);
 }

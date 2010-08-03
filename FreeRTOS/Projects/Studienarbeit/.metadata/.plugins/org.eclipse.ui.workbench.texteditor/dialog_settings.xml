@@ -13,16 +13,16 @@
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="SendTo" key="selection"/>
+		<item value="Task" key="selection"/>
 		<list key="findhistory">
+			<item value="task"/>
+			<item value="port"/>
+			<item value="Port"/>
+			<item value="parse"/>
+			<item value="startup"/>
 			<item value="SendTo"/>
 			<item value="sendTo"/>
 			<item value="STATUS_SEND_ON_ARRIVE"/>
-			<item value="Register"/>
-			<item value="register"/>
-			<item value="tasksuspend"/>
-			<item value="ISR"/>
-			<item value="xGPIOISRHandler"/>
 		</list>
 		<list key="replacehistory">
 			<item value="tCOMPort"/>

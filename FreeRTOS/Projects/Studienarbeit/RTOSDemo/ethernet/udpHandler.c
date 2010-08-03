@@ -28,6 +28,7 @@ static struct ReceiveCompleteCallbackHandler
 	int packsToReceive;
 }rxCbHandler[MAX_RX_HANDLERS];
 
+tBoolean bUdpSendTo(const unsigned char * data, int dataLen, uip_udp_endpoint_t dest);
 /**
  * Wird aufgerufen, wenn neue Daten über UDP angekommen sind [EthernetTask]
  */
@@ -148,7 +149,7 @@ tBoolean bUdpSendTo(const unsigned char * data, int dataLen, uip_udp_endpoint_t 
 {
 	if(xSmphrSendComplete != NULL && xSemaphoreTake(xSmphrSendComplete, portMAX_DELAY))
 	{
-		udpHandler_init(dest);
+		//udpHandler_init(dest);
 
 		txBuffer = (unsigned char*)data;
 		txBufferLen = dataLen;
@@ -160,6 +161,8 @@ tBoolean bUdpSendTo(const unsigned char * data, int dataLen, uip_udp_endpoint_t 
 			if( uip_len > 0 )
 			{
 				uip_arp_out();
+				uip_ipaddr_copy(((struct uip_udpip_hdr *)&uip_buf[UIP_LLH_LEN])->destipaddr, dest.rAddr);
+				((struct uip_udpip_hdr *)&uip_buf[UIP_LLH_LEN])->destport = HTONS(dest.rPort);
 				prvENET_Send();
 			}
 		}

@@ -1632,6 +1632,10 @@ u16_t uip_tcpchksum(void);
 u16_t uip_udpchksum(void);
 
 
+void uip_parseIpAddr(u16_t * ipaddr, u16_t * port, char * ipString);
+
+
+
 #endif /* __UIP_H__ */
 
 

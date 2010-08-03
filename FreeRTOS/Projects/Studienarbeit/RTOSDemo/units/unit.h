@@ -23,6 +23,7 @@
 
 /* Library includes. */
 #include "hw_types.h"
+#include "portmacro.h"
 #include "uip.h"
 #include "muXML/muXMLTree.h"
 #include <string.h>
@@ -70,6 +71,27 @@ typedef struct
 	eUnitState xState;
 	tcbUnitNewJob vNewJob;
 }tUnit;
+
+struct tUnitJobHandler
+{
+	struct muXMLTreeElement * job;
+	int internal_uid;
+
+	tUnit * unit;
+	uip_udp_endpoint_t endpoint;
+
+	int uid;
+	int seqNo;
+	tBoolean relTime;
+	tBoolean ack;
+	unsigned int ds;
+	unsigned int dt;
+	char statusFlags;
+
+	portTickType startTime;
+	tBoolean store;
+	tBoolean inUse;
+};
 
 void vUnitHandlerTask(void * pvParameters);
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);

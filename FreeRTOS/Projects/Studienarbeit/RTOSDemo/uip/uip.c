@@ -1915,4 +1915,31 @@ uip_send(const void *data, int len)
     }
   }
 }
+
+void
+uip_parseIpAddr(u16_t * ipaddr, u16_t * port, char * ipString)
+{
+	int i;
+	unsigned char octetts[4];
+	char * next = ipString;
+
+	// IP
+	for(i=0; i<4; i++)
+	{
+		octetts[i] = atoi(next);
+		next = strstr(next, ".") + 1;
+	}
+	if(ipaddr != NULL)
+	{
+		uip_ipaddr(ipaddr, octetts[0],octetts[1],octetts[2],octetts[3]);
+	}
+
+	// Port
+	next = strstr(ipString, ":");
+	if(next != NULL && port != NULL)
+		*port = (u16_t)atol(next+1);
+
+	return;
+}
+
 /** @} */

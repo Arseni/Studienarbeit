@@ -77,7 +77,7 @@ signed portBASE_TYPE xComGetChar( xComPortHandle pxPort, portTickType xBlockTime
 }
 void vComPutChar( xComPortHandle pxPort, signed char cOutChar, portTickType xBlockTime )
 {
-	UARTCharPut(UART0_BASE, 0x55);
+	UARTCharPut(UART0_BASE, cOutChar);
 }
 portBASE_TYPE xComWaitForSemaphore( xComPortHandle xPort )
 {

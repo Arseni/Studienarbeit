@@ -176,7 +176,8 @@ void vEthernetTask( void *pvParameters )
 
 	// initialize udp connection
 	uip_ipaddr(initialUdpEndpoint.rAddr, 0xFF,0xFF,0xFF,0xFF);
-	initialUdpEndpoint.lPort = initialUdpEndpoint.rPort = 50001;
+	initialUdpEndpoint.lPort = 50000;
+	initialUdpEndpoint.rPort = 50000;
 	udpHandler_init(initialUdpEndpoint);
 
 	while( vInitEMAC() != pdPASS )

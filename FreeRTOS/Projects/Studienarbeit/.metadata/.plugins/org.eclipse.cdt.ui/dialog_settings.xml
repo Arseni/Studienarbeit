@@ -13,6 +13,11 @@
 		<item value="227191" key="searchFlags"/>
 		<item value="false" key="caseSensitive"/>
 		<list key="previousPatterns">
+			<item value="RunJobHandler"/>
+			<item value="portmakroh"/>
+			<item value="bUdpSendAsync"/>
+			<item value="destipaddr"/>
+			<item value="udpHandler_init"/>
 			<item value="EthernetIntEnable"/>
 			<item value="vMACHandleTask"/>
 			<item value="UIP_NEWDATA"/>
