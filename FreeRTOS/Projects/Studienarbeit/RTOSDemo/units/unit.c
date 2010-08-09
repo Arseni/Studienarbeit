@@ -16,6 +16,7 @@
 #define CHECK_ATTR_NAME(A) if(strcmp(tree->Root.Element.Attribute[i].Name, A) == 0)
 #define CHECK_ATTR_VALUE(A) if(strcmp(tree->Root.Element.Attribute[i].Value, A) == 0)
 #define ATTR_VALUE()	(tree->Root.Element.Attribute[i].Value)
+#define ATTR_NAME()		(tree->Root.Element.Attribute[i].Name)
 
 #define STATUS_USE_SEQ_NO		(1<<0)
 #define STATUS_USE_UID			(1<<1)
@@ -85,7 +86,7 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
  * Was noch fehlt ist, dass globale Jobs übernommen werden und der timer gestartet wird etc etc etc...
  * noch viel zu tun
  */
-void deleteJobByUID(int uid)
+tBoolean deleteJobByUID(int uid)
 {
 	int i;
 	for (i = 0; i < UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
@@ -93,8 +94,10 @@ void deleteJobByUID(int uid)
 		if (xJobs[i].inUse && xJobs[i].uid == uid)
 		{
 			xJobs[i].inUse = false;
+			return true;
 		}
 	}
+	return false;
 }
 static void DispatchXmitRxCallback(unsigned char * data, int len,
 		uip_udp_endpoint_t sender);
@@ -127,24 +130,41 @@ static void RunJobHandler(struct tUnitJobHandler * xjob, uip_udp_endpoint_t send
 
 	state = xjob->unit->vNewJob(xjob->job, xjob->internal_uid);
 
-	if (state & JOB_STORE)
-		xjob->store = true;
-
 	if (state & JOB_ACK)
 	{
+		if (state & JOB_STORE)
+			xjob->store = true;
+
 		if (xjob->statusFlags & STATUS_PERIODIC)
 		{
 			xjob->store = true;
 			vUnitTimerStart(xjob->dt, RunJobHandler, xjob);
 		}
-		if (xjob->statusFlags & STATUS_ACK_REQUESTED)
-		{
-			struct muXMLTreeElement element;
-			muXMLCreateElement(&element, "ack");
-			muXMLUpdateAttribute(&element, "cmd", xjob->job->Element.Name);
+	}
 
-			bUnitSendTo(&element, xjob->internal_uid, &sender);
+	// ack ?
+	if (xjob->statusFlags & STATUS_ACK_REQUESTED)
+	{
+		struct muXMLTreeElement element;
+		muXMLCreateElement(&element, "ack");
+		muXMLUpdateAttribute(&element, "cmd", xjob->job->Element.Name);
+		if(xjob->statusFlags & STATUS_USE_UID)
+		{
+			char uidString[6];
+			sprintf(uidString, "%d", xjob->uid);
+			muXMLUpdateAttribute(&element, "uid", uidString);
 		}
+		if(!(state & JOB_ACK))
+			muXMLUpdateAttribute(&element, "error", "internal");
+		bUnitSendTo(&element, xjob->internal_uid, &sender);
+	}
+
+	if(state & JOB_COMPLETE)
+		xjob->inUse = false;
+
+	if(xjob->statusFlags & STATUS_DELETE)
+	{
+		deleteJobByUID(xjob->uid);
 	}
 }
 
@@ -169,11 +189,7 @@ static void DispatchXmitRxCallback(unsigned char * data, int len,
 	}
 
 	// handle stored jobs
-	if(xjob->statusFlags & STATUS_DELETE)
-	{
-		xjob->inUse = false;
-		deleteJobByUID(xjob->uid);
-	}
+
 
 	RunJobHandler(xjob, sender);
 }
@@ -213,6 +229,7 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 
 	// epm attributes to flags
 	handler->statusFlags = 0;
+	handler->timeout = -1; // default timeout
 	for(i=0; i<tree->Root.Element.nAttributes; i++)
 	{
 #ifdef OBSOLETE
@@ -252,9 +269,21 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 			// SINK
 			muXMLUpdateAttribute(tree->Root.SubElements->SubElements, "onchange", "yes");
 		}
+		CHECK_ATTR_NAME("reply")
+		{
+			CHECK_ATTR_VALUE("never")
+				handler->statusFlags |= STATUS_DELETE;
+
+			// SINK
+			muXMLUpdateAttribute(tree->Root.SubElements->SubElements, ATTR_NAME(), ATTR_VALUE());
+		}
 		CHECK_ATTR_NAME("dest")
 		{
 			uip_parseIpAddr(handler->endpoint.rAddr, &(handler->endpoint.rPort), ATTR_VALUE());
+		}
+		CHECK_ATTR_NAME("timeout")
+		{
+			handler->timeout = atoi(ATTR_VALUE());
 		}
 	}
 
@@ -337,9 +366,16 @@ void vUnitHandlerTask(void * pvParameters)
 
 		for (i = 0; i < UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
 		{
+			int timeout;
+			if(xJobs[i].timeout > 0)
+				timeout = xJobs[i].timeout / portTICK_RATE_MS;
+			else
+				timeout = UNIT_JOB_TIMEOUT / portTICK_RATE_MS;
+
+
 			if(xJobs[i].inUse // if active, ...
 			&& !xJobs[i].store // ... not selfcontrolled periodic, ...
-			&& xTaskGetTickCount() - xJobs[i].startTime > UNIT_JOB_TIMEOUT / portTICK_RATE_MS)// ... and overdue
+			&& xTaskGetTickCount() - xJobs[i].startTime > timeout)// ... and overdue
 			{
 				struct muXMLTreeElement err;
 				muXMLCreateElement(&err, xJobs[i].job->Element.Name);

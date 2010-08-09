@@ -13,8 +13,8 @@
 
 static tUnit * serComUnit;
 //static tUnitCapability * readCapability, * writeCapability;
-int stx = -1, etx = -1, sendoutImmediateUid;
-tBoolean sendoutImmediate = false;
+int stx = -1, etx = -1, stxSync = -1, etxSync = -1,  sendoutImmediateUid, readRequestUid;
+tBoolean sendoutImmediate = false, readRequest = false;
 char rxBuf[100];
 
 /**
@@ -25,18 +25,12 @@ char rxBuf[100];
  */
 static eUnitJobState vComportUnitJobReceived(struct muXMLTreeElement * job, int uid);
 
-void readCom(int start, int stop, char * buffer, int * cnt)
+int readCom(int stop, char * buffer, int * cnt)
 {
 	int c = -1;
 	*cnt = 0;
-	if(start == -1 || stop == -1)
-		return;
-
-
-	while(c != start)
-	{
-		c = xComGetChar(1,0);
-	}
+	if(stop == -1)
+		return 1;
 
 	c = xComGetChar(1,0);
 	while(c != -1 && c != stop)
@@ -46,7 +40,11 @@ void readCom(int start, int stop, char * buffer, int * cnt)
 		c = xComGetChar(1,0);
 	}
 	*buffer = 0;
-	return;
+
+	if(c == -1) // timeout
+		return 1;
+
+	return 0;
 }
 
 /**
@@ -66,21 +64,49 @@ void vComportUnitTask( void *pvParameters )
 	// Periodic
 	for(;;)
 	{
-		if(sendoutImmediate)
+
+		if(sendoutImmediate || readRequest)
 		{
-			int cnt = 0;
-			readCom(stx, etx, rxBuf, &cnt);
-			if(cnt > 0)
+			int cnt = 0, c;
+
+			c = xComGetChar(1,0);
+			while(c != stx && c != stxSync)
+				c = xComGetChar(1,0);
+
+			if(c == stxSync && readRequest)
 			{
-				static struct muXMLTreeElement element;
-				char * next;
+				readCom(etxSync, rxBuf, &cnt);
+				if(cnt > 0)
+				{
+					static struct muXMLTreeElement element;
+					char * next;
 
-				// if an error accured, add error attribute to unit or something
-				next = muXMLCreateElement(&element, "read");// ButtonStateCapability->Name);
-				muXMLUpdateAttribute(&element, "data", "string");
+					// if an error accured, add error attribute to unit or something
+					next = muXMLCreateElement(&element, "read");// ButtonStateCapability->Name);
+					muXMLUpdateAttribute(&element, "data", "string");
 
-				next = muXMLUpdateData(&element, rxBuf);
-				bUnitSend(&element, sendoutImmediateUid);//xBtnUnit, xQueueItem.xValue.xJob);
+					next = muXMLUpdateData(&element, rxBuf);
+
+					bUnitSend(&element, readRequestUid);//xBtnUnit, xQueueItem.xValue.xJob);
+					readRequest = false;
+				}
+			}
+			else if(c == stx && sendoutImmediate)
+			{
+				readCom(etx, rxBuf, &cnt);
+				if(cnt > 0)
+				{
+					static struct muXMLTreeElement element;
+					char * next;
+
+					// if an error accured, add error attribute to unit or something
+					next = muXMLCreateElement(&element, "read");// ButtonStateCapability->Name);
+					muXMLUpdateAttribute(&element, "data", "string");
+
+					next = muXMLUpdateData(&element, rxBuf);
+
+					bUnitSend(&element, sendoutImmediateUid);//xBtnUnit, xQueueItem.xValue.xJob);
+				}
 			}
 		}
 	}
@@ -98,34 +124,47 @@ static eUnitJobState vComportUnitJobReceived(struct muXMLTreeElement * job, int 
 
 	if(strcmp(job->Element.Name, "read") == 0)// readCapability->Name) == 0)
 	{
+		int tmpStx, tmpEtx;
+
+		if(strcmp(muXMLGetAttributeByName(job, "reply"), "never") == 0)
+		{
+			sendoutImmediate = false;
+			return JOB_ACK | JOB_COMPLETE;
+		}
+
 		tmpVal = muXMLGetAttributeByName(job, "stx");
 		if(tmpVal != NULL)
-			stx = atoi(tmpVal);
+			tmpStx = atoi(tmpVal);
 		else
-			stx = -1;
+			return 0;
 
 		tmpVal = muXMLGetAttributeByName(job, "etx");
 		if(tmpVal != NULL)
-			etx = atoi(tmpVal);
+			tmpEtx = atoi(tmpVal);
 		else
-			etx = -1;
+			return 0;
 
-		if(strcmp(muXMLGetAttributeByName(job, "onchange"), "yes") == 0)
+		if(strcmp(muXMLGetAttributeByName(job, "reply"), "onchange") == 0)
 		{
 			sendoutImmediateUid = uid;
+			stx = tmpStx;
+			etx = tmpEtx;
 			sendoutImmediate = true;
 			ret |= JOB_STORE;
 		}
 		else
 		{
-			// HIER WEITER und zwar die read synchron dings
-			//readCom(stx, etx, rxBuf, &cnt);
+			readRequestUid = uid;
+			stxSync = tmpStx;
+			etxSync = tmpEtx;
+			readRequest = true;
 		}
 	}
 	if(strcmp(job->Element.Name, "write") == 0)
 	{
 		for(i=0; i<job->Data.DataSize; i++)
 			vComPutChar(1, job->Data.Data[i], 0);
+		ret | JOB_COMPLETE;
 	}
 
 	return ret | JOB_ACK;

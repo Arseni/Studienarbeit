@@ -102,11 +102,12 @@ namespace NetWorker
         }
 
         Thread receiver = null;
+        bool runReceiver = true;
         private void button2_Click(object sender, EventArgs e)
         {
             receiver = new Thread(new ParameterizedThreadStart(rx));
             receiver.Start(int.Parse(textBoxPort.Text));
-            if(SendWithAck("<epm ack=\"yes\" reply=\"onchange\" dest=\"192.168.10.222:"+textBoxPort.Text+"\"><unit name=\"SerCom\"><read stx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxSTX.Text)[0] + "\" etx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxETX.Text)[0] + "\"/></unit></epm>"))
+            if(SendWithAck("<epm uid=\"123\" ack=\"yes\" reply=\"onchange\" dest=\"192.168.10.222:"+textBoxPort.Text+"\"><unit name=\"SerCom\"><read stx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxSTX.Text)[0] + "\" etx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxETX.Text)[0] + "\"/></unit></epm>"))
                 pictureBox1.Image = imageListStatus.Images["ok"];
             else
                 pictureBox1.Image = imageListStatus.Images["fail"];
@@ -118,7 +119,7 @@ namespace NetWorker
             IPEndPoint r = new IPEndPoint(IPAddress.Any, 50000);
             client.Client.Bind(new IPEndPoint(IPAddress.Any, (int)port));
             client.Client.ReceiveTimeout = 1000;
-            while (true)
+            while (runReceiver)
             {
                 try
                 {
@@ -130,6 +131,9 @@ namespace NetWorker
                 }
                 catch { }
             }
+            runReceiver = true;
+            client.Close();
+            Thread.CurrentThread.Abort();
         }
 
         delegate void listboxUpdater(rxSource source, DateTime now, XmlElement data);
@@ -152,10 +156,67 @@ namespace NetWorker
                         break;
                     case rxSource.syncReceive:
                         src = imageListSource.Images["remote"];
+                        if (data.ChildNodes[0].ChildNodes[0].Attributes["error"] != null)
+                            src = imageListSource.Images["remote_error"];
                         break;
                 }
                 dataGridView1.Rows.Add(new object[] { src, now.ToLongTimeString(), data.InnerText, data.InnerXml });
             }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            XmlElement ans = SendWithAnswer("<epm timeout=\""+trackBar1.Value+"\"><unit name=\"SerCom\"><read stx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxSTXSync.Text)[0] + "\" etx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxETXSync.Text)[0] + "\"/></unit></epm>");
+
+            if (ans != null)
+            {
+                pictureBox3.Image = imageListStatus.Images["ok"];
+                listboxUpdate(rxSource.syncReceive, DateTime.Now, ans);
+            }
+            else
+            {
+                pictureBox3.Image = imageListStatus.Images["fail"];
+            }
+        }
+
+        private XmlElement SendWithAnswer(string text)
+        {
+            UdpClient client = new UdpClient();
+            client.Client.Bind(lEndpoint);
+            XmlElement ret = null;
+            byte[] tx = ASCIIEncoding.Default.GetBytes(text + "\0");
+
+            client.Send(tx, tx.Length, rEndpoint);
+
+            client.Client.ReceiveTimeout = 20000;
+            try
+            {
+                Stream s = new MemoryStream(client.Receive(ref rEndpoint));
+                XmlDataDocument doc = new XmlDataDocument();
+
+                doc.Load(s);
+                //if (doc["epm"]["unit"]["read"].Attributes["data"].Value == "string")
+                    ret = doc["epm"];
+            }
+            catch { }
+
+            client.Close();
+            return ret;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (SendWithAck("<epm uid=\"123\" ack=\"yes\" reply=\"never\"><unit name=\"SerCom\"><read/></unit></epm>"))
+                pictureBox4.Image = imageListStatus.Images["ok"];
+            else
+                pictureBox4.Image = imageListStatus.Images["fail"];
+
+            runReceiver = false;
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            label6.Text = string.Format("{0}: {1}ms", (string)label6.Tag, trackBar1.Value);
         }
     }
     enum rxSource

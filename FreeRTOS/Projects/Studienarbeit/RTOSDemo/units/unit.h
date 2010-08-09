@@ -37,7 +37,8 @@ typedef enum
 typedef enum
 {
 	JOB_ACK = (1<<0),
-	JOB_STORE = (1<<1)
+	JOB_STORE = (1<<1),
+	JOB_COMPLETE = (1<<2)
 }eUnitJobState;
 
 typedef struct
@@ -89,6 +90,7 @@ struct tUnitJobHandler
 	char statusFlags;
 
 	portTickType startTime;
+	int timeout;
 	tBoolean store;
 	tBoolean inUse;
 };

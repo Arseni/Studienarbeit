@@ -13,6 +13,7 @@
 		<item value="227191" key="searchFlags"/>
 		<item value="false" key="caseSensitive"/>
 		<list key="previousPatterns">
+			<item value="xTaskCreate"/>
 			<item value="RunJobHandler"/>
 			<item value="portmakroh"/>
 			<item value="bUdpSendAsync"/>
