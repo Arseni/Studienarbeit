@@ -223,7 +223,7 @@ void vEthernetTask( void *pvParameters )
 				}
 			}
 
-			/* we ware done with that buffer slot */
+			/* we are done with that buffer slot */
 			uiAckRxData();
 		}
 		else

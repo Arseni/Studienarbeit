@@ -5,6 +5,7 @@
 #include "unit.h"
 #include "unitEPMOptions.h"
 #include "udpHandler.h"
+#include "dataAccess.h"
 #include <string.h>
 
 #include "muXML/muXMLAccess.h"
@@ -29,6 +30,8 @@ struct tUnitHandler
 	tUnit xUnit;
 	tBoolean bInUse;
 };
+
+static const char capabilityReadyStateDescription[] = "Ready";
 
 static struct tUnitHandler xUnits[UNIT_MAX_GLOBAL_UNITS];
 static struct tUnitJobHandler xJobs[UNIT_MAX_GLOBAL_JOBS_PARALLEL];
@@ -441,11 +444,51 @@ tBoolean xUnitUnlink(tUnit * pUnit)
 	return true;
 }
 
-static char * intToStr(char * buffer, int number)
+/**
+ *
+ */
+tUnitCapability * xUnitAddCapability(tUnit * pUnit, char * Name)
 {
-	sprintf(buffer, "%d", number);
-	return buffer;
+	int i;
+
+	// Validate parameters
+	// -> validate Unit pointer to be one of the global unit pool
+	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
+	{
+		if(xUnits[i].bInUse && &(xUnits[i].xUnit) == pUnit)
+			goto parameters_valid;
+	}
+	return NULL;
+
+	parameters_valid:
+	for(i=0; i<UNIT_MAX_CAPABILITIES; i++)
+	{
+		if(!UNIT_CAPABILITY_VALID(pUnit->xCapabilities[i]))
+		{
+			strcpy(pUnit->xCapabilities[i].Name, Name);
+			pUnit->xCapabilities[i].State = 0;
+			pUnit->xCapabilities[i].StateDescription = capabilityReadyStateDescription;
+			return &(pUnit->xCapabilities[i]);
+		}
+	}
+	return NULL;
 }
+
+tBoolean bUnitUpdateCapability(tUnitCapability * pCapability, char * stateDesc, eUnitCapaState state)
+{
+	pCapability->State = state;
+	pCapability->StateDescription = stateDesc;
+
+	return true;
+}
+
+tBoolean bUnitUnlinkCapability(tUnitCapability * pCapability)
+{
+	*(pCapability->Name) = 0;
+	return true;
+}
+
+
 tBoolean bUnitSendTo(struct muXMLTreeElement * xjob, int uid, uip_udp_endpoint_t * dest)
 {
 	int i;
@@ -493,3 +536,5 @@ tBoolean bUnitSend(struct muXMLTreeElement * xjob, int uid)
 {
 	bUnitSendTo(xjob, uid, NULL);
 }
+
+

@@ -50,7 +50,7 @@ static void vUdpNewData()
 }
 
 /**
- * Wird aufgerufen, wenn der timer im ethernet task abläuft. Verschickt ggf. Nachrichten
+ * Wird aufgerufen, wenn der Timer im ethernet task abläuft. Verschickt ggf. Nachrichten
  */
 static void vUdpCheckEntries(void)
 {
@@ -81,7 +81,6 @@ void udpHandler_appcall()
 		vOledDbg(uip_appdata);
 		vUdpNewData();
 	}
-//	EthernetIntEnable( ETH_BASE, ETH_INT_RX );
 }
 
 

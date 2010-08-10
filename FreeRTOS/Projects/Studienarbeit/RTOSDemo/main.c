@@ -214,10 +214,10 @@ int main( void )
 	xTaskCreate( vLEDTask, (signed portCHAR *) "LED", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	xTaskCreate( vButtonTask, (signed portCHAR *) "Buttons", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 	xTaskCreate( vEthernetTask, ( signed portCHAR * ) "uIP", mainBASIC_WEB_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY - 1, NULL );
-	xTaskCreate( vBtnUnitTask, ( signed portCHAR * ) "Button Unit", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-	xTaskCreate( vComportUnitTask,  ( signed portCHAR * ) "ComPort Unit", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+	xTaskCreate( vBtnUnitTask, ( signed portCHAR * ) "Buttons Unit", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+	xTaskCreate( vComportUnitTask,  ( signed portCHAR * ) "Comport Unit", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
 	xTaskCreate( vUnitHandlerTask,  ( signed portCHAR * ) "Unit Handler", mainOLED_TASK_STACK_SIZE*2, NULL, tskIDLE_PRIORITY, NULL );
-	xTaskCreate( vUnitTimerTask,  ( signed portCHAR * ) "Timer Task", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+	xTaskCreate( vUnitTimerTask,  ( signed portCHAR * ) "Unit Timer", mainOLED_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
 
 	/* Start the scheduler. */
 	vTaskStartScheduler();

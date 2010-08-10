@@ -41,6 +41,14 @@ typedef enum
 	JOB_COMPLETE = (1<<2)
 }eUnitJobState;
 
+typedef enum
+{
+	CAPA_Ready,
+	CAPA_Busy,
+	CAPA_Restricted,
+	CAPA_Failure
+}eUnitCapaState;
+
 typedef struct
 {
 	char Software[UNIT_SHORT_STRING];
@@ -52,11 +60,19 @@ typedef struct
 typedef struct
 {
 	char Name[UNIT_MIDDLE_STRING];
-	void * pxDependancy;
+	char * StateDescription;
+	eUnitCapaState State;
 }tUnitCapability;
 
 #define UNIT_CAPABILITY_VALID(X) (strlen(X.Name)>0?true:false)
 #define UNIT_CAPABILITIES_CMP(X,Y) (strcmp(X.Name, Y.Name))
+
+#define bUnitIsCapabilityName(X) (strcmp(job->Element.Name, X) == 0) // Name der adressierten Capability abgleichen
+#define bUnitHasAttribute(X) (muXMLGetAttributeByName(job, X) != NULL)
+#define bUnitIsAttrValue(X,Y) (strcmp(muXMLGetAttributeByName(job, X), Y) == 0)
+#define xUnitGetAttrValue(X) (muXMLGetAttributeByName(job, X))
+
+
 
 typedef struct
 {
@@ -68,6 +84,7 @@ typedef eUnitJobState (* tcbUnitNewJob) (struct muXMLTreeElement * Job, int uid)
 typedef struct
 {
 	char Name[UNIT_MIDDLE_STRING];
+	tUnitCapability xCapabilities[UNIT_MAX_CAPABILITIES];
 	tUnitVersion xVersion;
 	eUnitState xState;
 	tcbUnitNewJob vNewJob;
@@ -98,7 +115,9 @@ struct tUnitJobHandler
 void vUnitHandlerTask(void * pvParameters);
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);
 tBoolean xUnitUnlink(tUnit * pUnit);
-tUnitCapability * bUnitAddCapability(tUnit * pUnit, tUnitCapability Capability);
+tUnitCapability * xUnitAddCapability(tUnit * pUnit, char * Name);
+tBoolean bUnitUpdateCapability(tUnitCapability * pCapability, char * stateDesc, eUnitCapaState state);
+tBoolean bUnitUnlinkCapability(tUnitCapability * pCapability);
 
 tUnit * unitGetUnitByName(char * Name);
 
