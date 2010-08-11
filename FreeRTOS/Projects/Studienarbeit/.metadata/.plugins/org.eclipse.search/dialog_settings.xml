@@ -6,8 +6,8 @@
 	<section name="DialogBounds_SearchDialog">
 		<item value="519" key="DIALOG_WIDTH"/>
 		<item value="259" key="DIALOG_Y_ORIGIN"/>
-		<item value="398" key="DIALOG_HEIGHT"/>
 		<item value="445" key="DIALOG_X_ORIGIN"/>
+		<item value="398" key="DIALOG_HEIGHT"/>
 		<item value="1|Tahoma|8.25|0|WINDOWS|1|-11|0|0|0|400|0|0|0|1|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="Search">
@@ -22,10 +22,10 @@
 			<item value="org.eclipse.mylyn.tasks.ui.search.page"/>
 		</list>
 	</section>
+	<section name="org.eclipse.cdt.ui.pdomSearchViewPage">
+	</section>
 	<section name="org.eclipse.search.text.FileSearchResultPage">
 		<item value="1000" key="org.eclipse.search.resultpage.limit"/>
-	</section>
-	<section name="org.eclipse.cdt.ui.pdomSearchViewPage">
 	</section>
 	<section name="TextSearchPage">
 		<item value="false" key="CASE_SENSITIVE"/>
@@ -54,9 +54,9 @@
 			<list key="workingSets">
 			</list>
 		</section>
-		<section name="HISTORY0">
+		<section name="HISTORY10">
 			<item value="false" key="isRegExSearch"/>
-			<item value="*&quot;Rx:*" key="textPattern"/>
+			<item value="struct timer" key="textPattern"/>
 			<item value="0" key="scope"/>
 			<item value="true" key="ignoreCase"/>
 			<list key="fileNamePatterns">
@@ -65,9 +65,9 @@
 			<list key="workingSets">
 			</list>
 		</section>
-		<section name="HISTORY10">
+		<section name="HISTORY0">
 			<item value="false" key="isRegExSearch"/>
-			<item value="struct timer" key="textPattern"/>
+			<item value="*&quot;Rx:*" key="textPattern"/>
 			<item value="0" key="scope"/>
 			<item value="true" key="ignoreCase"/>
 			<list key="fileNamePatterns">
@@ -154,12 +154,12 @@
 			</list>
 		</section>
 	</section>
+	<section name="SearchDialog.ScopePart">
+		<item value="0" key="scope"/>
+	</section>
 	<section name="ReplaceDialog2">
 		<list key="replace_with">
 			<item value="inline"/>
 		</list>
-	</section>
-	<section name="SearchDialog.ScopePart">
-		<item value="0" key="scope"/>
 	</section>
 </section>

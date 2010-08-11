@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "hw_types.h"
+#include "dataAccess.h"
 
 static unsigned char strtouc(char * buffer, char ** end, int base)
 {
@@ -67,4 +68,17 @@ tBoolean stringToStream(char * buffer, char * data, char * type)
 			return true;
 		}
 	return false;
+}
+
+tBoolean updateData(struct muXMLTreeElement * subtree, char * buffer, char * data, char * type)
+{
+	streamToString(buffer, data, type);
+	muXMLUpdateData(subtree, buffer);
+	muXMLUpdateAttribute(subtree, "data", type);
+}
+
+void createBareByRequest(struct muXMLTreeElement * dest, struct muXMLTreeElement * src)
+{
+	memset(dest, 0, sizeof(struct muXMLTreeElement));
+	strcpy(dest->Element.Name, src->Element.Name);
 }

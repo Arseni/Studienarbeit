@@ -67,13 +67,6 @@ typedef struct
 #define UNIT_CAPABILITY_VALID(X) (strlen(X.Name)>0?true:false)
 #define UNIT_CAPABILITIES_CMP(X,Y) (strcmp(X.Name, Y.Name))
 
-#define bUnitIsCapabilityName(X) (strcmp(job->Element.Name, X) == 0) // Name der adressierten Capability abgleichen
-#define bUnitHasAttribute(X) (muXMLGetAttributeByName(job, X) != NULL)
-#define bUnitIsAttrValue(X,Y) (strcmp(muXMLGetAttributeByName(job, X), Y) == 0)
-#define xUnitGetAttrValue(X) (muXMLGetAttributeByName(job, X))
-
-
-
 typedef struct
 {
 	char Text[UNIT_MIDDLE_STRING];
@@ -100,9 +93,6 @@ struct tUnitJobHandler
 
 	int uid;
 	int seqNo;
-	tBoolean relTime;
-	tBoolean ack;
-	unsigned int ds;
 	unsigned int dt;
 	char statusFlags;
 

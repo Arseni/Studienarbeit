@@ -35,7 +35,7 @@ static const char capabilityReadyStateDescription[] = "Ready";
 
 static struct tUnitHandler xUnits[UNIT_MAX_GLOBAL_UNITS];
 static struct tUnitJobHandler xJobs[UNIT_MAX_GLOBAL_JOBS_PARALLEL];
-static tUnitCapability xGlobalUnitCapability;
+//static tUnitCapability xGlobalUnitCapability;
 static xSemaphoreHandle xJobHandlerMutex;
 static unsigned char txBuffer[UNIT_TX_BUFFER_LEN];
 static unsigned char xmlBuffer[UNIT_XML_TREE_BUFFER_LEN];
@@ -44,6 +44,7 @@ static unsigned int unitJobUID;
 
 tBoolean bUnitSendTo(struct muXMLTreeElement * xjob, int uid, uip_udp_endpoint_t * dest);
 static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char * data, uip_udp_endpoint_t sender);
+static void RunJobHandler(struct tUnitJobHandler * xjob, uip_udp_endpoint_t sender);
 
 static struct tUnitJobHandler * unitGetFreeJobHandler()
 {
@@ -102,7 +103,7 @@ tBoolean deleteJobByUID(int uid)
 	}
 	return false;
 }
-static void DispatchXmitRxCallback(unsigned char * data, int len,
+/*static void DispatchXmitRx(unsigned char * data, int len,
 		uip_udp_endpoint_t sender);
 static void DispatchXmitRxCallbackDelegate(void * pvParameters, int parameterCnt)
 {
@@ -121,7 +122,31 @@ static void DispatchXmitRxCallbackDelegate(void * pvParameters, int parameterCnt
 
 	sender = *((uip_udp_endpoint_t *)pvParameters);
 
-	DispatchXmitRxCallback(data, len, sender);
+	DispatchXmitRx(data, len, sender);
+}*/
+
+static void DispatchXmitRx(unsigned char * data, int len,
+		uip_udp_endpoint_t sender)
+{
+	int i, j;
+	struct tUnitJobHandler * xjob = NULL;
+
+	xjob = unitGetFreeJobHandler();
+	if (xjob == NULL)
+		return;
+
+	memcpy(&(xjob->endpoint), &(sender), sizeof(uip_udp_endpoint_t));
+
+	unitExtractJobHandle(xjob, data, sender);
+
+	if (!xjob->inUse)
+	{
+		return;
+		// TODO fehler
+	}
+
+	// handle stored jobs
+	RunJobHandler(xjob, sender);
 }
 
 static void RunJobHandler(struct tUnitJobHandler * xjob, uip_udp_endpoint_t sender)
@@ -169,32 +194,6 @@ static void RunJobHandler(struct tUnitJobHandler * xjob, uip_udp_endpoint_t send
 	{
 		deleteJobByUID(xjob->uid);
 	}
-}
-
-static void DispatchXmitRxCallback(unsigned char * data, int len,
-		uip_udp_endpoint_t sender)
-{
-	int i, j;
-	struct tUnitJobHandler * xjob = NULL;
-
-	xjob = unitGetFreeJobHandler();
-	if (xjob == NULL)
-		return;
-
-	memcpy(&(xjob->endpoint), &(sender), sizeof(uip_udp_endpoint_t));
-
-	unitExtractJobHandle(xjob, data, sender);
-
-	if (!xjob->inUse)
-	{
-		return;
-		// TODO fehler
-	}
-
-	// handle stored jobs
-
-
-	RunJobHandler(xjob, sender);
 }
 
 tUnit * unitGetUnitByName(char * Name)
@@ -325,7 +324,7 @@ static int unitBuildInitialEpm(unsigned char * buffer, int maxSize)
 	void * pp = muXMLCreateTree(xmlBuffer, sizeof(xmlBuffer), "epm");
 	muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "uid", "0");
 	muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "ack", "yes");
-	muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "home", "192.168.0.13:50000");
+	muXMLUpdateAttribute(&(((struct muXMLTree*)xmlBuffer)->Root), "home", "192.168.0.13:50000");// TODO ip adresse!!
 	for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
 	{
 		if(xUnits[i].bInUse)
@@ -357,7 +356,7 @@ void vUnitHandlerTask(void * pvParameters)
 		vTaskDelay(1000/portTICK_RATE_MS);
 	}
 	// Unit dispatch state
-	bUdpReceiveAsync(DispatchXmitRxCallback, -1);
+	bUdpReceiveAsync(DispatchXmitRx, -1);
 
 	while(true)
 	{
@@ -377,7 +376,7 @@ void vUnitHandlerTask(void * pvParameters)
 
 
 			if(xJobs[i].inUse // if active, ...
-			&& !xJobs[i].store // ... not selfcontrolled periodic, ...
+			&& !xJobs[i].store // ... not selfcontrolled, ...
 			&& xTaskGetTickCount() - xJobs[i].startTime > timeout)// ... and overdue
 			{
 				struct muXMLTreeElement err;
@@ -496,6 +495,11 @@ tBoolean bUnitSendTo(struct muXMLTreeElement * xjob, int uid, uip_udp_endpoint_t
 	void * pp, * p;
 	char tmpStr[UNIT_MIDDLE_STRING];
 
+	if(!xSemaphoreTake(xJobHandlerMutex, portMAX_DELAY))
+	{
+		return false;
+	}
+
 	for(i=0; i<UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
 	{
 		if(uid == xJobs[i].internal_uid)
@@ -504,6 +508,8 @@ tBoolean bUnitSendTo(struct muXMLTreeElement * xjob, int uid, uip_udp_endpoint_t
 			break;
 		}
 	}
+
+	xSemaphoreGive(xJobHandlerMutex);
 
 	if(handler->unit == NULL
 	|| handler->unit == SUPER_UNIT)
