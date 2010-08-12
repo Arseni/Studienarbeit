@@ -1,5 +1,5 @@
-#ifndef MUXML_H
-#define MUXML_H
+#ifndef MUXMLACCESS_H
+#define MUXMLACCESS_H
 
 #include "muXMLTree.h"
 struct muXMLTreeElement* muXMLGetElementByName(struct muXMLTreeElement * pRoot,
@@ -19,4 +19,4 @@ void * muXMLCreateTree(void * Buffer, int BufferLength, char * rootName);
 void * muXMLCreateElement(void * Buffer, char * name);
 
 char * muXMLGetAttributeByName(struct muXMLTreeElement * pElement, char * Name);
-#endif /* MUXML_H */
+#endif /* MUXMLACCESS_H */

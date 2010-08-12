@@ -58,50 +58,8 @@ void * muXMLCreateElement(void * Buffer, char * name)
 void * muXMLUpdateData(struct muXMLTreeElement * pElement,
 					   char * newData)
 {
-#ifdef OBSOLETE
-	int i=0, dataLen = strlen(newData),
-		diff = dataLen - strlen(pElement->Data.Data);
-	char * pData;
-	
-	if(pTree->StorageInfo.SpaceInUse + diff > pTree->StorageInfo.SpaceTotal)
-		return 1;
-	
-	// Vorgang der Datenverschiebung je nach diff unterschiedlich
-	if(diff > 0) // neue Daten sind größer
-	{
-		pData = (char*)pTree + pTree->StorageInfo.SpaceInUse;
-		while(pData != pElement->Data.Data)
-		{
-			*(pData + diff) = *pData;
-			pData--;
-		}
-	}
-	if(diff < 0) // neue Daten sind kleiner
-	{
-		pData = pElement->Data.Data;
-		while(pData != (char*)pTree + pTree->StorageInfo.SpaceInUse)
-		{
-			*(pData - diff) = *pData;
-			pData++;
-		}
-	}
-
-	// neue Daten übernehmen
-	memcpy(pElement->Data.Data, newData, dataLen);
-	pElement->Data.DataSize = dataLen;
-	pTree->StorageInfo.SpaceInUse += diff;
-
-	// Ketteninformationen updaten
-	if(pElement->Next)
-		pElement->Next = (char*)pElement->Next + diff;
-	return 0;
-#endif
-	
 	pElement->Data.Data = newData;
 	pElement->Data.DataSize = strlen(newData);
-#ifdef FILE_INFO
-	// TODO update tree storage usage
-#endif
 	return newData + strlen(newData) + 1;
 }
 

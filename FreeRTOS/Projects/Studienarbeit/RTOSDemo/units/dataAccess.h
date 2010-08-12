@@ -2,10 +2,14 @@
 #include "muXML/muXMLAccess.h"
 
 #define updateAttr(X,Y,Z) muXMLUpdateAttribute(X,Y,Z)
-#define isCapabilityName(X,Y) (strcmp(X->Element.Name, Y) == 0) // Name der adressierten Capability abgleichen
+#define isCapability(X,Y) (strcmp(X->Element.Name, Y) == 0) // Name der adressierten Capability abgleichen
 #define hasAttribute(X,Y) (muXMLGetAttributeByName(X, Y) != NULL)
 #define isAttrValue(X,Y,Z) (strcmp(muXMLGetAttributeByName(X, Y), Z) == 0)
-#define getAttrValue(X,Y) (muXMLGetAttributeByName(X,Y))
+#define getAttrValue(X,Y) muXMLGetAttributeByName(X,Y)
+
+#define toInt(X) atoi(X)
+
+#define HANDLE_CAPABILITY(X) if(isCapability(job, X))
 
 typedef struct muXMLTreeElement unitToken;
 

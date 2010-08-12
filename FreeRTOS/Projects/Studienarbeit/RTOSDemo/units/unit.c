@@ -15,10 +15,13 @@
 
 #define NEW_UID() (++unitJobUID)
 #define SUPER_UNIT ((tUnit*)(-1))
-#define CHECK_ATTR_NAME(A) if(strcmp(tree->Root.Element.Attribute[i].Name, A) == 0)
-#define CHECK_ATTR_VALUE(A) if(strcmp(tree->Root.Element.Attribute[i].Value, A) == 0)
+#define HANDLE_ATTRIBUTE(A) if(strcmp(tree->Root.Element.Attribute[i].Name, A) == 0)
+#define HANDLE_VALUE(A) if(strcmp(tree->Root.Element.Attribute[i].Value, A) == 0)
 #define ATTR_VALUE()	(tree->Root.Element.Attribute[i].Value)
 #define ATTR_NAME()		(tree->Root.Element.Attribute[i].Name)
+
+#define SINK() muXMLUpdateAttribute(tree->Root.SubElements->SubElements, ATTR_NAME(), ATTR_VALUE())
+#define SINK_AS(X,Y) muXMLUpdateAttribute(tree->Root.SubElements->SubElements, X, Y)
 
 #define STATUS_USE_SEQ_NO		(1<<0)
 #define STATUS_USE_UID			(1<<1)
@@ -168,7 +171,6 @@ static void DispatchXmitRx(unsigned char * data, int len,
 	if (!xjob->inUse)
 	{
 		return;
-		// TODO fehler
 	}
 
 	// handle stored jobs
@@ -305,19 +307,19 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 			// SINK
 			muXMLUpdateAttribute(tree->Root.SubElements->SubElements, "onchange", "yes");
 		}
-		CHECK_ATTR_NAME("reply")
+		HANDLE_ATTRIBUTE("reply")
 		{
-			CHECK_ATTR_VALUE("never")
+			HANDLE_VALUE("never")
 				handler->statusFlags |= STATUS_DELETE;
 
 			// SINK
 			muXMLUpdateAttribute(tree->Root.SubElements->SubElements, ATTR_NAME(), ATTR_VALUE());
 		}
-		CHECK_ATTR_NAME("dest")
+		HANDLE_ATTRIBUTE("dest")
 		{
 			uip_parseIpAddr(handler->endpoint.rAddr, &(handler->endpoint.rPort), ATTR_VALUE());
 		}
-		CHECK_ATTR_NAME("timeout")
+		HANDLE_ATTRIBUTE("timeout")
 		{
 			handler->timeout = atoi(ATTR_VALUE());
 		}

@@ -31,7 +31,6 @@ union xValue
 static xQueueHandle xQueue = NULL;
 static tUnit * xBtnUnit;
 //static tUnitCapability * ButtonStateCapability, * SendImmediateCapability;
-static char tmpStr[200]; // TODO delete me
 static tBoolean sendoutImmediate = false;
 int sendoutImmediateUid = 0;
 
@@ -87,10 +86,6 @@ void vBtnUnitTask(void * pvParameters)
 				}
 				break;
 			case JOB:
-				strcpy(tmpStr, "Job: ");
-				//strcat(tmpStr, xQueueItem.xValue.xJob.xCapability->Name);
-				vOledDbg(tmpStr);
-
 				// a job arrived, handle it
 				break;
 			}
@@ -126,36 +121,5 @@ static eUnitJobState vBtnUnitNewJob(struct muXMLTreeElement * job, int uid)
 		vOledDbg("job");
 		ret = JOB_ACK;
 	}
-	/*
-	tUnitCapability * pxDstCapability;
-	tBtnUnitQueueItem item;
-
-	// TODO Validate job
-	if(Job.xCapability == ButtonStateCapability)
-	{
-		if(strcmp(muXMLGetAttributeByName("sendonarrival"), "yes") == 0)
-		{
-			sendoutImmediate = true;
-			sendoutImmediateUid = Job.uid;
-			ret |= JOB_STORE;
-		}
-		for(i=0;i<Job.parametersCnt;i++)
-		{
-			if( (strcmp(Job.parameter[i].Name, "sendonarrival") == 0)
-				&& (strcmp(Job.parameter[i].Value, "yes") == 0) )
-			{
-
-			}
-		}
-	}
-
-	// format
-	item.eType = JOB;
-	item.xValue.xJob = Job;
-
-	// enqueue
-	if(xQueue != NULL)
-		xQueueSend(xQueue, &item, portMAX_DELAY);
-	*/
 	return ret;
 }
