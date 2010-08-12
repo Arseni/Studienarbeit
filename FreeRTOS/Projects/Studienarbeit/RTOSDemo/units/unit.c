@@ -4,6 +4,7 @@
 
 #include "unit.h"
 #include "unitEPMOptions.h"
+#include "unitDebug.h"
 #include "udpHandler.h"
 #include "dataAccess.h"
 #include <string.h>
@@ -125,6 +126,27 @@ static void DispatchXmitRxCallbackDelegate(void * pvParameters, int parameterCnt
 	DispatchXmitRx(data, len, sender);
 }*/
 
+static void sendNAK(unsigned char * data, uip_udp_endpoint_t sender)
+{
+	struct tUnitJobHandler job[1];
+	struct muXMLTreeElement element;
+
+	unitExtractJobHandle(job, data, sender);
+
+	muXMLCreateElement(&element, "ack");
+	muXMLUpdateAttribute(&element, "cmd", job->job->Element.Name);
+	if(job->statusFlags & STATUS_USE_UID)
+	{
+		char uidString[6];
+		sprintf(uidString, "%d", job->uid);
+		muXMLUpdateAttribute(&element, "uid", uidString);
+	}
+
+	muXMLUpdateAttribute(&element, "error", "full");
+
+	bUnitSendTo(&element, job->internal_uid, &sender);
+}
+
 static void DispatchXmitRx(unsigned char * data, int len,
 		uip_udp_endpoint_t sender)
 {
@@ -133,7 +155,11 @@ static void DispatchXmitRx(unsigned char * data, int len,
 
 	xjob = unitGetFreeJobHandler();
 	if (xjob == NULL)
+	{
+		sendNAK(data, sender);
+		DBG("Kein freier Slot");
 		return;
+	}
 
 	memcpy(&(xjob->endpoint), &(sender), sizeof(uip_udp_endpoint_t));
 
@@ -166,7 +192,7 @@ static void RunJobHandler(struct tUnitJobHandler * xjob, uip_udp_endpoint_t send
 		if (xjob->statusFlags & STATUS_PERIODIC)
 		{
 			xjob->store = true;
-			vUnitTimerStart(xjob->dt, RunJobHandler, xjob);
+			vUnitTimerStart(xjob->dt, RunJobHandler, xjob, sender);
 		}
 	}
 
@@ -213,8 +239,16 @@ tUnit * unitGetUnitByName(char * Name)
 	return NULL;
 }
 
+tBoolean setupRequired(struct muXMLTreeElement * element)
+{
+	int i, ret=0;
+	for(i=0; i<element->Element.nAttributes; i++)
+		if(strcmp(element->Element.Attribute[i].Name, "name"))
+			ret++;
+	return ret;
+}
+
 /**
- * TODO: ack ds, dt etc + global dedicated
  */
 static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char * data, uip_udp_endpoint_t sender)
 {
@@ -294,6 +328,7 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 	if(element == NULL)
 	{
 		handler->inUse = false;
+		DBG("EPM: <unit> fehlt");
 		return;
 	}
 	tmpStr = muXMLGetAttributeByName(element, "name");
@@ -304,6 +339,13 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 	else
 	{
 		handler->unit = unitGetUnitByName(tmpStr);
+		if(handler->unit == NULL)
+		{
+			handler->inUse = false;
+			DBG("Unit not implemented");
+			sendNAK(data, sender);
+			return;
+		}
 	}
 
 	// capability extraction
@@ -311,7 +353,76 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 	if(handler->job == NULL)
 	{
 		handler->inUse = false;
+		DBG("Kein Auftrag enthalten");
 		return;
+	}
+
+	if(handler->unit == SUPER_UNIT)
+	{
+		for(i=0; i<UNIT_MAX_GLOBAL_UNITS; i++)
+		{
+			if(xUnits[i].bInUse)
+			{
+				struct tUnitJobHandler * addJob = unitGetFreeJobHandler();
+				if(addJob == NULL)
+				{
+					sendNAK(data, sender);
+					handler->inUse = false;
+					return;
+				}
+				memcpy(addJob, handler, sizeof(struct tUnitJobHandler));
+				addJob->unit = &(xUnits[i].xUnit);
+				addJob->internal_uid = NEW_UID();
+
+				if(setupRequired(element))
+				{
+					struct tUnitJobHandler * addJob = unitGetFreeJobHandler();
+					static struct muXMLTreeElement setup[1];
+					if(addJob == NULL)
+					{
+						sendNAK(data, sender);
+						handler->inUse = false;
+						return;
+					}
+					memcpy(addJob, handler, sizeof(struct tUnitJobHandler));
+					addJob->job = setup;
+					strcpy(setup->SubElements->Element.Name, "setup");
+					for(i=0; i<element->Element.nAttributes; i++)
+					{
+						if(strcmp(element->Element.Attribute[i].Name, "name"))
+							muXMLUpdateAttribute(setup, element->Element.Attribute[i].Name, element->Element.Attribute[i].Value);
+					}
+					addJob->internal_uid = NEW_UID();
+					RunJobHandler(addJob, sender);
+				}
+
+				RunJobHandler(addJob, sender);
+			}
+		}
+		handler->inUse = false;
+		return;
+	}
+
+	if(setupRequired(element))
+	{
+		struct tUnitJobHandler * addJob = unitGetFreeJobHandler();
+		static struct muXMLTreeElement setup[1];
+		if(addJob == NULL)
+		{
+			sendNAK(data, sender);
+			handler->inUse = false;
+			return;
+		}
+		memcpy(addJob, handler, sizeof(struct tUnitJobHandler));
+		addJob->job = setup;
+		strcpy(setup->SubElements->Element.Name, "setup");
+		for(i=0; i<element->Element.nAttributes; i++)
+		{
+			if(strcmp(element->Element.Attribute[i].Name, "name"))
+				muXMLUpdateAttribute(setup, element->Element.Attribute[i].Name, element->Element.Attribute[i].Value);
+		}
+		addJob->internal_uid = NEW_UID();
+		RunJobHandler(addJob, sender);
 	}
 
 	handler->internal_uid = NEW_UID();

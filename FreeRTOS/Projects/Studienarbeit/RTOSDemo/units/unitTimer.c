@@ -9,6 +9,7 @@
 #include "gpio.h"
 #include "hw_memmap.h"
 
+#include "unit.h"
 #include "udpHandler.h"
 
 #include "drivers/timer.h"
@@ -18,8 +19,9 @@
 
 struct timerHandler
 {
-	void (*callback) (void * pvParameter);
-	void * pvParameter;
+	 void (*callback)(struct tUnitJobHandler * xjob, uip_udp_endpoint_t sender);
+	struct tUnitJobHandler * xjob;
+	uip_udp_endpoint_t sender;
 	int delay;
 };
 
@@ -67,14 +69,15 @@ void vUnitTimerTask(void * pvParameters)
 	for(;;)
 	{
 		xQueueReceive(xEventQueue, &event, portMAX_DELAY);
-		event.callback(event.pvParameter);
+		event.callback(event.xjob, event.sender);
 	}
 }
 
 
 void vUnitTimerStart(int msDelay,
-					 void callback(void * pvParameter),
-					 void * pvParameter)
+					 void callback(struct tUnitJobHandler * xjob, uip_udp_endpoint_t sender),
+					 struct tUnitJobHandler * xjob,
+					 uip_udp_endpoint_t sender)
 {
 	int i;
 	xSemaphoreTake(xTimerHandlerMutex, portMAX_DELAY);
@@ -83,7 +86,8 @@ void vUnitTimerStart(int msDelay,
 		if(timers[i].callback == NULL)
 		{
 			timers[i].callback = callback;
-			timers[i].pvParameter = pvParameter;
+			timers[i].xjob = xjob;
+			timers[i].sender = sender;
 			timers[i].delay = msDelay;
 			break;
 		}

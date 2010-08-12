@@ -7,6 +7,7 @@
 #define isAttrValue(X,Y,Z) (strcmp(muXMLGetAttributeByName(X, Y), Z) == 0)
 #define getAttrValue(X,Y) (muXMLGetAttributeByName(X,Y))
 
+typedef struct muXMLTreeElement unitToken;
 
 int strToInt(char * data, char * type);
 char * intToStr(char * buffer, int number);

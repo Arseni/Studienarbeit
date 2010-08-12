@@ -4,6 +4,13 @@
 <scannerInfo id="org.eclipse.cdt.make.core.discoveredScannerInfo">
 <instance id="0.1109417601">
 <collector id="org.eclipse.cdt.make.core.PerProjectSICollector">
+<includePath path="C:/TUHH/Studien Arbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo"/>
+<includePath path="C:/TUHH/Studien Arbeit/FreeRTOS/Source/include"/>
+<includePath path="C:/TUHH/Studien Arbeit/FreeRTOS/Source/portable/GCC/ARM_CM3"/>
+<includePath path="C:/TUHH/Studien Arbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/Drivers"/>
+<includePath path="C:/TUHH/Studien Arbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/API"/>
+<includePath path="C:/TUHH/Studien Arbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/uip"/>
+<includePath path="C:/TUHH/Studien Arbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo/ethernet"/>
 <includePath path="C:/TUHH/Studienarbeit/FreeRTOS/Projects/Studienarbeit/RTOSDemo"/>
 <includePath path="C:/TUHH/Studienarbeit/FreeRTOS/Demo/CORTEX_LM3Sxxxx_Eclipse_Studienarbeit/RTOSDemo"/>
 <includePath path="C:/TUHH/Studienarbeit/FreeRTOS/Source/include"/>
