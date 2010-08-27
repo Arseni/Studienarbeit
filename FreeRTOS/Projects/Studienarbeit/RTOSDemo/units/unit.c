@@ -3,8 +3,7 @@
 #include "semphr.h"
 
 #include "unit.h"
-#include "unitEPMOptions.h"
-#include "unitDebug.h"
+#define DBG(X);//#include "unitDebug.h"
 #include "udpHandler.h"
 #include "dataAccess.h"
 #include <string.h>
@@ -76,9 +75,13 @@ static struct tUnitJobHandler * unitGetFreeJobHandler()
 
 static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t sender)
 {
+	struct muXMLTree * tree = muXMLTreeDecode(data, xmlBuffer, sizeof(xmlBuffer), 0, NULL);
+
+	if(strcmp(tree->Root.SubElements->SubElements->Element.Name, "ack"))
+	/*
 	struct tUnitJobHandler * xjob = unitGetFreeJobHandler();
 	unitExtractJobHandle(xjob, data, sender);
-	if(strcmp(xjob->job->Element.Name, "ack"))
+	if(strcmp(xjob->job->Element.Name, "ack"))*/
 	{
 		bUdpReceiveAsync(InitXmitRxCallback, 1);
 	}
@@ -86,7 +89,7 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
 	{
 		ack = true;
 		udpHandler_init(sender);
-		xjob->inUse = false;
+		//xjob->inUse = false;
 	}
 }
 
@@ -270,15 +273,6 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 	handler->timeout = -1; // default timeout
 	for(i=0; i<tree->Root.Element.nAttributes; i++)
 	{
-#ifdef OBSOLETE
-		for(j=0; j<sizeof(unitEPMOption)/sizeof(struct tUnitEPMOption); j++)
-		{
-			if(strcmp(tree->Root.Element.Attribute[i].Name, unitEPMOption[j].Name) == 0)
-			{
-				unitEPMOption[i].preProcess(tree->Root.Element.Attribute[i].Value, handler, &(tree->Root));
-			}
-		}
-#endif
 		if(strcmp(tree->Root.Element.Attribute[i].Name, "ack") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "yes") == 0)
 			handler->statusFlags |= STATUS_ACK_REQUESTED;
 		if(strcmp(tree->Root.Element.Attribute[i].Name, "uid") == 0)
@@ -586,7 +580,7 @@ tUnitCapability * xUnitAddCapability(tUnit * pUnit, char * Name)
 	return NULL;
 }
 
-tBoolean bUnitUpdateCapability(tUnitCapability * pCapability, char * stateDesc, eUnitCapaState state)
+tBoolean bUnitUpdateCapability(tUnitCapability * pCapability, char * stateDesc, eUnitState state)
 {
 	pCapability->State = state;
 	pCapability->StateDescription = stateDesc;

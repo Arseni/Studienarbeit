@@ -28,11 +28,7 @@
 #include "muXML/muXMLTree.h"
 #include <string.h>
 
-typedef enum
-{
-	UNIT_READY,
-	UNIT_BUSY
-}eUnitState;
+
 
 typedef enum
 {
@@ -43,11 +39,11 @@ typedef enum
 
 typedef enum
 {
-	CAPA_Ready,
-	CAPA_Busy,
-	CAPA_Restricted,
-	CAPA_Failure
-}eUnitCapaState;
+	UNIT_Ready,
+	UNIT_Busy,
+	UNIT_Restricted,
+	UNIT_Failure
+}eUnitState;
 
 typedef struct
 {
@@ -61,7 +57,7 @@ typedef struct
 {
 	char Name[UNIT_MIDDLE_STRING];
 	char * StateDescription;
-	eUnitCapaState State;
+	eUnitState State;
 }tUnitCapability;
 
 #define UNIT_CAPABILITY_VALID(X) (strlen(X.Name)>0?true:false)
@@ -106,7 +102,7 @@ void vUnitHandlerTask(void * pvParameters);
 tUnit * xUnitCreate(char * Name, tcbUnitNewJob JobReceived);
 tBoolean xUnitUnlink(tUnit * pUnit);
 tUnitCapability * xUnitAddCapability(tUnit * pUnit, char * Name);
-tBoolean bUnitUpdateCapability(tUnitCapability * pCapability, char * stateDesc, eUnitCapaState state);
+tBoolean bUnitUpdateCapability(tUnitCapability * pCapability, char * stateDesc, eUnitState state);
 tBoolean bUnitUnlinkCapability(tUnitCapability * pCapability);
 
 tUnit * unitGetUnitByName(char * Name);
