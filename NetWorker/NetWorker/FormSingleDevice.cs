@@ -47,6 +47,7 @@ namespace NetWorker
             client.Client.Bind(lEndpoint);
             byte[] tx = ASCIIEncoding.Default.GetBytes(text+"\0");
 
+            listboxUpdate(rxSource.send, text);
             client.Send(tx, tx.Length, rEndpoint);
             client.Close();
         }
@@ -58,6 +59,7 @@ namespace NetWorker
             bool ret = false;
             byte[] tx = ASCIIEncoding.Default.GetBytes(text + "\0");
 
+            listboxUpdate(rxSource.send, text);
             client.Send(tx, tx.Length, rEndpoint);
 
             client.Client.ReceiveTimeout = 1000;
@@ -67,11 +69,38 @@ namespace NetWorker
                 XmlDataDocument doc = new XmlDataDocument();
 
                 doc.Load(s);
-                if (doc["epm"]["unit"]["ack"].Attributes["cmd"].Value.Length > 0)
+                listboxUpdate(rxSource.syncReceive, doc.InnerXml);
+                if (!doc["epm"]["unit"]["ack"].HasAttribute("error"))
                     ret = true;
             }
             catch{ }
             
+            client.Close();
+            return ret;
+        }
+        private XmlElement SendWithAnswer(string text)
+        {
+            UdpClient client = new UdpClient();
+            client.Client.Bind(lEndpoint);
+            XmlElement ret = null;
+            byte[] tx = ASCIIEncoding.Default.GetBytes(text + "\0");
+
+            listboxUpdate(rxSource.send, text);
+            client.Send(tx, tx.Length, rEndpoint);
+
+            client.Client.ReceiveTimeout = 20000;
+            try
+            {
+                Stream s = new MemoryStream(client.Receive(ref rEndpoint));
+                XmlDataDocument doc = new XmlDataDocument();
+
+                doc.Load(s);
+                //if (doc["epm"]["unit"]["read"].Attributes["data"].Value == "string")
+                listboxUpdate(rxSource.syncReceive, doc.InnerXml);
+                ret = doc["epm"];
+            }
+            catch { }
+
             client.Close();
             return ret;
         }
@@ -97,7 +126,7 @@ namespace NetWorker
                 Send(doc.InnerXml);
                 pictureBox2.Image = imageListStatus.Images["none"];
             }
-            listboxUpdate(rxSource.send, DateTime.Now, doc["epm"]);
+            //listboxUpdate(rxSource.send, DateTime.Now, doc["epm"]);
             
         }
 
@@ -107,7 +136,7 @@ namespace NetWorker
         {
             receiver = new Thread(new ParameterizedThreadStart(rx));
             receiver.Start(int.Parse(textBoxPort.Text));
-            if(SendWithAck("<epm uid=\"123\" ack=\"yes\" reply=\"onchange\" dest=\"192.168.10.222:"+textBoxPort.Text+"\"><unit name=\"SerCom\"><read stx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxSTX.Text)[0] + "\" etx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxETX.Text)[0] + "\"/></unit></epm>"))
+            if(SendWithAck("<epm uid=\"123\" ack=\"yes\" reply=\"onchange\" dest=\"192.168.0.1:"+textBoxPort.Text+"\"><unit name=\"SerCom\"><read stx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxSTX.Text)[0] + "\" etx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxETX.Text)[0] + "\"/></unit></epm>"))
                 pictureBox1.Image = imageListStatus.Images["ok"];
             else
                 pictureBox1.Image = imageListStatus.Images["fail"];
@@ -160,15 +189,22 @@ namespace NetWorker
                             src = imageListSource.Images["remote_error"];
                         break;
                 }
-                dataGridView1.Rows.Add(new object[] { src, now.ToLongTimeString(), data.InnerText, data.InnerXml });
+                dataGridView1.Rows.Add(new object[] { src, now.ToLongTimeString(), data.InnerText, data.OuterXml });
             }
         }
+        private void listboxUpdate(rxSource rxSource, string text)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(new MemoryStream(ASCIIEncoding.Default.GetBytes(text)));
+            listboxUpdate(rxSource, DateTime.Now, doc["epm"]);
+        }
+
 
         private void button1_Click_1(object sender, EventArgs e)
         {
             XmlElement ans = SendWithAnswer("<epm timeout=\""+trackBar1.Value+"\"><unit name=\"SerCom\"><read stx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxSTXSync.Text)[0] + "\" etx=\"" + (int)ASCIIEncoding.Default.GetBytes(textBoxETXSync.Text)[0] + "\"/></unit></epm>");
 
-            if (ans != null)
+            if (ans != null && ans.ChildNodes[0].ChildNodes[0].Attributes.Count == 0)
             {
                 pictureBox3.Image = imageListStatus.Images["ok"];
                 listboxUpdate(rxSource.syncReceive, DateTime.Now, ans);
@@ -179,30 +215,7 @@ namespace NetWorker
             }
         }
 
-        private XmlElement SendWithAnswer(string text)
-        {
-            UdpClient client = new UdpClient();
-            client.Client.Bind(lEndpoint);
-            XmlElement ret = null;
-            byte[] tx = ASCIIEncoding.Default.GetBytes(text + "\0");
 
-            client.Send(tx, tx.Length, rEndpoint);
-
-            client.Client.ReceiveTimeout = 20000;
-            try
-            {
-                Stream s = new MemoryStream(client.Receive(ref rEndpoint));
-                XmlDataDocument doc = new XmlDataDocument();
-
-                doc.Load(s);
-                //if (doc["epm"]["unit"]["read"].Attributes["data"].Value == "string")
-                    ret = doc["epm"];
-            }
-            catch { }
-
-            client.Close();
-            return ret;
-        }
 
         private void button3_Click(object sender, EventArgs e)
         {

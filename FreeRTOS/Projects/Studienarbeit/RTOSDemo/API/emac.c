@@ -62,6 +62,8 @@
 /* uIP includes. */
 #include "uip.h"
 
+#include "OLEDDisplay/oledDisplay.h"
+
 /* Hardware library includes. */
 #include "hw_types.h"
 #include "hw_memmap.h"
@@ -205,6 +207,7 @@ unsigned portLONG ulNextWord;
 	if(uip_buf == NULL)
 		return;
 
+
 	/* Locate the data to be send. */
 	pus = ( unsigned portSHORT * ) uip_buf;
 
@@ -236,6 +239,7 @@ unsigned portLONG ulNextWord;
  */
 void prvENET_Send(void)
 {
+	vOledDbg("test");
     vInitialiseSend();
     vIncrementTxLength( uip_len );
     vSendBufferToMAC();

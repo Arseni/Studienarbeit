@@ -70,6 +70,7 @@ static struct tUnitJobHandler * unitGetFreeJobHandler()
 		}
 	}
 	xSemaphoreGive(xJobHandlerMutex);
+	//memset(ret, 0, sizeof(struct tUnitJobHandler));
 	return ret;
 }
 
@@ -93,10 +94,6 @@ static void InitXmitRxCallback(unsigned char * data, int len, uip_udp_endpoint_t
 	}
 }
 
-/**
- * Was noch fehlt ist, dass globale Jobs übernommen werden und der timer gestartet wird etc etc etc...
- * noch viel zu tun
- */
 tBoolean deleteJobByUID(int uid)
 {
 	int i;
@@ -110,27 +107,19 @@ tBoolean deleteJobByUID(int uid)
 	}
 	return false;
 }
-/*static void DispatchXmitRx(unsigned char * data, int len,
-		uip_udp_endpoint_t sender);
-static void DispatchXmitRxCallbackDelegate(void * pvParameters, int parameterCnt)
+
+int hasJobWithUid(int uid)
 {
-	unsigned char * data;
-	int len;
-	uip_udp_endpoint_t sender;
-
-	if(parameterCnt < 3)
-		return;
-
-	data = (unsigned char*)pvParameters;
-	pvParameters += sizeof(unsigned char*);
-
-	len = *((int *)pvParameters);
-	pvParameters += sizeof(int);
-
-	sender = *((uip_udp_endpoint_t *)pvParameters);
-
-	DispatchXmitRx(data, len, sender);
-}*/
+	int i, ret = 0;
+	for (i = 0; i < UNIT_MAX_GLOBAL_JOBS_PARALLEL; i++)
+	{
+		if (xJobs[i].inUse && xJobs[i].uid == uid)
+		{
+			ret++;
+		}
+	}
+	return ret;
+}
 
 static void sendNAK(unsigned char * data, uip_udp_endpoint_t sender)
 {
@@ -176,6 +165,7 @@ static void DispatchXmitRx(unsigned char * data, int len,
 		return;
 	}
 
+
 	// handle stored jobs
 	RunJobHandler(xjob, sender);
 }
@@ -199,6 +189,9 @@ static void RunJobHandler(struct tUnitJobHandler * xjob, uip_udp_endpoint_t send
 			xjob->store = true;
 			vUnitTimerStart(xjob->dt, RunJobHandler, xjob, sender);
 		}
+		if(xjob->statusFlags & STATUS_DELETE)
+			if(hasJobWithUid(xjob->uid) < 2)
+				state &= ~JOB_ACK;
 	}
 
 	// ack ?
@@ -207,12 +200,12 @@ static void RunJobHandler(struct tUnitJobHandler * xjob, uip_udp_endpoint_t send
 		struct muXMLTreeElement element;
 		muXMLCreateElement(&element, "ack");
 		muXMLUpdateAttribute(&element, "cmd", xjob->job->Element.Name);
-		if(xjob->statusFlags & STATUS_USE_UID)
+		/*if(xjob->statusFlags & STATUS_USE_UID)
 		{
 			char uidString[6];
 			sprintf(uidString, "%d", xjob->uid);
 			muXMLUpdateAttribute(&element, "uid", uidString);
-		}
+		}*/
 		if(!(state & JOB_ACK))
 			muXMLUpdateAttribute(&element, "error", "internal");
 		bUnitSendTo(&element, xjob->internal_uid, &sender);
@@ -279,7 +272,7 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 		{
 			handler->uid = atoi(tree->Root.Element.Attribute[i].Value);
 			handler->statusFlags |= STATUS_USE_UID;
-			deleteJobByUID(handler->uid);
+			//deleteJobByUID(handler->uid);
 		}
 		if(strcmp(tree->Root.Element.Attribute[i].Name, "withseqno") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "yes") == 0)
 		{
@@ -291,15 +284,6 @@ static void unitExtractJobHandle(struct tUnitJobHandler * handler, unsigned char
 			handler->dt = atoi(tree->Root.Element.Attribute[i].Value);
 			if(handler->dt)
 				handler->statusFlags |= STATUS_PERIODIC;
-		}
-		if(strcmp(tree->Root.Element.Attribute[i].Name, "reply") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "never") == 0)
-		{
-			handler->statusFlags |= STATUS_DELETE;
-		}
-		if(strcmp(tree->Root.Element.Attribute[i].Name, "reply") == 0 && strcmp(tree->Root.Element.Attribute[i].Value, "onchange") == 0)
-		{
-			// SINK
-			muXMLUpdateAttribute(tree->Root.SubElements->SubElements, "onchange", "yes");
 		}
 		HANDLE_ATTRIBUTE("reply")
 		{
@@ -487,9 +471,14 @@ void vUnitHandlerTask(void * pvParameters)
 			&& xTaskGetTickCount() - xJobs[i].startTime > timeout)// ... and overdue
 			{
 				struct muXMLTreeElement err;
+
+				xSemaphoreGive(xJobHandlerMutex);
+
 				muXMLCreateElement(&err, xJobs[i].job->Element.Name);
 				muXMLUpdateAttribute(&err, "error", "timeout");
 				bUnitSend(&err, xJobs[i].internal_uid);
+
+				xSemaphoreTake(xJobHandlerMutex, portMAX_DELAY);
 			}
 		}
 		//release jobhandlers

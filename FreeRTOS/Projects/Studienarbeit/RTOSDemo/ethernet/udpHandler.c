@@ -148,8 +148,6 @@ tBoolean bUdpSendTo(const unsigned char * data, int dataLen, uip_udp_endpoint_t 
 {
 	if(xSmphrSendComplete != NULL && xSemaphoreTake(xSmphrSendComplete, portMAX_DELAY))
 	{
-		//udpHandler_init(dest);
-
 		txBuffer = (unsigned char*)data;
 		txBufferLen = dataLen;
 

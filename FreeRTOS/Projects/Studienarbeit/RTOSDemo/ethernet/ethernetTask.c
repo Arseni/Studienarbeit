@@ -207,7 +207,7 @@ void vEthernetTask( void *pvParameters )
 				if( uip_len > 0 )
 				{
 					uip_arp_out();
-					prvENET_Send();
+					//prvENET_Send();
 				}
 			}
 			else if( xHeader->type == htons( UIP_ETHTYPE_ARP ) )
